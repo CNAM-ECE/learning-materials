@@ -38,13 +38,14 @@ The **Reference** section collects the notation sheet, a TSN glossary and an ann
 
 ## Reproduction
 
-Requires Node.js ≥ 20.
+Requires Node.js ≥ 22 and [pnpm](https://pnpm.io). The pnpm version is pinned by the `packageManager` field of `package.json`; with Corepack enabled (`corepack enable`), that exact version is used automatically. Installing with npm or Yarn is rejected by a `preinstall` check.
 
 ```bash
-npm install
-npm start            # development server at http://localhost:3000/learning-materials/
-npm run build        # static site in build/
-npm run serve        # serve the production build
+pnpm install
+pnpm start           # development server at http://localhost:3000/learning-materials/
+pnpm build           # static site in build/
+pnpm serve           # serve the production build
+pnpm typecheck       # TypeScript check of config and components
 ```
 
 The build fails on broken internal links (`onBrokenLinks: 'throw'`), so a successful build also checks cross-references between posts. A GitHub Actions workflow (`.github/workflows/deploy.yml`) publishes `build/` to GitHub Pages on every push to `main`; it requires *Settings → Pages → Source: GitHub Actions*.

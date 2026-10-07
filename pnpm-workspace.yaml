@@ -1,0 +1,6 @@
+# Dependency build scripts are denied unless listed here (pnpm >= 10).
+# core-js only prints a funding message; @swc/core ships its binary
+# through optional platform packages, so neither script is needed.
+allowBuilds:
+  '@swc/core': false
+  core-js: false

@@ -1,24 +1,58 @@
+# Resource types: the kind of material a post draws on.
+
+youtube:
+  label: YouTube
+  permalink: /youtube
+  description: "Resource type: recorded lectures and seminars on YouTube"
+
+presentation:
+  label: Presentation
+  permalink: /presentation
+  description: "Resource type: conference or workshop slide decks"
+
+article:
+  label: Article
+  permalink: /article
+  description: "Resource type: peer-reviewed papers and extended abstracts"
+
+guide:
+  label: Guide
+  permalink: /guide
+  description: "Resource type: industrial technical guides"
+
+book:
+  label: Book
+  permalink: /book
+  description: "Resource type: textbooks and monographs"
+
+# Technologies and topics.
+
 foundations:
   label: Foundations
   permalink: /foundations
-  description: Mathematical background of deterministic network calculus
+  description: "Technology: mathematical background (min-plus algebra, curves)"
 
-bounds:
-  label: Bounds
-  permalink: /bounds
-  description: Delay, backlog and output bounds
+network-calculus:
+  label: Network calculus
+  permalink: /network-calculus
+  description: "Technology: deterministic network calculus bounds and analyses"
 
 tsn:
   label: TSN
   permalink: /tsn
-  description: IEEE 802.1 Time-Sensitive Networking
+  description: "Technology: IEEE 802.1 Time-Sensitive Networking"
+
+sdn:
+  label: SDN
+  permalink: /sdn
+  description: "Technology: software-defined networking and centralised control"
+
+tas:
+  label: TAS
+  permalink: /tas
+  description: "Technology: IEEE 802.1Qbv Time-Aware Shaper"
 
 reconfiguration:
   label: Reconfiguration
   permalink: /reconfiguration
-  description: Online and incremental reconfiguration of deterministic networks
-
-motivation:
-  label: Motivation
-  permalink: /motivation
-  description: Why worst-case guarantees are needed
+  description: "Technology: online and incremental reconfiguration of deterministic networks"

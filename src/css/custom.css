@@ -41,6 +41,31 @@
   padding: 0.25rem 0;
 }
 
+/* Blog author block: social icons on the same line as the author name. */
+.avatar__intro[class*='authorDetails'] {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  align-items: center;
+  justify-items: start;
+}
+
+.avatar__intro[class*='authorDetails'] > .avatar__name {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.avatar__intro[class*='authorDetails'] > [class*='authorSocials'] {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+}
+
+.avatar__intro[class*='authorDetails'] > small {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
 .nc-figure {
   margin: 1.5rem 0;
   text-align: center;

@@ -1,0 +1,96 @@
+---
+slug: dynamic-reconfiguration-of-tsn
+title: "9. Dynamic reconfiguration of TSN: where network calculus fits"
+authors: [trang]
+tags: [reconfiguration, tsn]
+description: A reading of two recent approaches to TSN reconfiguration, SDN-based path migration and resilient Time-Aware Shaper schedules, and the role of network calculus as a certificate.
+---
+
+The guarantees developed in this series are established for a fixed configuration. This final post examines what happens when the configuration changes at run time, through two recent contributions, and argues that network calculus is the natural tool to *certify* a reconfiguration, whatever method proposes it.
+
+{/* truncate */}
+
+## 1. Why reconfigure?
+
+Three situations force a TSN configuration to change after deployment:
+
+1. **New flows.** A production cell is extended and new streams request admission.
+2. **Resource fragmentation.** Flows admitted early occupy paths and windows that later prevent better placements.
+3. **Faults.** A link or bridge fails permanently and the flows that crossed it must be rerouted.
+
+In each case two problems arise: *finding* a new configuration (routes, priorities, gate schedules), and *verifying* that it, and the transition towards it, preserve every deadline.
+
+## 2. SDN-based dynamic path reconfiguration
+
+Sertbaş Bülbül, Ergenç and Fischer address problems 1 and 2 with a centralised SDN controller [1, 2]. A talker advertises the requirements of a new flow; a path computation element in the controller computes a route, possibly migrating existing flows to free capacity, and installs forwarding rules before confirming the reservation to the talker. This is close to the fully centralised configuration model of IEEE 802.1Qcc.
+
+The path computation is formulated as a mixed-integer linear program, the **time-sensitive optimal routing** (TSOR) problem. Binary variables assign demands to paths; continuous variables $g_{es}$ give the fraction of time the gate of class $s$ is open on link $e$. The end-to-end latency of a path is modelled as a sum over its links of a base delay plus a queueing term proportional to $1 - g_{es}$. Four strategies differ in how much of the existing assignment may change:
+
+| Strategy | Reconfiguration policy | Acceptance ratio | Delayed-frame ratio | Configuration time |
+| --- | --- | --- | --- | --- |
+| TSOR | Existing flows never moved | 49.2 % | 5.83 % | 17 µs |
+| TSOR-P | Full re-optimisation every $k$ requests | 51.18 % | 4.94 % | 63.7 µs |
+| TSOR-T | Re-optimisation when a quality threshold is exceeded | 51.93 % | 4.47 % | 137.4 µs |
+| TSOR-U | Full re-optimisation at every request | 52.81 % | 5.41 % | 189 µs |
+
+*Values from the OMNeT++ evaluation on the Integra topology reported in [2]. Configuration time excludes MILP solving, which the authors report at about 7.3 s for 100 flows from scratch versus about 4 ms for incremental TSOR.*
+
+Two observations are relevant here.
+
+- Periodic or threshold-triggered reconfiguration accepts more flows than never reconfiguring, at a moderate configuration cost.
+- The **delayed-frame ratio is non-zero for every strategy.** The latency constraint in TSOR is a linear surrogate, not a worst-case bound, so a configuration accepted by the optimiser can still produce frames that miss their deadline. This is precisely the gap a network calculus certificate closes.
+
+## 3. A resilient Time-Aware Shaper configuration
+
+Boyer (ONERA) and Henia (Thales) address problem 3, permanent link faults, for networks scheduled with the Time-Aware Shaper [3]. Their observation is that finding a new route is easy, whereas allocating real-time resources on that route is hard, especially within a short reaction time. They also argue for *incremental* reconfiguration: the windows of flows unaffected by the fault should not move, because applications are synchronised with the network schedule.
+
+Their scheme, **WPEx**, combines three ideas:
+
+1. **Window precedence exclusion.** A sending window and a receiving window never overlap, so all frames are enqueued before the window opens. This makes the schedule immune to frame losses.
+2. **Window enlargement.** Windows are made as large as possible, leaving slack that can later host rescue flows.
+3. **Protective gating.** Lower-priority gates are closed only at the *start* of protected windows, so unused window time returns to lower-priority traffic.
+
+An initial WPEx-compatible schedule is computed with a constraint solver (IBM CPLEX) and post-processed (windows spread over the hyper-period, enlarged, and empty windows added on lightly loaded links). On a fault, the resources of broken flows are freed and each one is tried on candidate rescue paths by inserting its frame into existing windows; the rescue computation takes under one second, and **no gate control list needs to be updated**, which removes the coherency problem of changing schedules on several bridges at once.
+
+The slides report the share of class-6 and class-7 flows that obtain a rescue schedule, given that a rescue path exists:
+
+| Post-processing | Single fault, class 6 | Single fault, class 7 | Double fault, class 6 | Double fault, class 7 |
+| --- | --- | --- | --- | --- |
+| CPLEX only | 0.00 % | 0.00 % | 0.00 % | 0.00 % |
+| Enlarge | 12.20 % | 9.09 % | 25.68 % | 9.17 % |
+| Add windows | 19.51 % | 9.09 % | 22.04 % | 8.97 % |
+| Enlarge then add | 31.71 % | 33.33 % | 43.38 % | 30.48 % |
+| Add then enlarge | 43.90 % | 24.24 % | 48.15 % | 23.94 % |
+
+*Table transcribed from the slide deck [3]; the authors state that performance is still under evaluation.*
+
+## 4. Synthesis: separating the proposer from the verifier
+
+The two contributions solve different problems with different tools: an MILP over paths and gate fractions, and a constraint-solved schedule with built-in slack. They share a structure: a *proposer* produces a candidate configuration quickly, and the network adopts it. Neither proposer, by itself, delivers a worst-case delay bound for the resulting configuration.
+
+This suggests an architecture in which any proposer, whether an MILP, a heuristic, a constraint solver or a learned policy, is followed by a **certified admission gate**:
+
+1. The proposer suggests a change: a new flow, a migrated path, a rescue schedule.
+2. The gate computes network calculus bounds for every flow affected by the change, using the arrival and service curves of the previous posts.
+3. The change is committed only if every affected flow still meets its deadline; the gate emits a certificate (the curves and bounds) that an independent checker can verify.
+
+The companion repository [4] implements such a gate with incremental Total Flow Analysis under non-preemptive static priority. Its bounds agree with panco to within $2.9 \times 10^{-6}$ relative difference end to end, and an incremental update is about twice as fast as a full re-analysis, with median admission times of a few milliseconds in single-threaded Python.
+
+## 5. Open questions
+
+- **Transient states.** A certificate for the old and the new configuration does not cover the *transition*, during which bridges may apply updates at different instants. WPEx avoids the issue by not changing gate control lists; path migration must address it explicitly.
+- **Tightness versus speed.** TFA is fast and incremental but pessimistic; tighter path-based analyses are costlier and harder to update incrementally ([post 7](/blog/aggregate-multiplexing-residual-service)). Which analysis suits online admission is an empirical question.
+- **Faults and redundancy.** Rescue flows and 802.1CB redundancy change burstiness along merged paths ([post 8](/blog/network-calculus-for-tsn)); certificates must account for this.
+- **Model validity.** A certificate holds only as far as the network model does. Clock error, processing jitter and policing configuration must be included in the model for the guarantee to transfer to the physical network.
+
+## Recommended viewing
+
+- *Networks and Calculus*, Prof. Jean-Yves Le Boudec, EPFL. [YouTube](https://www.youtube.com/watch?v=NpoqqPM4LYA).
+
+## References
+
+1. N. Sertbaş Bülbül, D. Ergenç, M. Fischer, "Towards SDN-based Dynamic Path Reconfiguration for Time Sensitive Networking," IEEE/IFIP NOMS 2022. [IEEE Xplore](https://ieeexplore.ieee.org/document/9789890)
+2. N. Sertbaş Bülbül, D. Ergenç, M. Fischer, "Evaluating Dynamic Path Reconfiguration for Time Sensitive Networks," extended abstract, Würzburg Workshop WueWoWAS 2022. [PDF](https://opus.bibliothek.uni-wuerzburg.de/files/28074/Sertbas_Buelbuel_et_al_Dynamic_Path_Reconfiguration_WueWoWas22_1570808763.pdf)
+3. M. Boyer, R. Henia, "Designing a Resilient Time-Aware Shaper Configuration for TSN," Ethernet & IP @ Automotive Technology Day, Toulouse, October 2025. [Slides](https://standards.ieee.org/wp-content/uploads/2025/10/D1_09_Marc-Boyer-TSN-reconfiguration.pdf)
+4. CNAM-ECE, *Certified Admission Control for TSN*. [GitHub](https://github.com/CNAM-ECE/network-calculus)
+5. TSF Technology, "Migration vers TSN : guide pratique." [Link](https://tsf-technology.com/fr/ressources/guides-techniques/migration-tsn-guide-pratique)

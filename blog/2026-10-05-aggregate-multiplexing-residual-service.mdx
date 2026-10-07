@@ -1,0 +1,94 @@
+---
+slug: aggregate-multiplexing-residual-service
+title: "7. Aggregate multiplexing and residual service"
+authors: [trang]
+tags: [bounds]
+description: Blind, FIFO and non-preemptive static-priority multiplexing; residual service curves; Total Flow Analysis versus path-based analyses.
+---
+
+In a real switch, a flow does not have a server to itself: it shares an egress port with other flows, possibly in the same queue. To apply the results of the previous posts to one flow, we need the service that remains for it once the competing traffic has been served. This is the **residual service curve**, and its form depends on the multiplexing policy.
+
+{/* truncate */}
+
+## 1. Blind multiplexing
+
+Under *blind* (arbitrary) multiplexing nothing is assumed about the order in which the server picks bits from different flows. Let a server offer a **strict** service curve $\beta$ to the aggregate of flows 1 and 2, and let flow 2 have arrival curve $\alpha_2$. Then flow 1 receives the service curve
+
+$$
+\beta_1 = [\beta - \alpha_2]^+ ,
+$$
+
+provided this function is wide-sense increasing (otherwise one takes its largest increasing lower bound). The strictness of $\beta$ is essential: the result is false for general min-plus service curves.
+
+For a rate-latency server and a token-bucket cross flow, the residual service is again rate-latency:
+
+$$
+\bigl[\beta_{C,T} - \gamma_{r_2,b_2}\bigr]^+ = \beta_{\,C - r_2,\; \frac{C T + b_2}{C - r_2}} .
+$$
+
+The residual rate is what the cross flow leaves on average; the residual latency includes the time needed to serve the cross flow's burst and its backlog accumulated during $T$.
+
+## 2. FIFO multiplexing
+
+Under FIFO, bits are served in arrival order regardless of the flow. This is more information than blind multiplexing, and it yields a *family* of residual service curves indexed by $\theta \ge 0$:
+
+$$
+\beta_1^{\theta}(t) = \bigl[\beta(t) - \alpha_2(t - \theta)\bigr]^+ \mathbf{1}_{\{t > \theta\}} .
+$$
+
+Each member is a valid service curve for flow 1; choosing $\theta$ well gives bounds tighter than blind multiplexing. Optimising $\theta$ across all hops of a path is what makes exact FIFO analysis computationally hard and motivates linear-programming approaches.
+
+## 3. Non-preemptive static priority
+
+TSN egress ports have up to eight traffic classes served by strict priority, and a frame being transmitted is not interrupted (preemption under 802.1Qbu/802.3br is optional). Consider class $k$ at a port of rate $C$, and let
+
+- $B_H, R_H$ be the aggregate burst and rate of all higher-priority classes,
+- $L_{lo}$ be the largest frame of any lower-priority class,
+- $B_k$ be the aggregate burst of class $k$.
+
+The class-$k$ aggregate is blocked by at most one lower-priority frame and is otherwise served whenever no higher-priority traffic is waiting. It therefore receives the strict rate-latency service curve
+
+$$
+\beta_k(t) = \bigl[\,C t - L_{lo} - B_H - R_H t\,\bigr]^+ = (C - R_H)\left[t - \frac{B_H + L_{lo}}{C - R_H}\right]^+ .
+$$
+
+Since frames inside a class are served FIFO, the delay bound of the class aggregate, plus a processing delay $t_{proc}$, bounds the delay of every frame of class $k$:
+
+$$
+d_k = \frac{B_H + L_{lo} + B_k}{C - R_H} + t_{proc}, \qquad R_H + R_k \le C .
+$$
+
+This is the per-hop formula used in the companion admission-control repository [4]. The stability condition $R_H + R_k \le C$ must hold at every port.
+
+## 4. From one node to a network
+
+Two families of methods extend these results to a network of switches.
+
+**Total Flow Analysis (TFA).** At each port, bound the delay of each class aggregate with the formula above. Propagate the bursts downstream with the output-burst rule of [post 5](/blog/three-fundamental-bounds), $b' = b + r\,d_k$, and sum the per-hop bounds along each path:
+
+$$
+D = \sum_{h \in \mathcal{P}} d_k^{(h)} .
+$$
+
+TFA is simple, scales well, and is easy to update incrementally when a flow is added, because only the ports on the new flow's path, and those downstream of them, are affected. Its weakness is that it pays bursts at every hop.
+
+**Path-based analyses.** Separated Flow Analysis (SFA) computes a residual service curve per hop and concatenates them, gaining PBOO. PMOO-style and linear-programming analyses go further by accounting for each cross flow only once. They are tighter but more expensive, and less naturally incremental.
+
+**Cyclic dependencies.** When routes form cycles, the bursts entering a port depend on delays that depend on those same bursts. TFA then becomes a fixed-point problem; a finite bound exists only under sufficiently low load, and solving it requires iteration.
+
+| Method | Tightness | Cost | Incremental update |
+| --- | --- | --- | --- |
+| TFA | Lowest | Low | Natural |
+| SFA | Better (PBOO) | Moderate | Possible |
+| PMOO / LP-based | Best | High | Difficult |
+
+## Recommended viewing
+
+- *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 6.
+2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
+3. A. Bouillard, *panco: Performance Analysis with Network Calculus and Optimization*, 2022. [GitHub](https://github.com/anne-bou/panco)
+4. CNAM-ECE, *Certified Admission Control for TSN*. [GitHub](https://github.com/CNAM-ECE/network-calculus)

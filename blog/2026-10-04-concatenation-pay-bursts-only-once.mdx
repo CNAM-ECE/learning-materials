@@ -1,0 +1,73 @@
+---
+slug: concatenation-pay-bursts-only-once
+title: "6. Concatenation and the \"pay bursts only once\" principle"
+authors: [trang]
+tags: [bounds]
+description: End-to-end service curves by min-plus convolution, and why they give tighter bounds than summing per-hop delays.
+---
+
+A flow in a TSN network crosses several bridges. There are two ways to bound its end-to-end delay: add the per-hop bounds, or first compose the hops into a single equivalent server. The second is never worse and often much better. This post explains why.
+
+{/* truncate */}
+
+## 1. Concatenation theorem
+
+If a flow crosses system $S_1$ offering service curve $\beta_1$ and then system $S_2$ offering $\beta_2$, the concatenation offers the service curve
+
+$$
+\beta_{1,2} = \beta_1 \otimes \beta_2 .
+$$
+
+The proof is a one-line consequence of associativity: $R_2^* \ge R_1^* \otimes \beta_2 \ge (R \otimes \beta_1) \otimes \beta_2 = R \otimes (\beta_1 \otimes \beta_2)$. The result extends to any number of hops by induction.
+
+For rate-latency servers, [post 2](/blog/min-plus-algebra) gives the closed form
+
+$$
+\bigotimes_{i=1}^{n} \beta_{R_i, T_i} = \beta_{\min_i R_i,\; \sum_i T_i}.
+$$
+
+The path behaves like a single server whose rate is the bottleneck rate and whose latency is the sum of the latencies.
+
+## 2. Two ways to bound a two-hop path
+
+Consider a token-bucket flow $\gamma_{r,b}$ crossing two rate-latency servers $\beta_{R_1,T_1}$ and $\beta_{R_2,T_2}$, with $r \le \min(R_1, R_2)$.
+
+**Additive (hop-by-hop) analysis.** At hop 1 the delay is $T_1 + b/R_1$ and the output burst is $b + rT_1$. At hop 2 the delay is $T_2 + (b + rT_1)/R_2$. Summing,
+
+$$
+D_{\text{add}} = T_1 + T_2 + \frac{b}{R_1} + \frac{b + r T_1}{R_2}.
+$$
+
+**Concatenated analysis.** With $R = \min(R_1, R_2)$,
+
+$$
+D_{\text{conc}} = T_1 + T_2 + \frac{b}{R}.
+$$
+
+The additive bound pays the burst $b$ at *every* hop, and additionally pays the burst *increase* created by upstream latencies. The concatenated bound pays the burst once, at the bottleneck. This is the **pay bursts only once** (PBOO) principle.
+
+## 3. Numerical example
+
+Take two identical hops with $R = 100$ Mbit/s and $T = 20\ \mu s$, and the flow $b = 12\,000$ bits, $r = 12$ Mbit/s from the previous posts.
+
+| Method | Formula | Bound |
+| --- | --- | --- |
+| Additive | $(20 + 120) + (20 + 122.4)$ | $282.4\ \mu s$ |
+| Concatenated | $40 + 120$ | $160\ \mu s$ |
+
+The concatenated bound is about 43 % smaller. The gap grows linearly with the number of hops: with $n$ identical hops, the additive bound grows like $n\,b/R$ whereas the concatenated bound keeps a single $b/R$ term.
+
+## 4. Why this matters for TSN
+
+PBOO is the reason per-flow, path-based analyses can be much tighter than per-node analyses. It is not free, however.
+
+- It requires a *per-flow* service curve at each hop. When flows share a queue, one must first derive the service left to the flow of interest, the **residual service curve**, which is the subject of the [next post](/blog/aggregate-multiplexing-residual-service).
+- For aggregate scheduling, a related principle, **pay multiplexing only once** (PMOO), avoids paying the interference of a cross flow at every hop it shares with the flow of interest. PMOO is established for blind multiplexing; FIFO multiplexing requires different techniques.
+
+The trade-off between per-node analyses (simple, incremental, fast) and path-based analyses (tighter, more expensive) recurs in the discussion of online admission control in [post 9](/blog/dynamic-reconfiguration-of-tsn).
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1.
+2. J. B. Schmitt, F. A. Zdarsky, I. Martinovic, "Improving Performance Bounds in Feed-Forward Networks by Paying Multiplexing Only Once," MMB 2008.
+3. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.

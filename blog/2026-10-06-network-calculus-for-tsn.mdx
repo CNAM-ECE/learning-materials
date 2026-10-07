@@ -1,0 +1,73 @@
+---
+slug: network-calculus-for-tsn
+title: "8. Network calculus for TSN shapers"
+authors: [trang]
+tags: [tsn, bounds]
+description: How the Time-Aware Shaper, Credit-Based Shaper, Asynchronous Traffic Shaper, policing and redundancy are modelled with arrival and service curves, and which tools implement the analyses.
+---
+
+The previous posts developed a general theory. This post maps each TSN mechanism onto the objects of that theory: which mechanisms create *service curves*, which enforce *arrival curves*, and which modify burstiness along a path.
+
+{/* truncate */}
+
+## 1. A mapping table
+
+| Mechanism | Standard | Network calculus object | Effect on analysis |
+| --- | --- | --- | --- |
+| Strict priority, non-preemptive | 802.1Q | Residual service curve per class | Blocking term $L_{lo}/C$ ([post 7](/blog/aggregate-multiplexing-residual-service)) |
+| Time-Aware Shaper | 802.1Qbv | Periodic service curve per gated queue | Rate $Cw/c$, latency up to $c - w$ ([post 4](/blog/service-curves)) |
+| Credit-Based Shaper | 802.1Qav | Rate-latency service curve per AVB class | Rate set by the idle slope |
+| Asynchronous Traffic Shaper | 802.1Qcr | Interleaved regulator (shaper) | Resets burstiness at each hop |
+| Per-Stream Filtering and Policing | 802.1Qci | Enforced arrival curve | Makes the input contract hold |
+| Frame Replication and Elimination | 802.1CB | Merge of redundant paths | Can increase burstiness |
+| Time synchronisation | 802.1AS | Bounded clock error | Enters as a jitter term |
+
+## 2. Time-Aware Shaper
+
+For flows that are *scheduled*, i.e. whose emission times are synchronised with the gate control lists, the delay is determined by the schedule itself and network calculus is not needed for them. It becomes necessary in three situations:
+
+1. for traffic that shares the scheduled port but is not itself scheduled, which receives the *residual* of the gate schedule;
+2. for scheduled traffic whose emission is not perfectly aligned, for instance because of clock error or application jitter;
+3. when one wants a schedule-independent guarantee that survives a modification of the schedule, a question central to reconfiguration ([post 9](/blog/dynamic-reconfiguration-of-tsn)).
+
+In each case, the gate schedule of a queue translates into a periodic strict service curve, which can be lower-bounded by a rate-latency curve as derived in [post 4](/blog/service-curves).
+
+## 3. Credit-Based Shaper
+
+The Credit-Based Shaper of AVB limits each class to a configured *idle slope*. Its network calculus model gives each shaped class a rate-latency service curve whose rate is the idle slope and whose latency accounts for the interference of other classes. The shaper also bounds the *output* burstiness of the class, which keeps per-hop bursts from growing without limit. Zhao, Pop, Zheng and Li derived timing analyses for AVB traffic in TSN networks with this approach [3]; Mohammadpour et al. combined CBS with ATS [4].
+
+## 4. Asynchronous Traffic Shaper
+
+ATS (802.1Qcr) places *interleaved regulators* at each hop. An interleaved regulator processes the frames of several flows in a single FIFO queue and releases the head frame only when that frame's own flow is conformant with its arrival curve. Le Boudec proved that an interleaved regulator placed after a FIFO system does not increase the worst-case delay of that system: the "shaping for free" property of [post 3](/blog/arrival-curves) extends to interleaved regulators [5]. In consequence, the arrival curve of every flow is restored to its initial value at every hop, which eliminates burst propagation and breaks the cyclic dependencies discussed in [post 7](/blog/aggregate-multiplexing-residual-service).
+
+## 5. Policing and redundancy
+
+Every network calculus bound is conditional on its arrival curves. **802.1Qci** policers make the conditions hold in the field by discarding or marking frames that violate their declared contract; without them, a single misbehaving talker can invalidate the guarantees of every other flow.
+
+**802.1CB** replicates frames over disjoint paths and eliminates duplicates near the destination. The elimination function outputs the first copy of each frame, so the merged stream can be burstier than either path's output when the paths have different delays. Thomas, Mifdaoui and Le Boudec analysed this effect and showed that it must be accounted for, for instance by re-shaping after elimination [6].
+
+## 6. Tools
+
+| Tool | Scope | Link |
+| --- | --- | --- |
+| DiscoDNC | Java library; TFA, SFA, PMOO and tandem analyses for feed-forward networks | [NetCal/DNC](https://github.com/NetCal/DNC) |
+| panco | Python; TFA, SFA and linear-programming analyses for FIFO networks | [anne-bou/panco](https://github.com/anne-bou/panco) |
+| Nancy | C# library for min-plus operations on piecewise-affine curves | [rzippo/nancy](https://github.com/rzippo/nancy) |
+| tsnkit | Python; implementations and benchmarks of 802.1Qbv scheduling algorithms | [ChuanyuXue/tsnkit](https://github.com/ChuanyuXue/tsnkit) |
+
+Cross-checking an analysis against an independent tool is a cheap form of validation. The companion repository on certified admission control compares its TFA bounds against panco and reports a relative difference of $2.5 \times 10^{-16}$ per hop [7].
+
+## Recommended viewing
+
+- *Networks and Calculus*, Prof. Jean-Yves Le Boudec, EPFL. [YouTube](https://www.youtube.com/watch?v=NpoqqPM4LYA).
+- *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
+
+## References
+
+1. IEEE Std 802.1Q, *Bridges and Bridged Networks* (incorporating 802.1Qav, 802.1Qbv, 802.1Qci and 802.1Qcr).
+2. IEEE Std 802.1CB, *Frame Replication and Elimination for Reliability*.
+3. L. Zhao, P. Pop, Z. Zheng, Q. Li, "Timing Analysis of AVB Traffic in TSN Networks Using Network Calculus," IEEE RTAS 2018.
+4. E. Mohammadpour, E. Stai, M. Mohiuddin, J.-Y. Le Boudec, "Latency and Backlog Bounds in Time-Sensitive Networking with Credit Based Shapers and Asynchronous Traffic Shaping," ITC 30, 2018.
+5. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, 26(6), 2018.
+6. L. Thomas, A. Mifdaoui, J.-Y. Le Boudec, "Worst-Case Delay Bounds in Time-Sensitive Networks With Packet Replication and Elimination," *IEEE/ACM Transactions on Networking*, 2022.
+7. CNAM-ECE, *Certified Admission Control for TSN*. [GitHub](https://github.com/CNAM-ECE/network-calculus)

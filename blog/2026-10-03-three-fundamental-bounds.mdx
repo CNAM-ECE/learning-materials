@@ -1,0 +1,90 @@
+---
+slug: three-fundamental-bounds
+title: "5. The three fundamental bounds: delay, backlog and output"
+authors: [trang]
+tags: [bounds]
+description: Horizontal and vertical deviations, the output arrival curve, and closed forms for a token-bucket flow crossing a rate-latency server.
+---
+
+import BoundsFigure from '@site/src/components/BoundsFigure';
+
+With an arrival curve $\alpha$ for the input and a service curve $\beta$ for the system, network calculus yields three bounds. They are the core results of the theory; everything that follows in this series composes them.
+
+{/* truncate */}
+
+## 1. Statements
+
+Let a flow with arrival curve $\alpha$ cross a system offering service curve $\beta$.
+
+**Backlog bound.** For all $t$,
+
+$$
+R(t) - R^*(t) \le v(\alpha, \beta) = \sup_{s \ge 0} \{\, \alpha(s) - \beta(s) \,\}.
+$$
+
+**Delay bound.** For all $t$, the virtual delay satisfies
+
+$$
+d(t) \le h(\alpha, \beta) = \sup_{s \ge 0} \Bigl\{ \inf \{\, \tau \ge 0 : \alpha(s) \le \beta(s + \tau) \,\} \Bigr\}.
+$$
+
+**Output arrival curve.** The output flow $R^*$ has arrival curve
+
+$$
+\alpha^* = \alpha \oslash \beta .
+$$
+
+$v$ is the *vertical deviation* and $h$ the *horizontal deviation* between the two curves. For a FIFO system the virtual delay is the actual delay of every bit, so $h(\alpha,\beta)$ bounds the delay of every frame of the flow.
+
+## 2. Proof sketch of the backlog bound
+
+Fix $t$. By the service curve property there exists $s \le t$ such that $R^*(t) \ge R(s) + \beta(t - s)$. Hence
+
+$$
+R(t) - R^*(t) \le R(t) - R(s) - \beta(t - s) \le \alpha(t - s) - \beta(t - s) \le v(\alpha, \beta),
+$$
+
+where the second inequality uses the arrival curve property. The delay bound follows from a similar argument; the output bound follows from $R^*(t) - R^*(s) \le R(t) - R(s - u) - \beta(u)$ for a suitable $u$ and the duality property of $\oslash$.
+
+## 3. Closed forms: token bucket through a rate-latency server
+
+Take $\alpha = \gamma_{r,b}$ and $\beta = \beta_{R,T}$ with the stability condition $r \le R$. The three bounds become
+
+$$
+D = T + \frac{b}{R}, \qquad B = b + r\,T, \qquad \alpha^* = \gamma_{r,\; b + r T}.
+$$
+
+<BoundsFigure />
+
+Each formula has a direct reading.
+
+- **Delay.** A burst of $b$ bits arrives just as the server starts its worst-case latency $T$; it is then drained at rate $R$.
+- **Backlog.** During the latency $T$ nothing leaves, while the burst $b$ and a further $rT$ bits may arrive.
+- **Output burst.** The long-term rate is unchanged, but the burst grows by $rT$: data held back during the latency may leave back-to-back. This *burstiness increase* is what makes multi-hop analysis non-trivial.
+
+If $r > R$, both $v$ and $h$ are infinite: no finite bound exists, which is the network-calculus statement of instability.
+
+## 4. Numerical example
+
+Reuse the control stream of [post 3](/blog/arrival-curves), $b = 12\,000$ bits, $r = 12$ Mbit/s, and a switch port offering $\beta_{R,T}$ with $R = 100$ Mbit/s and $T = 20\ \mu s$.
+
+| Quantity | Formula | Value |
+| --- | --- | --- |
+| Delay bound | $T + b/R$ | $20 + 120 = 140\ \mu s$ |
+| Backlog bound | $b + rT$ | $12\,000 + 240 = 12\,240$ bits |
+| Output burst | $b + rT$ | $12\,240$ bits |
+
+The output burst is the input burst of the next hop. The next post shows that propagating it hop by hop is sound but pessimistic, and how to avoid that pessimism.
+
+## 5. Tightness
+
+For a single node with $\alpha$ a good arrival curve and $\beta$ a service curve, the bounds are *tight*: there exist a trajectory and a system that attain them. Tightness is lost when nodes are composed or when flows are aggregated, and recovering it at acceptable computational cost is one of the active research topics of the field.
+
+## Recommended viewing
+
+- *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1.
+2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.

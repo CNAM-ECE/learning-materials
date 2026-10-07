@@ -1,0 +1,80 @@
+---
+slug: why-deterministic-guarantees
+title: "1. Why deterministic guarantees? From TSN to worst-case bounds"
+authors: [trang]
+tags: [motivation, tsn]
+description: Motivation for deterministic network calculus, and why measurement alone cannot certify a Time-Sensitive Network.
+---
+
+Time-Sensitive Networking (TSN) promises that a standard Ethernet network can carry control traffic with *bounded* latency. This first post explains what "bounded" means, why it cannot be established by measurement alone, and why deterministic network calculus is the analytical tool of choice for establishing it.
+
+{/* truncate */}
+
+## 1. The promise of TSN
+
+TSN is a family of IEEE 802.1 amendments that add deterministic behaviour to bridged Ethernet. Industrial guides typically single out four of them [3]:
+
+| Standard | Mechanism | Role in the guarantee |
+| --- | --- | --- |
+| 802.1AS | Generalised Precision Time Protocol (gPTP) | Common time base for all bridges and end stations |
+| 802.1Qbv | Time-Aware Shaper (TAS) | Gate control lists open and close queues at scheduled instants |
+| 802.1Qci | Per-Stream Filtering and Policing (PSFP) | Enforces the traffic contract declared by each stream |
+| 802.1CB | Frame Replication and Elimination (FRER) | Seamless redundancy over disjoint paths |
+
+A shorter glossary is kept in the [TSN glossary](/reference/tsn-glossary).
+
+The promise is converged traffic: control loops, video and best-effort traffic share one physical network, and the control traffic still meets its deadlines. That promise is only as strong as the argument that supports it.
+
+## 2. Average-case versus worst-case performance
+
+Classical queueing theory answers questions such as "what is the *mean* delay of a packet?" or "what is the probability that the delay exceeds 1 ms?". Such answers are indispensable for dimensioning best-effort networks, but they are the wrong kind of answer for a safety-critical control loop, for two reasons.
+
+1. **Rare events are exactly the events that matter.** A braking command delayed once in $10^9$ frames is acceptable in a statistical sense and unacceptable in an engineering sense.
+2. **Stochastic assumptions are hard to justify.** Poisson arrivals and independence between flows are modelling conveniences; certification authorities ask for arguments that hold for *every* admissible traffic pattern.
+
+Deterministic network calculus replaces probabilistic assumptions with *envelopes*: each flow is assumed only to respect an upper bound on the amount of data it can emit in any interval, and each network element is assumed only to guarantee a lower bound on the service it provides. From these two envelopes it derives bounds that hold for every trajectory compatible with them.
+
+## 3. Why measurement does not suffice
+
+The practical TSN migration guide by TSF Technology proposes a five-phase method: audit the existing network and identify critical flows, design the TSN topology and synchronisation domains, pilot on a segment, configure scheduled traffic with 802.1Qbv, and finally *validate latency and jitter against requirements* [3]. The last phase is usually carried out by measurement.
+
+Measurement establishes a *lower* bound on the worst-case delay: the largest observed value. A certificate needs an *upper* bound. The gap between the two can be large, because the worst case arises from a precise alignment of bursts on every hop of a path, which a test campaign is unlikely to provoke. In the companion repository on certified admission control, packet-level simulation of 4,915 admitted flows observed a median worst delay of only 19 % (control traffic) and 10 % (stream traffic) of the analytical bound [4]. These figures are a sanity check, not a tightness measure: they illustrate that the observed maximum and the provable maximum are different quantities.
+
+:::note[Key distinction]
+A measured maximum answers "what happened?". A network calculus bound answers "what *can* happen, under the stated assumptions?". Only the second can be used as a guarantee.
+:::
+
+## 4. Static configuration and the reconfiguration problem
+
+TSN guarantees are usually established for a configuration that is computed and verified offline, then frozen. In practice, networks change: flows are added and removed, links fail, and production lines are reconfigured. Two recent lines of work, discussed in [post 9](/blog/dynamic-reconfiguration-of-tsn), illustrate the tension:
+
+- Sertbaş Bülbül, Ergenç and Fischer use a software-defined networking (SDN) controller to migrate time-sensitive flows to new paths at run time [5];
+- Boyer and Henia design a Time-Aware Shaper schedule that can absorb rescue flows after a permanent link fault without modifying existing windows [6].
+
+Both raise the same question: *after* the change, does every admitted flow still meet its deadline? Answering it quickly and soundly is the motivation for this series.
+
+## 5. Plan of the series
+
+| Post | Topic |
+| --- | --- |
+| 2 | [Min-plus algebra](/blog/min-plus-algebra) |
+| 3 | [Arrival curves](/blog/arrival-curves) |
+| 4 | [Service curves](/blog/service-curves) |
+| 5 | [The three fundamental bounds](/blog/three-fundamental-bounds) |
+| 6 | [Concatenation and "pay bursts only once"](/blog/concatenation-pay-bursts-only-once) |
+| 7 | [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) |
+| 8 | [Network calculus for TSN](/blog/network-calculus-for-tsn) |
+| 9 | [Dynamic reconfiguration of TSN](/blog/dynamic-reconfiguration-of-tsn) |
+
+## Recommended viewing
+
+- *Networks and Calculus*, lecture by Prof. Jean-Yves Le Boudec (EPFL School of Computer and Communication Sciences). [YouTube](https://www.youtube.com/watch?v=NpoqqPM4LYA). A good first contact with the motivation and the vocabulary used throughout this series.
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus: A Theory of Deterministic Queuing Systems for the Internet*, LNCS 2050, Springer, 2001.
+2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus: From Theory to Practical Implementation*, Wiley-ISTE, 2018.
+3. TSF Technology, "Migration vers TSN : guide pratique," technical guide. [Link](https://tsf-technology.com/fr/ressources/guides-techniques/migration-tsn-guide-pratique)
+4. CNAM-ECE, *Certified Admission Control for TSN*, companion repository. [GitHub](https://github.com/CNAM-ECE/network-calculus)
+5. N. Sertbaş Bülbül, D. Ergenç, M. Fischer, "Towards SDN-based Dynamic Path Reconfiguration for Time Sensitive Networking," IEEE/IFIP NOMS 2022. [IEEE Xplore](https://ieeexplore.ieee.org/document/9789890)
+6. M. Boyer, R. Henia, "Designing a Resilient Time-Aware Shaper Configuration for TSN," Ethernet & IP @ Automotive Technology Day, Toulouse, October 2025. [Slides](https://standards.ieee.org/wp-content/uploads/2025/10/D1_09_Marc-Boyer-TSN-reconfiguration.pdf)

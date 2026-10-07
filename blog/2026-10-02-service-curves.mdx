@@ -1,0 +1,74 @@
+---
+slug: service-curves
+title: "4. Service curves: describing what a server guarantees"
+authors: [trang]
+tags: [foundations]
+description: Min-plus and strict service curves, rate-latency servers, and the service offered by a Time-Aware Shaper window.
+---
+
+The arrival curve bounds the demand; the **service curve** bounds the supply. It abstracts a scheduler, a link or a whole switch into a single function that lower-bounds the service it delivers.
+
+{/* truncate */}
+
+## 1. Min-plus service curve
+
+A system with input $R$ and output $R^*$ offers a (min-plus) **service curve** $\beta$ if
+
+$$
+R^* \ge R \otimes \beta, \qquad \text{i.e.} \qquad R^*(t) \ge \inf_{0 \le s \le t} \{\, R(s) + \beta(t - s) \,\}.
+$$
+
+Read operationally: for every $t$ there is some instant $s \le t$ such that the system has delivered at least $\beta(t - s)$ bits since $s$ on top of everything that arrived before $s$. The definition mirrors the impulse response of linear systems: an ideal pipe with latency $T$ has service curve $\delta_T$, a constant-rate link of rate $C$ has $\lambda_C$.
+
+## 2. Strict service curve
+
+A system offers a **strict service curve** $\beta$ if, during any *backlogged period* of duration $u$ (an interval in which the system is never empty), the output is at least $\beta(u)$.
+
+Every strict service curve is a min-plus service curve; the converse is false. The distinction matters because several results, in particular blind multiplexing in [post 7](/blog/aggregate-multiplexing-residual-service), require the strict version. Schedulers that serve as soon as they are backlogged, possibly after a bounded interruption, are naturally described by strict service curves.
+
+## 3. Rate-latency servers
+
+The workhorse of the theory is the **rate-latency** function
+
+$$
+\beta_{R,T}(t) = R\,[t - T]^+ = \max(0,\, R(t - T)).
+$$
+
+It models a server that, after a worst-case start-up latency $T$, serves at rate at least $R$. Many real schedulers fall into this class, for example:
+
+| System | Rate $R$ | Latency $T$ |
+| --- | --- | --- |
+| Link of rate $C$ with processing delay $t_{proc}$ | $C$ | $t_{proc}$ |
+| Non-preemptive link, highest priority, max lower-priority frame $L_{lo}$ | $C$ | $L_{lo}/C$ |
+| Generalised Processor Sharing with weight $\phi_i$ | $\phi_i C / \sum_j \phi_j$ | $0$ |
+
+Rate-latency functions are convex, so by the concatenation rule of [post 2](/blog/min-plus-algebra) a tandem of rate-latency servers is again rate-latency.
+
+## 4. Example: a Time-Aware Shaper window
+
+Consider an egress queue controlled by an 802.1Qbv gate that is open for $w$ time units in every cycle of length $c$, on a link of rate $C$. Assume, for simplicity, that no other queue transmits during this window and ignore the guard band that prevents frames from overrunning the window.
+
+In the worst case, the queue becomes backlogged just as its gate closes. It then waits $c - w$, is served at rate $C$ for $w$, waits again, and so on. The resulting cumulative service is a staircase whose lower corners lie on the line of slope $Cw/c$ passing through $(c - w,\, 0)$. Hence the queue receives the strict rate-latency service curve
+
+$$
+\beta(t) = \frac{C w}{c}\, \bigl[\, t - (c - w) \,\bigr]^+ .
+$$
+
+The rate is the reserved share of the link; the latency is the longest closed interval. Accounting for the guard band and for non-preemptive blocking increases the latency and slightly decreases the effective window.
+
+:::tip[Modelling choice]
+The rate-latency bound discards the staircase structure and is therefore pessimistic for traffic that is *synchronised* with the gate schedule. Time-triggered TSN analyses often exploit that synchronisation explicitly; network calculus remains the method of choice for traffic that is not synchronised, and for the residual service left to lower-priority classes.
+:::
+
+## 5. Service curves are a contract, not a description
+
+A service curve is a guarantee that the system *at least* provides, not an exact model. This has two consequences that recur in the rest of the series.
+
+1. **Composability.** Any lower bound of a service curve is still a service curve, so one may always simplify a complex curve to a rate-latency one and keep sound (if looser) bounds.
+2. **Robustness.** Bounds derived from service curves remain valid under any implementation that honours the curve, which is what a certificate needs.
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1.
+2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018, Chapter 5.
+3. IEEE Std 802.1Qbv-2015, *Enhancements for Scheduled Traffic*, now incorporated in IEEE Std 802.1Q.

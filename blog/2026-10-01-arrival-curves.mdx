@@ -1,0 +1,87 @@
+---
+slug: arrival-curves
+title: "3. Arrival curves: describing what a flow may send"
+authors: [trang]
+tags: [foundations]
+description: Definition of arrival curves, token buckets, staircase curves for periodic TSN streams, good arrival curves and greedy shapers.
+---
+
+An arrival curve is the traffic *contract* of a flow: an upper bound on how much data the flow may send in any time window. It is the first of the two envelopes on which network calculus is built.
+
+{/* truncate */}
+
+## 1. Definition
+
+A wide-sense increasing function $\alpha$ is an **arrival curve** for a flow with cumulative function $R$ if
+
+$$
+R(t) - R(s) \le \alpha(t - s) \qquad \text{for all } 0 \le s \le t.
+$$
+
+Equivalently, in min-plus notation,
+
+$$
+R \le R \otimes \alpha.
+$$
+
+The definition constrains *every* interval, not only intervals starting at time zero. It therefore bounds both the long-term rate and the short-term burstiness of the flow.
+
+## 2. Standard families
+
+**Token bucket (leaky bucket).** The affine function
+
+$$
+\gamma_{r,b}(t) = \begin{cases} 0 & t = 0 \\ b + r\,t & t > 0 \end{cases}
+$$
+
+states that the flow never sends more than $b$ bits instantaneously (the *burst*) and has a long-term rate at most $r$. A token bucket with rate $r$ and depth $b$ is the classical device that enforces it, and 802.1Qci policers in TSN implement this kind of contract.
+
+**Peak rate.** $\lambda_C(t) = C\,t$ constrains a flow that cannot exceed the line rate $C$. Combining it with a token bucket gives $\alpha = \min(\lambda_C, \gamma_{r,b})$, which is concave.
+
+**Staircase.** A strictly periodic stream with period $P$ and maximum frame size $L$, as typical of time-triggered TSN traffic, admits
+
+$$
+\alpha(t) = L \left\lceil \frac{t}{P} \right\rceil.
+$$
+
+If the release instants may deviate by up to a jitter $J$, the curve becomes $L \lceil (t + J)/P \rceil$. A staircase is upper-bounded by the token bucket $\gamma_{L/P,\,L}$ (or $\gamma_{L/P,\,L(1 + J/P)}$ with jitter); analyses frequently use the token bucket because it keeps closed forms simple, at the cost of some pessimism.
+
+## 3. Good arrival curves
+
+Not every arrival curve is informative. If $\alpha$ is an arrival curve for $R$, then its sub-additive closure $\overline{\alpha}$ is also one. Moreover, $\overline{\alpha} \le \alpha$, so no information is lost. One may therefore restrict attention to **good** arrival curves, i.e. sub-additive functions with $\alpha(0) = 0$. All concave functions with $\alpha(0) = 0$, in particular token buckets, are good.
+
+## 4. Greedy shapers
+
+A **greedy shaper** with shaping curve $\sigma$ (assumed good) delays bits as little as necessary so that its output has arrival curve $\sigma$. Its output is
+
+$$
+R^* = R \otimes \sigma.
+$$
+
+Two properties make shapers attractive in network design:
+
+1. **Shapers preserve arrival curves.** If the input has arrival curve $\alpha$, the output has arrival curve $\alpha \otimes \sigma$, and in particular still satisfies $\alpha$.
+2. **Re-shaping is for free.** If a flow is already constrained by $\sigma$ at the entrance of a network, inserting a greedy shaper with the same curve $\sigma$ after any sub-network does not increase the end-to-end delay *bound*. The shaper removes the burstiness accumulated inside the network without costing anything in the worst case.
+
+The second property is the theoretical basis of the Asynchronous Traffic Shaper (802.1Qcr), whose *interleaved* regulators extend it to aggregates of flows (see [post 8](/blog/network-calculus-for-tsn)).
+
+## 5. Worked example
+
+Consider a control stream that emits one 1500-byte frame ($L = 12\,000$ bits) every $P = 1$ ms. Its staircase arrival curve is $12\,000 \lceil t / 10^{-3} \rceil$ bits, upper-bounded by the token bucket
+
+$$
+\gamma_{r,b} \quad\text{with}\quad r = \frac{12\,000}{10^{-3}} = 12 \text{ Mbit/s}, \qquad b = 12\,000 \text{ bits}.
+$$
+
+This pair $(b, r)$ is the input of every bound derived in the rest of the series.
+
+## Recommended viewing
+
+- *An Introduction to Network Calculus*, LCA2, EPFL. [YouTube](https://www.youtube.com/watch?v=ABQ327BTc_o).
+- *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1.
+2. R. L. Cruz, "A calculus for network delay, Part I: Network elements in isolation," *IEEE Transactions on Information Theory*, 37(1), 1991.
+3. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, 26(6), 2018.

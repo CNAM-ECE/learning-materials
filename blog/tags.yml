@@ -1,0 +1,24 @@
+foundations:
+  label: Foundations
+  permalink: /foundations
+  description: Mathematical background of deterministic network calculus
+
+bounds:
+  label: Bounds
+  permalink: /bounds
+  description: Delay, backlog and output bounds
+
+tsn:
+  label: TSN
+  permalink: /tsn
+  description: IEEE 802.1 Time-Sensitive Networking
+
+reconfiguration:
+  label: Reconfiguration
+  permalink: /reconfiguration
+  description: Online and incremental reconfiguration of deterministic networks
+
+motivation:
+  label: Motivation
+  permalink: /motivation
+  description: Why worst-case guarantees are needed

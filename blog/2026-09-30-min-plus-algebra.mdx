@@ -1,0 +1,116 @@
+---
+slug: min-plus-algebra
+title: "2. Min-plus algebra: the language of network calculus"
+authors: [trang]
+tags: [foundations]
+description: Cumulative functions, the min-plus dioid, convolution and deconvolution, with the properties used throughout the series.
+---
+
+Network calculus is often summarised as "queueing theory in the min-plus algebra". In conventional system theory, a linear time-invariant system is characterised by its impulse response and its output is a *convolution* in the $(+,\times)$ algebra. Network calculus keeps the same structure but replaces addition by minimum and multiplication by addition. This post sets up that algebra.
+
+{/* truncate */}
+
+## 1. Cumulative functions
+
+A flow crossing a system is described by two **cumulative functions**:
+
+- $R(t)$, the number of bits that have *entered* the system in $[0, t]$;
+- $R^*(t)$, the number of bits that have *left* the system in $[0, t]$.
+
+Both belong to the set $\mathcal{F}$ of wide-sense increasing functions $f : \mathbb{R}_{\ge 0} \to \mathbb{R}_{\ge 0} \cup \{+\infty\}$ with $f(0) = 0$ (for cumulative functions). Causality and lossless operation give $R^* \le R$.
+
+Two performance quantities are read directly from these curves:
+
+$$
+b(t) = R(t) - R^*(t) \qquad \text{(backlog at time } t\text{)}
+$$
+
+$$
+d(t) = \inf \{\, \tau \ge 0 : R(t) \le R^*(t + \tau) \,\} \qquad \text{(virtual delay at time } t\text{)}
+$$
+
+The backlog is the *vertical* distance between the two curves, the virtual delay their *horizontal* distance. For a FIFO system, $d(t)$ is the delay experienced by the last bit that arrived at time $t$.
+
+## 2. The min-plus dioid
+
+The structure $(\mathbb{R} \cup \{+\infty\}, \min, +)$ is a *dioid*: $\min$ plays the role of addition (neutral element $+\infty$) and $+$ the role of multiplication (neutral element $0$). Two properties differ from ordinary arithmetic and are the source of many results:
+
+- $\min$ is **idempotent**: $\min(a, a) = a$;
+- there is no inverse for $\min$, so equations are solved by *inequalities* and *closures* rather than by subtraction.
+
+## 3. Min-plus convolution
+
+For $f, g \in \mathcal{F}$, the **min-plus convolution** is
+
+$$
+(f \otimes g)(t) = \inf_{0 \le s \le t} \{\, f(t - s) + g(s) \,\}.
+$$
+
+Interpretation: to obtain the value at $t$, split the interval $[0, t]$ into two parts and take the cheapest split. The operation has the following properties, all of which are used later.
+
+| Property | Statement |
+| --- | --- |
+| Closure | $f \otimes g \in \mathcal{F}$ |
+| Associativity | $(f \otimes g) \otimes h = f \otimes (g \otimes h)$ |
+| Commutativity | $f \otimes g = g \otimes f$ |
+| Distributivity over $\min$ | $(\min(f, g)) \otimes h = \min(f \otimes h,\, g \otimes h)$ |
+| Neutral element | $f \otimes \delta_0 = f$, where $\delta_0(0) = 0$ and $\delta_0(t) = +\infty$ for $t > 0$ |
+| Isotonicity | $f \le f'$ and $g \le g'$ imply $f \otimes g \le f' \otimes g'$ |
+| Upper bound | if $f(0) = g(0) = 0$ then $f \otimes g \le \min(f, g)$ |
+
+Two closed forms cover most practical computations:
+
+- **Concave functions.** If $f$ and $g$ are concave with $f(0) = g(0) = 0$, then $f \otimes g = \min(f, g)$.
+- **Convex piecewise-linear functions.** If $f$ and $g$ are convex and piecewise linear, $f \otimes g$ is obtained by concatenating their linear segments in order of increasing slope.
+
+The second rule gives the most frequently used identity of the theory: for rate-latency functions $\beta_{R,T}(t) = R\,[t - T]^+$,
+
+$$
+\beta_{R_1,T_1} \otimes \beta_{R_2,T_2} = \beta_{\min(R_1,R_2),\, T_1 + T_2}.
+$$
+
+## 4. Min-plus deconvolution
+
+The dual operation is the **min-plus deconvolution**
+
+$$
+(f \oslash g)(t) = \sup_{u \ge 0} \{\, f(t + u) - g(u) \,\}.
+$$
+
+It is not the inverse of $\otimes$, but it satisfies the *duality* (residuation) property
+
+$$
+f \oslash g \le h \iff f \le h \otimes g,
+$$
+
+which is the min-plus analogue of solving $f \le h \times g$ for $h$. Deconvolution is used in [post 5](/blog/three-fundamental-bounds) to compute the arrival curve of a flow *after* it has crossed a server.
+
+## 5. Sub-additive closure
+
+A function $f$ is **sub-additive** if $f(s + t) \le f(s) + f(t)$ for all $s, t$. The sub-additive closure of $f$ is
+
+$$
+\overline{f} = \inf_{n \ge 0} f^{(n)}, \qquad f^{(0)} = \delta_0,\; f^{(n)} = f \otimes f^{(n-1)}.
+$$
+
+It is the largest sub-additive function below $f$ (and below $\delta_0$). Sub-additive closures appear naturally in the study of arrival curves: any arrival curve can be replaced by its sub-additive closure without loss of information, as shown in the next post.
+
+## 6. Summary
+
+| Object | Conventional systems | Network calculus |
+| --- | --- | --- |
+| Signal | $x(t)$ | Cumulative function $R(t)$ |
+| "Addition" | $+$ | $\min$ |
+| "Multiplication" | $\times$ | $+$ |
+| System law | $y = h * x$ | $R^* \ge R \otimes \beta$ |
+| Impulse | Dirac $\delta$ | $\delta_0$ (zero at 0, $+\infty$ elsewhere) |
+
+## Recommended viewing
+
+- *An Introduction to Network Calculus*, LCA2, EPFL. [YouTube](https://www.youtube.com/watch?v=ABQ327BTc_o). Useful to see the convolution and deconvolution operators illustrated graphically.
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 3.
+2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018, Part 1.
+3. C.-S. Chang, *Performance Guarantees in Communication Networks*, Springer, 2000.

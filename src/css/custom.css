@@ -1,0 +1,58 @@
+/**
+ * Global styles. The classic template bundles Infima; KaTeX styles are
+ * imported here so that formulas render without a CDN.
+ */
+
+@import 'katex/dist/katex.min.css';
+
+:root {
+  --ifm-color-primary: #1f5f8b;
+  --ifm-color-primary-dark: #1c567d;
+  --ifm-color-primary-darker: #1a5176;
+  --ifm-color-primary-darkest: #154361;
+  --ifm-color-primary-light: #226899;
+  --ifm-color-primary-lighter: #246da0;
+  --ifm-color-primary-lightest: #297bb5;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --nc-arrival: #c2410c;
+  --nc-service: #1f5f8b;
+  --nc-bound: #6b7280;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #6cb4e4;
+  --ifm-color-primary-dark: #50a6df;
+  --ifm-color-primary-darker: #429fdc;
+  --ifm-color-primary-darkest: #2588ca;
+  --ifm-color-primary-light: #88c2e9;
+  --ifm-color-primary-lighter: #96c9ec;
+  --ifm-color-primary-lightest: #bfdef3;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --nc-arrival: #fb923c;
+  --nc-service: #6cb4e4;
+  --nc-bound: #9ca3af;
+}
+
+/* Long display formulas scroll horizontally instead of overflowing on phones. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+.nc-figure {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.nc-figure svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.nc-figure figcaption {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  margin-top: 0.5rem;
+}

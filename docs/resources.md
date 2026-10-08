@@ -26,7 +26,7 @@ description: The lectures, articles and technical documents from which the learn
 
 | Resource | Note |
 | --- | --- |
-| J.-Y. Le Boudec, P. Thiran, *Network Calculus: A Theory of Deterministic Queuing Systems for the Internet*, LNCS 2050, Springer, 2001. | The standard reference for the min-plus formulation; Chapter 1 contains the fundamental bounds. |
+| J.-Y. Le Boudec, P. Thiran, *Network Calculus: A Theory of Deterministic Queuing Systems for the Internet*, LNCS 2050, Springer, 2001. [Online edition](https://leboudec.github.io/netcal/) | The standard reference for the min-plus formulation; Chapter 1 contains the fundamental bounds. |
 | A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus: From Theory to Practical Implementation*, Wiley-ISTE, 2018. | Modern treatment with algorithms, FIFO and linear-programming analyses. |
 | C.-S. Chang, *Performance Guarantees in Communication Networks*, Springer, 2000. | Includes the stochastic extension of the theory. |
 

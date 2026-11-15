@@ -9,6 +9,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 ## Repository structure
 
 ```
+├── article/               # Survey article (LaTeX, IEEEtran journal), see below
 ├── blog/                  # Learning path: nine posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
@@ -35,6 +36,35 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | III | 9. Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
 
 The **Reference** section collects the notation sheet, a TSN glossary and an annotated list of the lectures and articles from which the posts were prepared [3–7].
+
+## Article
+
+`article/` holds the draft of a survey written in the IEEEtran journal format for *IEEE Communications Surveys & Tutorials*:
+
+> H.-T. Le, A. Soni, S. Bouzefrane, "The Development of Time-Sensitive Networking: A Survey on Network Calculus for Performance Analysis of Deterministic Networks."
+
+The survey traces TSN from Audio Video Bridging to the current IEEE 802.1 standards, introduces deterministic network calculus, and reviews its use to bound delay and backlog under the main TSN mechanisms (CBS, TAS, ATS, frame preemption, CQF), including the integration with DetNet and wireless/5G. The section outline, the network calculus fundamentals and the author biographies are written; the remaining sections hold bracketed notes of their planned content.
+
+```
+article/
+├── tsn-network-calculus-survey.tex   # Manuscript
+├── Reference.bib                     # BibTeX database (IEEEtran style)
+├── IEEEtran.cls                      # IEEE document class
+└── figures/
+    ├── architecture/                 # Architecture diagrams
+    ├── authors/                      # Biography photos (1 in × 1.25 in)
+    └── logo/                         # ORCID icon
+```
+
+Build the PDF with a TeX Live or TinyTeX installation (`latexmk` runs `pdflatex` and `bibtex` as needed):
+
+```bash
+cd article
+latexmk -pdf tsn-network-calculus-survey.tex
+latexmk -c           # remove auxiliary files, keep the PDF
+```
+
+LaTeX build outputs (`.aux`, `.bbl`, `.log`, the PDF, …) are ignored by Git.
 
 ## Reproduction
 

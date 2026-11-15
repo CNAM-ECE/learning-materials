@@ -56,7 +56,7 @@ description: One-page summary of operators, standard curves and closed-form boun
 | Tandem of $n$ servers | $\beta_{\min_i R_i,\, \sum_i T_i}$ |
 | Blind residual | $\beta_{C - r_2,\, (CT + b_2)/(C - r_2)}$ |
 
-## Non-preemptive static priority (class $k$, port rate $C$)
+## Non-preemptive static priority (class $k$, rate $C$)
 
 $$
 d_k = \frac{B_H + L_{lo} + B_k}{C - R_H} + t_{proc}, \qquad R_H + R_k \le C,

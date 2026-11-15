@@ -1,0 +1,226 @@
+\documentclass[journal]{IEEEtran}
+
+% *** PACKAGES ***
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\interdisplaylinepenalty=2500
+\usepackage{array}
+\usepackage{url}
+\ifCLASSINFOpdf
+  \usepackage[pdftex]{graphicx}
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  \usepackage[dvips]{graphicx}
+  \DeclareGraphicsExtensions{.eps}
+\fi
+% figures/logo: logos and icons; figures/architecture: architecture diagrams;
+% figures/authors: author photos for the biographies (IEEE size 1in x 1.25in)
+\graphicspath{{figures/logo/}{figures/architecture/}{figures/authors/}}
+\newcommand{\authorphoto}[1]{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{#1}}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor de-ter-min-is-tic
+time-sen-si-tive}
+
+% ORCID icon linking to an author's ORCID record
+\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\includegraphics[scale=0.13]{ORCIDiD_icon64x64.png}}}
+
+
+\begin{document}
+
+% paper title
+\title{The Development of Time-Sensitive Networking:\\
+A Survey on Network Calculus for Performance Analysis\\
+of Deterministic Networks}
+
+% author names and affiliations
+%Trang's work [Updated]: Authors and affiliations (LyRIDS, ECE Paris; CEDRIC, Cnam). H.-T. Le: PhD at Cnam & ECE since Nov. 2026 (huyentrang-le.github.io).
+\author{Huyen-Trang~Le\,\orcid{0009-0004-3738-0235}, Aakash~Soni, and~Samia~Bouzefrane\,\orcid{0000-0002-0979-1289}% <-this % stops a space
+\thanks{H.-T. Le is with the LyRIDS Laboratory, ECE Paris, Paris, France, and also with the CEDRIC Laboratory, Conservatoire National des Arts et M\'etiers (Cnam), Paris, France (e-mail: htle@ece.fr).}% <-this % stops a space
+\thanks{A. Soni is with the LyRIDS Laboratory, ECE Paris, Paris, France (e-mail: aakash.soni@ece.fr).}% <-this % stops a space
+\thanks{S. Bouzefrane is with the CEDRIC Laboratory, Conservatoire National des Arts et M\'etiers (Cnam), Paris, France (e-mail: samia.bouzefrane@lecnam.net).}% <-this % stops a space
+\thanks{Manuscript received November 15, 2026; revised [Month Day, Year].}}
+
+% The paper headers
+\markboth{IEEE Communications Surveys \& Tutorials,~Vol.~XX, No.~X, [Month]~2026}%
+{Le \MakeLowercase{\textit{et al.}}: The Development of TSN: A Survey on Network Calculus for Deterministic Networks}
+
+% make the title area
+\maketitle
+
+\begin{abstract}
+Time-Sensitive Networking (TSN) is a set of IEEE 802.1 standards that extends standard Ethernet with bounded latency, low jitter, and high reliability, making it a key enabler for industrial automation, automotive in-vehicle networks, avionics, and 5G fronthaul. Ensuring that every time-critical flow meets its deadline requires formal methods able to compute guaranteed worst-case performance bounds rather than average-case estimates. Network calculus, a min-plus algebraic theory of arrival and service curves, has emerged as one of the main analytical frameworks for this purpose. This survey reviews the development of TSN from Audio Video Bridging to the current set of standards, covering time synchronization, traffic shaping and scheduling, frame preemption, reliability, and resource management. We then present the fundamentals of deterministic network calculus and systematically review how it has been applied to derive delay and backlog bounds for the main TSN mechanisms, including the credit-based shaper, the time-aware shaper, asynchronous traffic shaping, and frame preemption. We compare the tightness, scalability, and tool support of existing approaches, discuss the integration of TSN with IETF Deterministic Networking (DetNet) and wireless/5G systems, and identify open research challenges for the performance analysis of large-scale deterministic networks.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Time-Sensitive Networking, TSN, network calculus, deterministic networking, DetNet, worst-case delay analysis, real-time Ethernet, traffic shaping, scheduling.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+
+\section{Introduction}
+\IEEEPARstart{M}{any} emerging applications, such as Industry~4.0 production lines, autonomous vehicles, and avionics, rely on communication networks that deliver data within strict and guaranteed time bounds. Conventional Ethernet offers high bandwidth at low cost but only best-effort service, while traditional fieldbuses and proprietary real-time Ethernet variants provide determinism at the price of interoperability. The IEEE 802.1 Time-Sensitive Networking (TSN) task group addresses this gap by standardizing deterministic services over IEEE 802 networks~\cite{nasrallah2019ull}. In parallel, the IETF Deterministic Networking (DetNet) working group extends these guarantees to routed Layer~3 networks~\cite{rfc8655}.
+
+Proving that a TSN configuration satisfies its timing requirements calls for formal worst-case analysis. Network calculus~\cite{cruz1991calculus, leboudec2001network, bouillard2018deterministic} provides a rigorous framework for computing upper bounds on end-to-end delay and buffer occupancy, and it is increasingly used for TSN design, configuration, and certification.
+
+\subsection{Motivation and Scope}
+[Explain why a survey combining TSN development and network calculus is needed, and position it against existing surveys.]
+
+\subsection{Contributions}
+The main contributions of this survey are as follows:
+\begin{itemize}
+\item a review of the evolution of TSN standards and their key mechanisms;
+\item a tutorial introduction to deterministic network calculus;
+\item a systematic classification of network-calculus-based analyses of TSN mechanisms;
+\item a discussion of open challenges and future research directions.
+\end{itemize}
+
+\subsection{Paper Organization}
+Section~\ref{sec:tsn} reviews the development of TSN. Section~\ref{sec:nc} introduces network calculus. Section~\ref{sec:nc_tsn} surveys the application of network calculus to TSN. Section~\ref{sec:challenges} discusses open challenges, and Section~\ref{sec:conclusion} concludes the paper.
+
+
+\section{Development of Time-Sensitive Networking}
+\label{sec:tsn}
+
+\subsection{From Audio Video Bridging to TSN}
+[History of IEEE 802.1 AVB and its evolution into the TSN task group.]
+
+\subsection{Time Synchronization}
+[IEEE 802.1AS and generalized Precision Time Protocol (gPTP).]
+
+\subsection{Traffic Shaping and Scheduling}
+[Credit-based shaper (IEEE 802.1Qav), time-aware shaper (IEEE 802.1Qbv)~\cite{ieee8021qbv}, cyclic queuing and forwarding (IEEE 802.1Qch), and asynchronous traffic shaping (IEEE 802.1Qcr)~\cite{specht2016ubs}.]
+
+\subsection{Frame Preemption}
+[IEEE 802.1Qbu and IEEE 802.3br.]
+
+\subsection{Reliability}
+[Frame replication and elimination for reliability (IEEE 802.1CB), per-stream filtering and policing (IEEE 802.1Qci).]
+
+\subsection{Resource Management and Configuration}
+[Stream Reservation Protocol, IEEE 802.1Qcc centralized and distributed configuration models.]
+
+\subsection{TSN Profiles and Application Domains}
+[Industrial automation (IEC/IEEE 60802), automotive (IEEE P802.1DG), avionics, and 5G fronthaul (IEEE 802.1CM).]
+
+
+\section{Fundamentals of Network Calculus}
+\label{sec:nc}
+
+\subsection{Min-Plus Algebra}
+Network calculus is built on the min-plus dioid, in which the convolution of two functions $f$ and $g$ is defined as
+\begin{equation}
+(f \otimes g)(t) = \inf_{0 \le s \le t} \left\{ f(s) + g(t-s) \right\}.
+\end{equation}
+
+\subsection{Arrival Curves}
+A flow with cumulative arrival function $A(t)$ has an arrival curve $\alpha$ if $A(t) - A(s) \le \alpha(t-s)$ for all $0 \le s \le t$. A common example is the token-bucket (leaky-bucket) curve $\alpha(t) = b + r t$, where $b$ is the burst and $r$ the sustained rate.
+
+\subsection{Service Curves}
+A system offers a (minimum) service curve $\beta$ to a flow if its output satisfies $D(t) \ge (A \otimes \beta)(t)$. A widely used example is the rate-latency curve $\beta_{R,T}(t) = R\,[t-T]^{+}$.
+
+\subsection{Performance Bounds}
+Given an arrival curve $\alpha$ and a service curve $\beta$, the delay is bounded by the horizontal deviation $h(\alpha,\beta)$ and the backlog by the vertical deviation $v(\alpha,\beta)$~\cite{leboudec2001network}. For a token bucket and a rate-latency server with $r \le R$, the delay bound is
+\begin{equation}
+d \le T + \frac{b}{R}.
+\end{equation}
+
+\subsection{Analysis Methods for Networks}
+[Total flow analysis, separated flow analysis, pay-bursts-only-once, pay multiplexing only once, and linear-programming-based approaches.]
+
+\subsection{Variants and Tools}
+[Stochastic network calculus, real-time calculus, and tools such as DiscoDNC, RTaW-Pegase, and others.]
+
+
+\section{Network Calculus Applied to TSN}
+\label{sec:nc_tsn}
+
+\subsection{Credit-Based Shaper}
+[Service curves and credit bounds for CBS~\cite{mohammadpour2019cbs}.]
+
+\subsection{Time-Aware Shaper}
+[Worst-case latency analysis of IEEE 802.1Qbv with network calculus~\cite{zhao2018tas}.]
+
+\subsection{Asynchronous Traffic Shaping and Interleaved Regulators}
+[Shaping-for-free property and interleaved regulators~\cite{leboudec2018regulators}.]
+
+\subsection{Frame Preemption}
+[Impact of preemption on express and preemptable traffic bounds.]
+
+\subsection{Cyclic Queuing and Forwarding}
+[Bounds for CQF and comparison with other mechanisms.]
+
+\subsection{TSN/DetNet Integration and Wireless TSN}
+[End-to-end bounds across TSN, DetNet, and 5G segments.]
+
+\subsection{Comparison of Approaches}
+[Table comparing works by TSN mechanism, analysis method, tightness, and scalability.]
+
+% Example table (uncomment and fill in):
+%\begin{table}[!t]
+%\renewcommand{\arraystretch}{1.3}
+%\caption{Network Calculus Analyses of TSN Mechanisms}
+%\label{tab:comparison}
+%\centering
+%\begin{tabular}{|l|l|l|l|}
+%\hline
+%Work & TSN Mechanism & Method & Bound Type\\
+%\hline
+%\cite{zhao2018tas} & TAS & DNC & Worst-case delay\\
+%\hline
+%\cite{mohammadpour2019cbs} & CBS & DNC & Credit and delay\\
+%\hline
+%\end{tabular}
+%\end{table}
+
+
+\section{Open Challenges and Future Directions}
+\label{sec:challenges}
+[Tightness versus scalability, joint scheduling and analysis, time synchronization errors, multi-domain and wireless deterministic networks, dynamic reconfiguration, and machine-learning-assisted analysis.]
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+[Summarize the development of TSN, the role of network calculus in guaranteeing deterministic performance, and the main research directions.]
+
+
+% use section* for acknowledgment
+\section*{Acknowledgment}
+The authors would like to thank...
+
+
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+% references section
+\bibliographystyle{IEEEtran}
+\bibliography{Reference}
+
+
+% biography section
+%Trang's work [Updated]: Biographies from public sources (huyentrang-le.github.io,
+% ORCID records, HAL theses, ECE and Cnam pages), checked on Nov. 15, 2026.
+% Photos: author-supplied (H.-T. Le), ece.fr (A. Soni), cnam.fr (S. Bouzefrane).
+\newcommand{\lebio}{received the engineering degree in computer science from the Vietnam--France Elite Engineering Programme (PFIEV), Hanoi University of Science and Technology (HUST), Hanoi, Vietnam, in 2024, and the M.Sc. degree in computer networks (network systems track) from Universit\'e d'\'Evry Paris-Saclay, France, in 2026. In 2025, she was a Research Intern with the Faculty of Engineering of the University of Porto (FEUP), Portugal, and from 2025 to 2026 a Master Research Intern with the COSMO Team of the IBISC Laboratory, Universit\'e d'\'Evry Paris-Saclay. Since November 2026, she has been working toward the Ph.D. degree in computer networks with the Conservatoire National des Arts et M\'etiers (Cnam) and ECE Paris, within the CEDRIC and LyRIDS Laboratories, on the certified dynamic reconfiguration of time-sensitive networks. Her research interests include Time-Sensitive Networking, deterministic network calculus, dynamic reconfiguration, blockchain, zero-knowledge proofs, and privacy-preserving systems. She received the Best Presentation Award at JDSE 2026.}
+\IfFileExists{figures/authors/le.jpg}
+  {\begin{IEEEbiography}[{\authorphoto{le.jpg}}]{Huyen-Trang Le}
+   \lebio
+   \end{IEEEbiography}}
+  {\begin{IEEEbiographynophoto}{Huyen-Trang Le}
+   \lebio
+   \end{IEEEbiographynophoto}}
+
+\begin{IEEEbiography}[{\authorphoto{soni.jpg}}]{Aakash Soni}
+received the Ph.D. degree in computer science from the Institut National Polytechnique de Toulouse (INPT), Toulouse, France, in 2020, with a thesis on the real-time performance analysis of a QoS-based industrial embedded network, supervised by J.-L. Scharbarg and J. Ermont. From 2016 to 2018, he was a Research Assistant with ECE Paris, and from 2018 to 2020 with the Real-Time Networks team of the Institut de Recherche en Informatique de Toulouse (IRIT). Since 2020, he has been a Teacher-Researcher (Enseignant-Chercheur) with ECE Paris and a member of the LyRIDS Laboratory. His research interests include network calculus and worst-case delay analysis of real-time switched Ethernet networks, such as AFDX and Time-Sensitive Networking, packet scheduling, and machine learning for physiological signal analysis.
+\end{IEEEbiography}
+
+\begin{IEEEbiography}[{\authorphoto{bouzefrane.jpg}}]{Samia Bouzefrane}
+received the engineering degree and the Magister degree in computer science in Algiers, Algeria, and the Ph.D. degree in computer science from the University of Poitiers, France, in 1998. She taught for one year at the Mouloud Mammeri University of Tizi-Ouzou, Algeria, and was then an Associate Professor (Ma\^itre de Conf\'erences) with the University of Le Havre, France. She joined the CEDRIC Laboratory of the Conservatoire National des Arts et M\'etiers (Cnam), Paris, in 2002, and was appointed Full Professor in 2019. She has led the Cnam Network--Systems--Multimedia computer engineering degree since 2018, has been a member of the French National Council of Universities (CNU, Section~27) since 2023, and has headed the CEDRIC Laboratory since January 2024. Her research interests include Internet of Things security, cryptography, smart cards, and artificial intelligence. She received the European Female Cyber-Researcher Medal from the CEFCYS in 2024.
+\end{IEEEbiography}
+
+\end{document}

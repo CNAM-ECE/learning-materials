@@ -39,11 +39,7 @@ The **Reference** section collects the notation sheet, a TSN glossary and an ann
 
 ## Article
 
-`article/` holds the draft of a survey written in the IEEEtran journal format for *IEEE Communications Surveys & Tutorials*:
-
-> H.-T. Le, A. Soni, S. Bouzefrane, "A Survey on the Application of Network Calculus into Deterministic Networks."
-
-The survey traces TSN from Audio Video Bridging to the current IEEE 802.1 standards, introduces deterministic network calculus, and reviews its use to bound delay and backlog under the main TSN mechanisms (CBS, TAS, ATS, frame preemption, CQF), including the integration with DetNet and wireless/5G. The section outline, the network calculus fundamentals and the author biographies are written; the remaining sections hold bracketed notes of their planned content.
+The survey traces TSN from Audio Video Bridging to the current IEEE 802.1 standards, introduces deterministic network calculus, and reviews its use to bound delay and backlog under the main TSN mechanisms (CBS, TAS, ATS, frame preemption, CQF), including the integration with DetNet and wireless/5G. The draft of a survey is written in the IEEEtran journal format for *IEEE Communications Surveys & Tutorials*:
 
 ```
 article/
@@ -63,8 +59,6 @@ cd article
 latexmk -pdf tsn-network-calculus-survey.tex
 latexmk -c           # remove auxiliary files, keep the PDF
 ```
-
-LaTeX build outputs (`.aux`, `.bbl`, `.log`, the PDF, …) are ignored by Git.
 
 ## Reproduction
 

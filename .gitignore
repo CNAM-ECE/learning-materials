@@ -22,3 +22,14 @@ yarn-error.log*
 # Only pnpm-lock.yaml is used
 package-lock.json
 yarn.lock
+
+# LaTeX build outputs (article/)
+article/*.aux
+article/*.bbl
+article/*.blg
+article/*.fdb_latexmk
+article/*.fls
+article/*.log
+article/*.out
+article/*.synctex.gz
+article/*.pdf

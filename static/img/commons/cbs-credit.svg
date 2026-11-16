@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="818.67" height="540" inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)" sodipodi:docname="Traffic-shaping.svg" version="1.1" viewBox="0 0 614 405" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">
+ <sodipodi:namedview bordercolor="#cccccc" borderopacity="1" inkscape:bbox-nodes="true" inkscape:current-layer="g1165" inkscape:cx="443.39912" inkscape:cy="350.50072" inkscape:document-units="px" inkscape:guide-bbox="true" inkscape:pagecheckerboard="0" inkscape:pageopacity="1" inkscape:pageshadow="0" inkscape:snap-bbox="false" inkscape:snap-bbox-edge-midpoints="true" inkscape:snap-bbox-midpoints="false" inkscape:snap-center="true" inkscape:snap-global="true" inkscape:snap-nodes="true" inkscape:snap-others="false" inkscape:snap-page="false" inkscape:snap-text-baseline="true" inkscape:snap-to-guides="true" inkscape:window-height="1053" inkscape:window-maximized="1" inkscape:window-width="1880" inkscape:window-x="40" inkscape:window-y="0" inkscape:zoom="1.1141204" pagecolor="#ffffff" showgrid="false" showguides="true" units="px">
+  <sodipodi:guide orientation="1,0" position="65.999998,399"/>
+  <sodipodi:guide orientation="1,0" position="83.624999,400.125"/>
+  <sodipodi:guide orientation="1,0" position="187.125,400.125"/>
+  <sodipodi:guide orientation="1,0" position="205.125,400.5"/>
+  <sodipodi:guide orientation="1,0" position="229.125,405.74999"/>
+  <sodipodi:guide orientation="1,0" position="312.375,346.5"/>
+  <sodipodi:guide orientation="1,0" position="336.375,402.375"/>
+  <sodipodi:guide orientation="1,0" position="439.87499,406.49999"/>
+  <sodipodi:guide orientation="1,0" position="463.87499,413.62499"/>
+  <inkscape:grid enabled="true" type="xygrid" visible="true"/>
+  <inkscape:grid dotted="true" empspacing="1" enabled="false" originx="-0.375" originy="-0.375" type="xygrid"/>
+  <sodipodi:guide orientation="0,-1" position="598.12499,57"/>
+  <sodipodi:guide orientation="0,-1" position="64.499999,178.5"/>
+  <sodipodi:guide orientation="0,-1" position="587.24999,340.875"/>
+  <sodipodi:guide orientation="1,0" position="434.24999,345.375"/>
+  <sodipodi:guide orientation="1,0" position="306.75,344.625"/>
+  <sodipodi:guide orientation="1,0" position="596.99999,399.375"/>
+  <sodipodi:guide orientation="0,-1" position="74.25,140.99999"/>
+  <sodipodi:guide orientation="0,-1" position="74.25,112.49999"/>
+  <sodipodi:guide orientation="1,0" position="74.249998,105"/>
+  <sodipodi:guide orientation="0,-1" position="79.499999,192.75"/>
+  <sodipodi:guide orientation="0,-1" position="77.999998,207"/>
+  <sodipodi:guide orientation="0,-1" position="104.25,221.25"/>
+  <sodipodi:guide orientation="0,-1" position="65.999997,399"/>
+  <sodipodi:guide orientation="0.32441162,-0.94591601" position="187.5,376.49999"/>
+  <sodipodi:guide orientation="0.82942308,0.55862094" position="187.125,376.37139"/>
+  <sodipodi:guide orientation="1,0" position="610.99999,178.5"/>
+  <sodipodi:guide orientation="1,0" position="85.874999,396.75001"/>
+  <sodipodi:guide orientation="1,0" position="211.49999,340.18015"/>
+ </sodipodi:namedview>
+ <defs>
+  <marker id="d" overflow="visible" inkscape:isstock="true" inkscape:stockid="Arrow2Lend" orient="auto">
+   <path transform="matrix(-1.1,0,0,-1.1,-1.1,0)" d="m8.7186 4.0337-10.926-4.0177 10.926-4.0177c-1.7455 2.3721-1.7354 5.6175-6e-7 8.0354z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-linejoin="round" stroke-width=".625"/>
+  </marker>
+  <filter id="a" x="-.02849" y="-.043349" width="1.057" height="1.0867" color-interpolation-filters="sRGB" inkscape:collect="always">
+   <feGaussianBlur inkscape:collect="always" stdDeviation="4.3617839"/>
+  </filter>
+  <filter id="b" x="-.019497" y="-.066202" width="1.039" height="1.1324" color-interpolation-filters="sRGB" inkscape:collect="always">
+   <feGaussianBlur inkscape:collect="always" stdDeviation="2.8527624"/>
+  </filter>
+  <filter id="c" x="-.00437" y="-.0065598" width="1.0087" height="1.0131" color-interpolation-filters="sRGB" inkscape:collect="always">
+   <feGaussianBlur inkscape:collect="always" stdDeviation="0.93477223"/>
+  </filter>
+ </defs>
+ <g inkscape:groupmode="layer" inkscape:label="Background" sodipodi:insensitive="true">
+  <rect width="614" height="405" fill="#fff" fill-rule="evenodd" style="paint-order:normal"/>
+ </g>
+ <g inkscape:groupmode="layer" inkscape:label="New">
+  <g inkscape:groupmode="layer" inkscape:label="Areas" sodipodi:insensitive="true">
+   <g fill-rule="evenodd" filter="url(#c)">
+    <rect x="83.625" y="6" width="127.87" height="342" fill="#daffda" style="mix-blend-mode:normal;paint-order:normal"/>
+    <rect x="211.5" y="6" width="95.25" height="342" fill="#ffdada" style="mix-blend-mode:normal;paint-order:normal"/>
+    <rect x="312.37" y="6" width="121.87" height="342" fill="#ffdada" style="mix-blend-mode:normal;paint-order:normal"/>
+    <rect x="306.75" y="6" width="5.625" height="342" fill="#daffda" style="mix-blend-mode:normal;paint-order:normal"/>
+    <rect x="439.88" y="6" width="157.13" height="342" fill="#ffdada" style="mix-blend-mode:normal;paint-order:normal"/>
+    <rect x="434.25" y="6" width="5.625" height="342" fill="#daffda" style="mix-blend-mode:normal;paint-order:normal"/>
+   </g>
+  </g>
+  <g stroke-miterlimit="4.2222" inkscape:groupmode="layer" inkscape:label="Diagram Lines" sodipodi:insensitive="true">
+   <g fill="none" stroke="#000">
+    <path d="m66 6v342h527.7" marker-end="url(#d)" stroke-width="1.5" style="paint-order:markers stroke fill"/>
+    <path d="m66 64.5h545m0 162h-545" stroke-width=".75" style="paint-order:markers stroke fill" sodipodi:nodetypes="cccc"/>
+    <path d="m83.625 6-0.125 342m103.62-342v342m18-342v342m24-342v342m83.25-342-0.875 342.5m24.875-342.5v342m103.5-342v342m24-342v342" stroke-dasharray="2.25, 2.25" stroke-width=".75" style="paint-order:markers stroke fill" sodipodi:nodetypes="cccccccccccccccc"/>
+    <path d="m66 64.125h17.625l103.5-35.496 42 62.36 83.25-28.551 24 35.634 103.5-35.496 24 35.634 99.385-34.085h47.74" stroke-width="3" style="paint-order:markers stroke fill" sodipodi:nodetypes="cccccccccc"/>
+   </g>
+   <text transform="rotate(-18.93)" x="112.9498" y="81.785927" fill="#000000" fill-rule="evenodd" font-family="'Noto Sans'" font-size="12px" stroke-linejoin="round" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan fill="#000000" font-family="'Noto Sans'" stroke-width="1.5" text-align="center" text-anchor="middle">idleSlope</tspan></text>
+   <text transform="rotate(56.04)" x="160.49817" y="-145.2146" fill="#000000" fill-rule="evenodd" font-family="'Noto Sans'" font-size="12px" stroke-linejoin="round" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan fill="#000000" font-family="'Noto Sans'" stroke-width="1.5" text-align="center" text-anchor="middle">sendSlope</tspan></text>
+  </g>
+  <g fill="#000000" fill-rule="evenodd" font-family="'Noto Sans'" font-size="12px" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" inkscape:groupmode="layer" inkscape:label="Labels" sodipodi:insensitive="true">
+   <g>
+    <text x="69" y="223.5" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="69" y="223.5" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">0</tspan></text>
+    <text x="86" y="209.73199" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="86" y="209.73199" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">1</tspan></text>
+    <text x="108" y="195" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="108" y="195" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line"/></text>
+    <text x="108" y="195" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="108" y="195" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">2</tspan></text>
+    <text x="131.25" y="180.75" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="131.25" y="180.75" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">3</tspan></text>
+    <text x="190.125" y="195" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="190.125" y="195" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">2</tspan></text>
+    <text x="208.125" y="209.25" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="208.125" y="209.25" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">1</tspan></text>
+    <text x="315.375" y="223.5" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="315.375" y="223.5" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">0</tspan></text>
+    <text x="384" y="209.25" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="384" y="209.25" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">1</tspan></text>
+    <text x="442.875" y="223.5" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="442.875" y="223.5" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">0</tspan></text>
+   </g>
+   <g text-anchor="middle">
+    <text x="33" y="200.763" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="33" y="200.763" text-align="center" sodipodi:role="line">Queue</tspan><tspan x="33" y="215.763" text-align="center" sodipodi:role="line">Depth</tspan></text>
+    <text x="33" y="274.98599" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="33" y="274.98599" sodipodi:role="line">Transmitted</tspan><tspan x="33" y="289.98599" sodipodi:role="line">Data</tspan></text>
+    <text x="33" y="352.23599" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="33" y="352.23599" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">Time</tspan></text>
+    <text x="33" y="68.432999" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="33" y="68.432999" font-family="'Noto Sans'" stroke-width="1.5" sodipodi:role="line">Credit</tspan></text>
+   </g>
+  </g>
+  <g inkscape:groupmode="layer" inkscape:label="Packet Shadows" sodipodi:insensitive="true">
+   <g fill-rule="evenodd" filter="url(#b)" opacity=".50248" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5">
+    <rect x="75.75" y="265.5" width="112.88" height="28.5" opacity="1" style="paint-order:normal"/>
+    <rect x="188.62" y="265.5" width="18" height="28.5" opacity="1" style="paint-order:normal"/>
+    <rect x="206.62" y="265.5" width="24" height="28.5" opacity="1" style="paint-order:normal"/>
+    <rect x="84.5" y="214.23" width="104.12" height="13.768" opacity="1" style="paint-order:normal"/>
+    <rect x="106.5" y="199.5" width="82.125" height="14.25" opacity="1" style="paint-order:normal"/>
+    <rect x="129.75" y="185.25" width="58.875" height="14.25" opacity="1" style="paint-order:normal"/>
+    <rect x="188.62" y="213.75" width="18" height="14.25" opacity="1" style="paint-order:normal"/>
+    <rect x="188.62" y="199.5" width="18" height="14.25" opacity="1" style="paint-order:normal"/>
+    <rect x="206.62" y="213.75" width="107.25" height="14.25" opacity="1" style="paint-order:normal"/>
+    <rect x="313.88" y="265.5" width="24" height="28.5" opacity="1" style="paint-order:normal"/>
+    <rect x="441.38" y="265.5" width="24" height="28.5" opacity="1" style="paint-order:normal"/>
+    <rect x="382.5" y="213.75" width="58.875" height="14.25" opacity="1" style="paint-order:normal"/>
+   </g>
+  </g>
+  <g inkscape:groupmode="layer" inkscape:label="Packets">
+   <g transform="translate(0,-6)">
+    <rect x="74.25" y="270" width="112.88" height="28.5" fill="#fffc00" fill-rule="evenodd" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" style="paint-order:normal"/>
+   </g>
+   <g fill-rule="evenodd" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5">
+    <rect x="187.12" y="264" width="18" height="28.5" fill="#00f900" style="paint-order:normal"/>
+    <rect x="205.12" y="264" width="24" height="28.5" fill="#0096ff" style="paint-order:normal"/>
+    <rect x="83" y="212.73" width="104.12" height="13.768" fill="#00f900" style="paint-order:normal"/>
+    <rect x="105" y="198" width="82.125" height="14.25" fill="#0096ff" style="paint-order:normal"/>
+    <rect x="128.25" y="183.75" width="58.875" height="14.25" fill="#ff3092" style="paint-order:normal"/>
+    <rect x="187.12" y="212.25" width="18" height="14.25" fill="#0096ff" style="paint-order:normal"/>
+   </g>
+   <g fill="#ff3092" fill-rule="evenodd" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5">
+    <rect x="187.12" y="198" width="18" height="14.25" style="paint-order:normal"/>
+    <rect x="205.12" y="212.25" width="107.25" height="14.25" style="paint-order:normal"/>
+    <rect x="312.38" y="264" width="24" height="28.5" style="paint-order:normal"/>
+   </g>
+   <rect x="439.88" y="264" width="24" height="28.5" fill="#929000" fill-rule="evenodd" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" style="paint-order:normal"/>
+   <rect x="381" y="212.25" width="58.875" height="14.25" fill="#929000" fill-rule="evenodd" stroke="#000" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" style="paint-order:normal"/>
+   <text x="130.4715" y="281.33401" font-family="'Noto Sans'" font-size="12px" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="130.4715" y="281.33401" sodipodi:role="line">interfering traffic</tspan></text>
+  </g>
+  <g inkscape:groupmode="layer" inkscape:label="Annotation Shadows" sodipodi:insensitive="true">
+   <g transform="translate(-34.365 -155.29)" filter="url(#a)" opacity=".64463">
+    <path d="m127.3 286.85 11.545-6.503 21.942 38.954 6.934-3.9058-3.1793 24.071-22.233-9.7562 6.9339-3.9057z"/>
+    <path d="m378.48 314.11 11.545-6.503 21.942 38.954 6.934-3.9058-3.1793 24.071-22.233-9.7562 6.9339-3.9057z"/>
+    <path d="m210.57 518.14-12.753-3.9773 13.42-43.029-7.6594-2.3889 19.863-14.306 8.2088 23.061-7.6594-2.3888z"/>
+    <path d="m290.82 517.94-12.78 3.8943-13.14-43.123-7.6761 2.3389 8.361-23.01 19.772 14.438-7.676 2.3389z"/>
+    <path d="m339.43 494.52 1.4943-22.538-8.0238-0.53202 16.001-18.597 13.406 20.547-8.0237-0.53201-1.4943 22.538z" sodipodi:nodetypes="cccccccc"/>
+    <path d="m491.45 518.22-13.288 1.3893-4.6876-44.836-7.9811 0.8344 12.59-20.997 16.66 17.938-7.981 0.83443z"/>
+    <g fill-rule="evenodd">
+     <rect x="359.87" y="285.79" width="99" height="37.5" style="paint-order:normal"/>
+     <rect x="112.37" y="482.29" width="140.25" height="65.25" style="paint-order:normal"/>
+     <rect x="262.37" y="516.04" width="127.5" height="37.5" style="paint-order:normal"/>
+     <rect x="299.87" y="474.79" width="159" height="37.5" style="paint-order:normal"/>
+     <rect x="419.87" y="516.04" width="154.5" height="37.5" style="paint-order:normal"/>
+     <rect x="116.12" y="267.04" width="117.75" height="37.5" style="paint-order:normal"/>
+    </g>
+   </g>
+  </g>
+  <g inkscape:groupmode="layer" inkscape:label="Annotations" sodipodi:insensitive="true">
+   <g fill="#666">
+    <path d="m89.939 128.56 11.545-6.503 21.942 38.954 6.934-3.9058-3.1793 24.071-22.233-9.7562 6.9339-3.9057z"/>
+    <path d="m341.12 155.82 11.545-6.503 21.942 38.954 6.934-3.9058-3.1793 24.071-22.233-9.7562 6.9339-3.9057z"/>
+    <path d="m173.2 359.85-12.753-3.9773 13.42-43.029-7.6594-2.3889 19.863-14.306 8.2088 23.061-7.6594-2.3888z"/>
+    <path d="m253.45 359.65-12.78 3.8943-13.14-43.123-7.6761 2.3389 8.361-23.01 19.772 14.438-7.676 2.3389z"/>
+    <path d="m302.06 336.23 1.4943-22.538-8.0238-0.53202 16.001-18.597 13.406 20.547-8.0237-0.53201-1.4943 22.538z" sodipodi:nodetypes="cccccccc"/>
+   </g>
+   <g transform="translate(65.176 -6.1445)" fill-rule="evenodd">
+    <rect x="257.32" y="133.64" width="99" height="37.5" fill="#666" style="paint-order:normal"/>
+    <text x="306.75" y="148.01666" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="306.75" y="148.01666" sodipodi:role="line">4th AVB packet</tspan><tspan x="306.75" y="163.01666" sodipodi:role="line">is queued</tspan></text>
+   </g>
+   <g transform="translate(70.51 -22.627)" fill-rule="evenodd">
+    <rect x="4.4902" y="346.63" width="140.25" height="65.25" fill="#666" style="paint-order:normal"/>
+    <text x="75" y="361" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="75" y="361" sodipodi:role="line">credit positive,</tspan><tspan x="75" y="376" sodipodi:role="line">AVB packets launched</tspan><tspan x="75" y="391" sodipodi:role="line">as soon as interfering</tspan><tspan x="75" y="406" sodipodi:role="line">traffic is finished</tspan></text>
+   </g>
+   <g transform="translate(75.553 2.207)" fill-rule="evenodd">
+    <rect x="149.45" y="355.54" width="127.5" height="37.5" fill="#666" style="paint-order:normal"/>
+    <text x="213.375" y="369.91501" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="213.375" y="369.91501" sodipodi:role="line">credit negative,</tspan><tspan x="213.375" y="384.91501" sodipodi:role="line">3rd AVB packet held</tspan></text>
+   </g>
+   <g transform="translate(5.8496 -45.896)" fill-rule="evenodd">
+    <rect x="256.65" y="362.4" width="159" height="37.5" fill="#666" style="paint-order:normal"/>
+    <text x="336.375" y="376.76971" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="336.375" y="376.76971" sodipodi:role="line">credit positive,</tspan><tspan x="336.375" y="391.76971" sodipodi:role="line">3rd AVB packed launched</tspan></text>
+   </g>
+   <g transform="translate(-17.779 -13.119)" fill-rule="evenodd">
+    <rect x="400.28" y="370.87" width="154.5" height="37.5" fill="#666" style="paint-order:normal"/>
+    <text x="477.93936" y="385.24203" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="477.93936" y="385.24203" sodipodi:role="line">credit positive,</tspan><tspan x="477.93936" y="400.24203" sodipodi:role="line">4th AVB packet launched</tspan></text>
+   </g>
+   <g transform="translate(185.52 -32.434)" fill-rule="evenodd">
+    <rect x="-106.77" y="141.18" width="117.75" height="37.5" fill="#666" style="paint-order:normal"/>
+    <text x="-47.965481" y="155.55748" fill="#ffffff" font-family="'Noto Sans'" font-size="12px" font-weight="bold" stroke-linejoin="round" stroke-miterlimit="4.2222" stroke-width="1.5" text-align="center" text-anchor="middle" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25;paint-order:normal" xml:space="preserve"><tspan x="-47.965481" y="155.55748" sodipodi:role="line">three AVB packets</tspan><tspan x="-47.965481" y="170.55748" sodipodi:role="line">are queued</tspan></text>
+   </g>
+   <path d="m454.08 359.93-13.288 1.3893-4.6876-44.836-7.9811 0.8344 12.59-20.997 16.66 17.938-7.981 0.83443z" fill="#666"/>
+  </g>
+ </g>
+</svg>

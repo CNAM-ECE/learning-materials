@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="813.333" height="542.667" version="1.1" viewBox="0 0 813.333 542.667" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <filter id="filter1899" x="-.3" y="-.5" width="1.6" height="1.8" color-interpolation-filters="sRGB">
+      <feFlood flood-color="rgb(0,0,0)" flood-opacity=".498039" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation="4"/>
+      <feOffset dx="0" dy="-6" result="offset"/>
+      <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
+    </filter>
+  </defs>
+  <g transform="matrix(1.33333 0 0 -1.33333 0 542.667)">
+    <path d="m15 197.5h133.5c6.6274 0 12-5.3726 12-12v-165c0-6.62741-5.3726-12-12-12h-133.5c-6.62742 0-12 5.37259-12 12l-8e-6 165c0 6.6274 5.37258 12 12 12z" fill="#005493" fill-opacity=".14" stroke="#005493" stroke-miterlimit="10" stroke-width="1.00063"/>
+    <path d="m556.5 392.5v-165c0-6.6274-5.3726-12-12-12l-75.0001-2e-4c-6.6274 0-12-5.3726-12-12v-48.0002c0-6.6274-5.3726-12-12-12h-52.5001c-6.6274 0-12 5.3725-12 11.9999l-2e-4 67.8838c-1e-4 6.5948-5.3217 11.9537-11.9163 11.9997l-115.667 0.8074c-6.5945 0.0461-11.9162 5.405-11.9162 11.9997v49.4777c0 6.6275 5.3726 12 12 12h38.2127c6.583 0 11.937 5.3034 11.9995 11.8861l0.6749 71.0601c0.0625 6.5826 5.4165 11.886 11.9995 11.886h228.113c6.6274 0 12-5.3726 12-12z" fill="#005493" fill-opacity=".14" stroke="#005493" stroke-miterlimit="10" stroke-width="1.00063"/>
+    <use filter="url(#filter1899)" xlink:href="#path1059"/>
+    <use filter="url(#filter1899)" xlink:href="#path1131"/>
+    <use filter="url(#filter1899)" xlink:href="#path1275"/>
+    <use filter="url(#filter1899)" xlink:href="#path1161"/>
+    <use filter="url(#filter1899)" xlink:href="#path1083"/>
+    <use filter="url(#filter1899)" xlink:href="#path1527"/>
+    <use filter="url(#filter1899)" xlink:href="#path1643"/>
+    <use filter="url(#filter1899)" xlink:href="#path1667"/>
+    <use filter="url(#filter1899)" xlink:href="#path1691"/>
+    <use filter="url(#filter1899)" xlink:href="#path1715"/>
+    <use filter="url(#filter1899)" xlink:href="#path1113"/>
+    <use filter="url(#filter1899)" xlink:href="#path1221"/>
+    <use filter="url(#filter1899)" xlink:href="#path1191"/>
+    <use filter="url(#filter1899)" xlink:href="#path1239"/>
+    <use filter="url(#filter1899)" xlink:href="#path1613"/>
+    <use filter="url(#filter1899)" xlink:href="#path1257"/>
+    <g fill-opacity="0">
+      <path d="m-28.5-118.5h76v76h-76z"/>
+      <path d="m-28.5 346.5h67v67h-67z"/>
+      <path d="m-28.5 279.5h67v67h-67z"/>
+      <path d="m-28.5 212.5h67v67h-67z"/>
+      <path d="m-28.5 145.5h67v67h-67z"/>
+    </g>
+    <g transform="matrix(1 0 0 -1 398.5 274.5)">
+      <text transform="translate(47.6002 -108.94)" fill="#005493" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB domain 2</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,81.25,103.5)">
+      <text transform="translate(-22.9893 85.275)" fill="#005493" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB domain 1</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m132.75 146.5v69.5" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="9"/>
+    </g>
+    <path d="m502.5 269.5v13.5c0 1.3807 1.1193 2.5 2.5 2.5v0h13.25c1.2426 0 2.25 1.0074 2.25 2.25v13.25" fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m274.5 271.344h21c4.4183 0 8 3.5817 8 8v9.218c0 4.4183 3.5817 8 8 8h20" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m103.5 245.25h-15 4-18.344c-3.67601 0-6.65601 2.98-6.65601 6.656v6.656-4 15" fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="9"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m162 117.25h28c4.4183 0 8 3.5817 8 8v14.131c0 4.4183 3.5817 8 8 8h64" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="9"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m103.5 117.25h-19c-4.41828 0-8 3.5817-8 8v23.25" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m132.75 88v-18c0-3.866-3.134-7-7-7h-35.75" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m299.25 176.631v25c0 4.4183-3.5817 8-8 8h-38c-4.4183 0-8 3.5817-8 8v24.463" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10">
+      <path d="m475.5 242.5h-17c-3.3137 0-6 2.6863-6 6v24.25c0 3.0376-2.4624 5.5-5.5 5.5h-16.5" stroke-width="5"/>
+      <path d="m401.25 249v-15c0-2.2091 1.7909-4 4-4h12.25c2.2091 0 4-1.7909 4-4v-15" stroke-width="5"/>
+      <path d="m401.25 307.5v13c0 1.10455-0.8954 2-2 2h-52.5c-1.97095 0.53259-1.75 1.79321-1.75 3.5v11" stroke-width="9"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m400.5 135.25h-15 4-18.9345c-3.3499 0-6.0655 2.7156-6.0655 6.0655v0c0 3.3499-2.7156 6.0655-6.0655 6.0655h-18.9345 4-15" fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="9"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m245.25 300.594v18c0 3.866 3.134 7 7 7h5.889c3.6069 0 6.531 2.924 6.531 6.531v17.531" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m531 198v23.75c0 1.2426-1.0074 2.25-2.25 2.25v0c-1.2426 0-2.25 1.0074-2.25 2.25v24.031" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <path id="path1059" d="m483.5 269.5h38c4.4183 0 8-3.5817 8-8v-38c0-4.4183-3.5817-8-8-8h-38c-4.4183 0-8 3.5817-8 8v38c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,502,243)">
+      <text transform="translate(-14.2598 -3)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,502,243)">
+      <text transform="translate(-21.3896 13)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1083" d="m501.5 355h38c4.4183 0 8-3.5817 8-8v-38c0-4.4183-3.5817-8-8-8h-38c-4.4183 0-8 3.5817-8 8v38c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,520,328.5)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,520,328.5)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,520,328.5)">
+      <text transform="translate(-19.6641 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001 29.327999 32.664001" y="0">point 5</tspan>
+      </text>
+    </g>
+    <path id="path1113" d="m483.5 163.219h29c4.4183 0 8-3.5817 8-8v-29c0-4.4183-3.5817-8-8-8h-29c-4.4183 0-8 3.5817-8 8v29c0 4.4183 3.5817 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,497.5,141.219)">
+      <text transform="translate(-10.667 -3)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,497.5,141.219)">
+      <text transform="translate(-14.6602 11)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001" y="0">point</tspan>
+      </text>
+    </g>
+    <path id="path1131" d="m402.5 211h38c4.4183 0 8-3.5817 8-8v-38c0-4.4183-3.5817-8-8-8h-38c-4.4183 0-8 3.5817-8 8v38c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,421,184.5)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,421,184.5)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,421,184.5)">
+      <text transform="translate(-19.6641 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001 29.327999 32.664001" y="0">point 4</tspan>
+      </text>
+    </g>
+    <path id="path1161" d="m326 391h38c4.4183 0 8-3.5817 8-8v-38c0-4.4183-3.5817-8-8-8h-38c-4.4183 0-8 3.5817-8 8v38c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,344.5,364.5)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,344.5,364.5)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,344.5,364.5)">
+      <text transform="translate(-19.6641 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001 29.327999 32.664001" y="0">point 3</tspan>
+      </text>
+    </g>
+    <path id="path1191" d="m195.5 171.406h42.5c4.4183 0 8-3.5817 8-8v-42.5c0-4.4183-3.5817-8-8-8h-42.5c-4.4183 0-8 3.5817-8 8v42.5c0 4.4183 3.5817 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,216.25,142.656)">
+      <text transform="translate(-15.1587 -11)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 17.108 25.662001" y="0">non-</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,216.25,142.656)">
+      <text transform="translate(-14.2598 5)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">A</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,216.25,142.656)">
+      <text transform="translate(-5.18848 5)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 9.3380003 19.445999" y="0">VB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,216.25,142.656)">
+      <text transform="translate(-21.3896 21)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1221" d="m221.67 63.844h29c4.4183 0 8-3.58172 8-8v-29c0-4.41827-3.5817-8-8-8h-29c-4.4183 0-8 3.58173-8 8v29c0 4.41828 3.5817 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1 0 0 -1 235.67 41.844)">
+      <text transform="translate(-10.667 -3)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 235.67 41.844)">
+      <text transform="translate(-14.6602 11)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001" y="0">point</tspan>
+      </text>
+    </g>
+    <path id="path1239" d="m33.5 265h29c4.41828 0 8-3.5817 8-8v-29c0-4.4183-3.58172-8-8-8h-29c-4.41828 0-8 3.5817-8 8v29c0 4.4183 3.58172 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,47.5,243)">
+      <text transform="translate(-10.667 -3)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,47.5,243)">
+      <text transform="translate(-14.6602 11)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001" y="0">point</tspan>
+      </text>
+    </g>
+    <path id="path1257" d="m24.5 373h29c4.41828 0 8-3.5817 8-8v-29c0-4.4183-3.58172-8-8-8h-29c-4.41828 0-8 3.5817-8 8v29c0 4.4183 3.58172 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,38.5,351)">
+      <text transform="translate(-10.667 -3)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,38.5,351)">
+      <text transform="translate(-14.6602 11)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001" y="0">point</tspan>
+      </text>
+    </g>
+    <path id="path1275" d="m311 143.938h38c4.4183 0 8-3.5817 8-8v-38c0-4.41828-3.5817-8-8-8h-38c-4.4183 0-8 3.58172-8 8v38c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,329.5,117.438)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,329.5,117.438)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,329.5,117.438)">
+      <text transform="translate(-14.6602 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001" y="0">point</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,176.875,231)">
+      <text transform="translate(-35.6777 -10)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 3.336 10.668 14.664 21.336 26.004 36.672001 43.344002 50.675999 54.012001 60.683998 64.68 71.351997" y="0">Intermediate</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,176.875,231)">
+      <text transform="translate(-29.6748,4)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.004 20.676001 24.011999 30.684 37.355999 40.692001 48.023998 55.355999 59.352001" y="0">device not</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,176.875,231)">
+      <text transform="translate(-36.2344 18)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB capable</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,444,350)">
+      <text transform="translate(-33.0107 -14)" fill="black" font-family="Arial" font-size="11px" font-weight="bold">
+        <tspan x="0 7.3369999 11.616 18.337 22 28.115999 34.231998 40.348 43.405998 50.126999 56.848 62.964001 66.022003" y="0">Professional</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,444,350)">
+      <text transform="translate(-41.0513 -2)" fill="black" font-family="Arial" font-size="11px" font-weight="bold">
+        <tspan x="0 6.7210002 13.442 19.558001 22.615999 25.674 29.337 35.452999" y="0">quality A/V only</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,444,350)">
+      <text transform="translate(-43.7153 10)" fill="black" font-family="Arial" font-size="11px" font-weight="bold">
+        <tspan x="0 6.7210002 12.837 16.5 25.058001 31.174 37.290001 44.011002 47.069 53.790001 59.905998 66.022003 69.080002 75.195999 81.311996 87.428001" y="0">between devices</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,444,350)">
+      <text x="-35.127689" y="22" fill="black" font-family="Arial" font-size="11px" font-weight="bold">
+        <tspan x="-35.127689" y="22">in AVB cloud</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-68.4609 -31)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 8.0039997 12.672 20.004 24 30.672001 37.344002 44.015999 47.352001 54.683998 62.015999 68.688004 72.024002 75.360001 82.692001 90.024002 96.695999 100.032 103.368 107.364 114.036" y="0">Professional quality A/V</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(48.457 -31)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 8.6639996 12 20.004" y="0">A/V</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-61.0078 -17)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18.66 21.996 29.327999 36.66 43.332001 50.004002 53.34 60.672001 64.008003 70.68 74.015999 81.348 88.019997 92.015999 101.352 108.024 114.696 122.028" y="0">not possible between</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-64.8955 -3)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB endpoints 1 and 3</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-69.2402 11)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 10.008 17.34 24.011999 30.684 34.02 38.015999 45.348 52.02 56.688 63.360001 66.695999 73.367996 78.036003 84.708 88.043999 95.375999 102.708 110.04 114.036" y="0">since there are non-AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-71.3438 25)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 3.336 6.6719999 14.004 20.676001 27.348 30.684 34.02 41.352001 44.688 48.683998 56.015999 62.688 66.024002 73.356003 80.028 84.024002 91.356003 94.692001 102.024 108.696 112.692 122.028 128.7 135.37199 142.70399" y="0">links in the path between</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 209.5 360.5)">
+      <text transform="translate(-20.9971 39)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 3.9960001 11.328 18 21.336 25.332001 34.667999" y="0">the two</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 486.25 84.938)">
+      <text transform="translate(-78.25,-10)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB domain boundary</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 486.25 84.938)">
+      <text transform="translate(-78.25,4)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 19.332001 23.327999 27.323999 30.66 34.655998 37.992001 41.327999 45.324001 51.995998 56.664001 60 67.332001 74.664001 78 82.667999 89.339996 93.335999 100.008 107.34 114.672 118.008 125.34 132.672" y="0">port: filtering/retagging</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 486.25 84.938)">
+      <text transform="translate(-78.25,18)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 13.344 17.34 20.676001 27.348" y="0">active</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m396 360h36" fill="none" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1 0 0 -1 466 54.438)">
+      <text transform="translate(-58,4)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 21.996 25.992001" y="0">non-AVB link</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m432 379h-36" fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1 0 0 -1 466.75 34.188)">
+      <text transform="translate(-58,4)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB link</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m166.5 163.909-9.0028-4.365" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m150.749 156.272 8.8346 9.2845-2.086-6.0124 6.0124-2.0859z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,570.625,163)">
+      <text transform="translate(-34.375,-17)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 8.0039997 15.336 22.667999 26.664 33.995998 41.327999 44.664001 51.995998 55.992001" y="0">End-point</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,570.625,163)">
+      <text transform="translate(-34.375,-3)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.004 20.676001 24.011999 30.684" y="0">device</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,570.625,163)">
+      <text transform="translate(-34.375,11)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18.66" y="0">not  AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,570.625,163)">
+      <text transform="translate(-34.375,25)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 13.344 20.676001 27.348 34.68 38.015999" y="0">capable</tspan>
+      </text>
+    </g>
+    <path id="path1527" d="m105.5 94.062h38c4.4183 0 8-3.58172 8-8v-38c0-4.41827-3.5817-8-8-8h-38c-4.4183 0-8 3.58173-8 8v38c0 4.41828 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1 0 0 -1 124 67.562)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 124 67.562)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1 0 0 -1 124 67.562)">
+      <text transform="translate(-19.6641 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001 29.327999 32.664001" y="0">point 2</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m132.75 274.5v16.5c0 3.0376 2.4624 5.5 5.5 5.5h8.781c3.2966 0 5.969 2.6724 5.969 5.969v16.969" fill="none" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g fill="#ff2800">
+      <path d="m382 87c0-3.72794 3.0221-6.75 6.75-6.75s6.75 3.02209 6.75 6.75c0 3.72794-3.0221 6.75-6.75 6.75s-6.75-3.02209-6.75-6.75zm9.5795-3.78412c-2.0899-1.56271-5.0509-1.13531-6.6136 0.95459-0.6108 0.8169-0.9409 1.80951-0.9409 2.82953s0.3301 2.01263 0.9409 2.82953zm-5.659 7.56824c2.0899 1.56271 5.0509 1.13531 6.6136-0.95462 0.6108-0.81687 0.9409-1.80951 0.9409-2.8295 0-1.02002-0.3301-2.01263-0.9409-2.82953z"/>
+      <path d="m497.5 209.25c0-3.7279 3.0221-6.75 6.75-6.75s6.75 3.0221 6.75 6.75-3.0221 6.75-6.75 6.75-6.75-3.0221-6.75-6.75zm9.5795-3.7841c-2.0899-1.5627-5.0509-1.1353-6.6136 0.9546-0.6108 0.8169-0.9409 1.8095-0.9409 2.8295s0.3301 2.0126 0.9409 2.8295zm-5.659 7.5682c2.0899 1.5627 5.0509 1.1353 6.6136-0.9546 0.6108-0.8169 0.9409-1.8095 0.9409-2.8295s-0.3301-2.0126-0.9409-2.8295z"/>
+      <path d="m289 117.438c0-3.7279 3.0221-6.75 6.75-6.75s6.75 3.0221 6.75 6.75-3.0221 6.75-6.75 6.75-6.75-3.0221-6.75-6.75zm9.5795-3.7841c-2.0899-1.5627-5.0509-1.1353-6.6136 0.9546-0.6108 0.8169-0.9409 1.8095-0.9409 2.8295s0.3301 2.0126 0.9409 2.8295zm-5.659 7.5682c2.0899 1.5627 5.0509 1.1353 6.6136-0.9546 0.6108-0.8169 0.9409-1.8095 0.9409-2.8295s-0.3301-2.0126-0.9409-2.8295z"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m132.75 146.5v69.5" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <path d="m263.5 230.312c0-3.7279 3.0221-6.75 6.75-6.75s6.75 3.0221 6.75 6.75-3.0221 6.75-6.75 6.75-6.75-3.0221-6.75-6.75zm9.5795-3.7841c-2.0899-1.5627-5.0509-1.1353-6.6136 0.9546-0.6108 0.8169-0.9409 1.8095-0.9409 2.8295s0.3301 2.0126 0.9409 2.8295zm-5.659 7.5682c2.0899 1.5627 5.0509 1.1353 6.6136-0.9546 0.6108-0.8169 0.9409-1.8095 0.9409-2.8295s-0.3301-2.0126-0.9409-2.8295z" fill="#ff2800"/>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m225 207 12.7532 22.1018" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m241.502 235.598-2.0998-12.6428-1.6486 6.1467-6.1467-1.6487z" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="5"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m103.5 245.25h-29.22c-3.74449 0-6.78 3.0355-6.78 6.78v17.532" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m161.25 117.25h28.75c4.4183 0 8 3.5817 8 8v15.9405c0 3.4189 2.7716 6.1905 6.1905 6.1905h65.8095" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m429.75 106v-12.829c0-1.14709-0.9299-2.07703-2.077-2.07703h-52.252c-1.061 0-1.921-0.86004-1.921-1.92099v0-12.673" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m400.5 135.25h-30.3095c-3.3499 0-6.0655 2.7156-6.0655 6.0655v0c0 3.3499-2.7156 6.0655-6.0655 6.0655h-29.5595" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <path d="m227.5 266.619c0-3.7279 3.0221-6.75 6.75-6.75s6.75 3.0221 6.75 6.75-3.0221 6.75-6.75 6.75-6.75-3.0221-6.75-6.75zm9.5795-3.7841c-2.0899-1.5627-5.0509-1.1353-6.6136 0.9546-0.6108 0.8169-0.9409 1.8095-0.9409 2.8295s0.3301 2.0126 0.9409 2.8295zm-5.659 7.5682c2.0899 1.5627 5.0509 1.1354 6.6136-0.9546 0.6108-0.8169 0.9409-1.8095 0.9409-2.8295s-0.3301-2.0126-0.9409-2.8295z" fill="#ff2800"/>
+    <path d="m97.5 204.75c2e-5 -3.7279 3.0221-6.75 6.75-6.75s6.75 3.0221 6.75 6.75-3.0221 6.75-6.75 6.75-6.74998-3.0221-6.75-6.75zm9.5795-3.7841c-2.0899-1.5627-5.0509-1.1353-6.6136 0.9546-0.61083 0.8169-0.94091 1.8095-0.94091 2.8295s0.33008 2.0126 0.94091 2.8295zm-5.659 7.5682c2.0899 1.5627 5.0509 1.1353 6.6136-0.9546 0.6108-0.8169 0.9409-1.8095 0.9409-2.8295s-0.3301-2.0126-0.9409-2.8295z" fill="#ff2800"/>
+    <g transform="matrix(1,0,0,-1,-28.5,413.5)">
+      <path d="m432.75 401.5h-33.375" fill="none" stroke="#00fdff" stroke-dasharray="9.504, 9.504" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="4.752"/>
+    </g>
+    <g transform="matrix(1 0 0 -1 471.438 12)">
+      <text transform="translate(-62.6875,4)" fill="black" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336 28.667999 36 39.335999 46.667999 50.664001 54 60.672001 64.008003 70.68 78.012001 85.344002 88.68 95.351997 98.688004 106.692 113.364 117.36" y="0">endpoint 1 and 3 Path</tspan>
+      </text>
+    </g>
+    <path id="path1613" d="m83 325.5h42.5c4.4183 0 8-3.5817 8-8v-42.5c0-4.4183-3.5817-8-8-8h-42.5c-4.41828 0-8 3.5817-8 8v42.5c0 4.4183 3.58172 8 8 8z" fill="#30923b" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,103.75,296.75)">
+      <text transform="translate(-15.1587 -11)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 17.108 25.662001" y="0">non-</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,103.75,296.75)">
+      <text transform="translate(-14.2598 5)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">A</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,103.75,296.75)">
+      <text transform="translate(-5.18848 5)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 9.3380003 19.445999" y="0">VB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,103.75,296.75)">
+      <text transform="translate(-21.3896 21)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1643" d="m83 197.5h42.5c4.4183 0 8-3.5817 8-8v-42.5c0-4.4183-3.5817-8-8-8h-42.5c-4.41828 0-8 3.5817-8 8v42.5c0 4.4183 3.58172 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,103.75,168.75)">
+      <text transform="translate(-14.2598 -3.00002)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,103.75,168.75)">
+      <text transform="translate(-21.3896 13)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1667" d="m249.5 295.369h42.5c4.4183 0 8-3.5817 8-8v-42.5c0-4.4183-3.5817-8-8-8h-42.5c-4.4183 0-8 3.5817-8 8v42.5c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,270.25,266.619)">
+      <text transform="translate(-14.2598 -3)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,270.25,266.619)">
+      <text transform="translate(-21.3896 13)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1691" d="m380 307.5h42.5c4.4183 0 8-3.5817 8-8v-42.5c0-4.4183-3.5817-8-8-8h-42.5c-4.4183 0-8 3.5817-8 8v42.5c0 4.4183 3.5817 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,400.75,278.75)">
+      <text transform="translate(-14.2598 -3)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,400.75,278.75)">
+      <text transform="translate(-21.3896 13)" fill="white" font-family="Arial" font-size="14px" font-weight="bold">
+        <tspan x="0 8.5539999 14 17.892 26.445999 35" y="0">bridge</tspan>
+      </text>
+    </g>
+    <path id="path1715" d="m20 143.938h38c4.41828 0 8-3.5817 8-8v-38c0-4.41828-3.58172-8-8-8h-38c-4.41828 0-8 3.58172-8 8v38c0 4.4183 3.58172 8 8 8z" fill="#005493" stroke="#000" stroke-miterlimit="10" stroke-width=".498898"/>
+    <g transform="matrix(1,0,0,-1,38.5,117.438)">
+      <text transform="translate(-12.2227 -10)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0" y="0">AVB</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,38.5,117.438)">
+      <text transform="translate(-10.667 3.99997)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 6.6719999 14.004 21.336" y="0">end</tspan>
+      </text>
+    </g>
+    <g transform="matrix(1,0,0,-1,38.5,117.438)">
+      <text transform="translate(-19.6641 18)" fill="white" font-family="Arial" font-size="12px" font-weight="bold">
+        <tspan x="0 7.3319998 14.664 18 25.332001 29.327999 32.664001" y="0">point 1</tspan>
+      </text>
+    </g>
+  </g>
+</svg>

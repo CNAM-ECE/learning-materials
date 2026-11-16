@@ -1,0 +1,73 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: fig2dev Version 3.2 Patchlevel 5e -->
+<!-- CreationDate: Fri Mar 20 11:13:52 2015 -->
+<!-- Magnification: 1.050 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="6.3in" height="1.2in"
+	viewBox="932 2113 7584 1442">
+<g style="stroke-width:.025in; fill:none">
+<!-- Line: box -->
+<rect x="2362" y="2362" width="1417" height="944" rx="0" 
+style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Line -->
+<polyline points="944,2834
+2344,2834
+" style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 944 2834 - 2377 2834-->
+<polyline points="2234 2866
+2360 2834
+2234 2803
+" style="stroke:#000000;stroke-width:8;stroke-miterlimit:8;
+"/>
+<!-- Line -->
+<polyline points="3779,2834
+5651,2834
+" style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 3779 2834 - 5685 2834-->
+<polyline points="5541 2866
+5667 2834
+5541 2803
+" style="stroke:#000000;stroke-width:8;stroke-miterlimit:8;
+"/>
+<!-- Line: box -->
+<rect x="5669" y="2362" width="1417" height="944" rx="0" 
+style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Line -->
+<polyline points="7086,2834
+8486,2834
+" style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+"/>
+<!-- Arrowhead on XXXpoint 7086 2834 - 8519 2834-->
+<polyline points="8375 2866
+8501 2834
+8375 2803
+" style="stroke:#000000;stroke-width:8;stroke-miterlimit:8;
+"/>
+<!-- Line: box -->
+<rect x="2125" y="2125" width="5196" height="1417" rx="0" 
+style="stroke:#000000;stroke-width:8;
+stroke-linejoin:miter; stroke-linecap:butt;
+stroke-dasharray:41 41;"/>
+<!-- Text -->
+<!--  12  -->
+<text xml:space="preserve" x="1417" y="2598" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="202" text-anchor="start">A</text>
+<!-- Text -->
+<!--  12  -->
+<text xml:space="preserve" x="8031" y="2598" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="202" text-anchor="start">D</text>
+<!-- Text -->
+<!--  12  -->
+<text xml:space="preserve" x="4724" y="2598" fill="#000000"  font-family="Times" font-style="normal" font-weight="normal" font-size="202" text-anchor="middle">X</text>
+</g>
+</svg>

@@ -1,0 +1,44 @@
+<svg id="svg1" width="827" height="440" version="1.1" viewBox="0 0 827 440" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="markerArrow" viewBox="0 -5 10 10" orient="auto-start-reverse" markerWidth="4" markerHeight="4">
+      <path d="M10 0 L0 5 L0 -5 Z" fill="context-stroke"/>
+    </marker>
+  </defs>
+  <g id="PTP" font-family="sans-serif">
+    <g id="graph" stroke="#000">
+      <path id="nw_element_line" d="M100 260 H800" stroke-width="3"/>
+      <path id="time_server_line" d="M800 142 H100" stroke-width="3"/>
+      <path id="axis" fill="none" d="M800 380 H100 V20" stroke-width="4" marker-start="url(#markerArrow)" marker-end="url(#markerArrow)"/>
+    </g>
+    <g id="labels" font-size="29" xml:space="preserve">
+      <text id="label_1" x="245" y="421">T1</text>
+      <text id="label_2" x="289" y="421">T1'</text>
+      <text id="label_3" x="343" y="422">T2</text>
+      <text id="label_4" x="390" y="422">T2'</text>
+      <text id="label_5" x="448" y="422">T3</text>
+      <text id="label_6" x="491" y="422">T3'</text>
+      <text id="axis_label" x="775" y="429">t</text>
+      <text id="nw_element_text" x="20" y="297">n/w element</text>
+      <text id="time_server_text" x="12" y="125">Time server</text>
+      <text id="delay_text" x="596" y="47">Delay = T1' - T1</text>
+    </g>
+    <g id="dashes" stroke="#000" stroke-width="1" stroke-dasharray="3,3">
+      <path id="dash_1" d="M255 65 V380"/>
+      <path id="dash_2" d="M317 65 V380"/>
+      <path id="dash_3" d="M350 65 V380"/>
+      <path id="dash_4" d="M425 65 V380"/>
+      <path id="dash_5" d="M455 65 V380"/>
+      <path id="dash_6" d="M520 65 V380"/>
+    </g>
+    <g id="arrows" stroke="#000" stroke-width="2" marker-end="url(#markerArrow)">
+      <path id="arrow_1" d="M255 142 L311 251"/>
+      <path id="arrow_2" d="M350 260 L419 151"/>
+      <path id="arrow_3" d="M455 142 L514 251"/>
+    </g>
+    <g id="annotations" font-size="16" xml:space="preserve">
+      <text id="note_1" x="278" y="177">T1</text>
+      <text id="note_2" x="375" y="242">T1  T1'  T2</text>
+      <text id="note_3" x="476" y="177">T1  T1'  T2  T2'  T3</text>
+    </g>
+  </g>
+</svg>

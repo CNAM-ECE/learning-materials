@@ -92,6 +92,18 @@
   margin-top: 0.5rem;
 }
 
+/* Reproduced images (Wikimedia Commons): drawn for a white page, so they keep
+   a white card in dark mode. */
+.nc-figure-image img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
 /* Source line under a figure caption. */
 .nc-figure-source {
   display: block;

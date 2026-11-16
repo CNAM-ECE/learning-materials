@@ -4,16 +4,18 @@ Learning materials for the PhD *"Certified Dynamic Reconfiguration of Time-Sensi
 
 ## Overview
 
-Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configuration that is fixed and verified offline. Reconfiguring such a network online, to admit new flows, migrate existing ones or recover from a link fault, requires a fast and sound argument that every admitted flow still meets its deadline. Deterministic network calculus provides that argument: from an upper envelope on what each flow may send (*arrival curve*) and a lower envelope on what each element guarantees (*service curve*), it derives delay and backlog bounds that hold for every admissible trajectory. These notes build the theory from the min-plus algebra up to its use as a certificate for TSN reconfiguration, in nine posts meant to be read in order.
+Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configuration that is fixed and verified offline. Reconfiguring such a network online, to admit new flows, migrate existing ones or recover from a link fault, requires a fast and sound argument that every admitted flow still meets its deadline. Deterministic network calculus provides that argument: from an upper envelope on what each flow may send (*arrival curve*) and a lower envelope on what each element guarantees (*service curve*), it derives delay and backlog bounds that hold for every admissible trajectory. These notes build the theory from the min-plus algebra up to its use as a certificate for TSN reconfiguration, in thirteen posts grouped into five topics: deterministic networks, network calculus, IEEE 802.1, IETF and TSN.
 
 ## Repository structure
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── blog/                  # Learning path: nine posts (MDX, KaTeX), authors.yml, tags.yml
+├── blog/                  # Learning path: thirteen posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
-│   ├── components/        # BoundsFigure (delay/backlog figure), HomepageFeatures
+│   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
+│   ├── data/              # learningPath.ts: topics and post order of the blog sidebar
+│   ├── theme/             # BlogSidebar/Content: sidebar grouped by topic instead of by year
 │   ├── css/               # Theme and KaTeX styles
 │   └── pages/             # Home page
 ├── static/img/            # Logo, favicon, social card
@@ -23,17 +25,23 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ## Content
 
-| Part | Post | Topic |
-|:---:|:---|:---|
-| I | 1. Why deterministic guarantees? | Average versus worst case; why measurement cannot certify TSN |
-| I | 2. Min-plus algebra | Cumulative functions, convolution, deconvolution, sub-additive closure |
-| I | 3. Arrival curves | Token bucket, staircase, good arrival curves, greedy shapers |
-| I | 4. Service curves | Min-plus and strict service curves, rate-latency, TAS window |
-| II | 5. The three fundamental bounds | Delay, backlog, output arrival curve; worked example |
-| II | 6. Concatenation | End-to-end service curve; pay bursts only once |
-| II | 7. Aggregate multiplexing | Blind, FIFO, static-priority residual service; TFA vs. path-based analyses |
-| III | 8. Network calculus for TSN | TAS, CBS, ATS, PSFP, FRER; analysis tools |
-| III | 9. Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
+| Topic | Post | Content |
+|:---|:---|:---|
+| Deterministic networks | Why deterministic guarantees? | Average versus worst case; why measurement cannot certify TSN |
+| Deterministic networks | Deterministic networking | Deterministic service, requirements, the three techniques, TSN versus DetNet |
+| Network calculus | Min-plus algebra | Cumulative functions, convolution, deconvolution, sub-additive closure |
+| Network calculus | Arrival curves | Token bucket, staircase, good arrival curves, greedy shapers |
+| Network calculus | Service curves | Min-plus and strict service curves, rate-latency, TAS window |
+| Network calculus | The three fundamental bounds | Delay, backlog, output arrival curve; worked example |
+| Network calculus | Concatenation | End-to-end service curve; pay bursts only once |
+| Network calculus | Aggregate multiplexing | Blind, FIFO, static-priority residual service; TFA vs. path-based analyses |
+| IEEE 802.1 | IEEE 802.1 and the TSN task group | Organisation, AVB to TSN, naming rules, tiers of standards, process |
+| IETF | IETF DetNet | Charter, RFC 8655 sub-layers, node types, planes, DetNet over TSN |
+| TSN | The TSN toolbox | Each TSN mechanism and the stage of the 802.1Q bridge it extends |
+| TSN | Network calculus for TSN shapers | TAS, CBS, ATS, PSFP, FRER; analysis tools |
+| TSN | Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
+
+The sidebar of the learning path is grouped by these topics; the grouping and the order of posts are defined in `src/data/learningPath.ts`. The posts on standards open with an architecture diagram, and every figure names its source.
 
 The **Reference** section collects the notation sheet, a TSN glossary and an annotated list of the lectures and articles from which the posts were prepared [3–7].
 

@@ -51,19 +51,22 @@ export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): Reac
   const tone = (stage: BridgeStage, base: Tone): Tone =>
     !highlight ? base : highlight.includes(stage) ? 'service' : 'muted';
   const stages: string[][] = [
-    ['Ingress port', 'filtering, tagging', '+ PSFP (802.1Qci)', '+ FRER (802.1CB)'],
-    ['Relay', 'forwarding,', 'filtering', '+ explicit trees'],
-    ['Queuing', '8 traffic classes', '+ CBS (802.1Qav)', '+ ATS (802.1Qcr)'],
-    ['Tx selection', 'strict priority', '+ gates (802.1Qbv)', '+ CQF (802.1Qch)'],
-    ['MAC / PHY', 'IEEE 802.3', '+ preemption', '(802.3br, 802.1Qbu)'],
+    ['Ingress', 'PSFP (Qci)', 'FRER (CB)'],
+    ['Relay', 'forwarding', 'explicit trees'],
+    ['Queuing', 'CBS (Qav)', 'ATS (Qcr)'],
+    ['Tx selection', 'gates (Qbv)', 'CQF (Qch)'],
+    ['MAC / PHY', 'preemption', '(Qbu, 802.3br)'],
   ];
+  const w = 104;
+  const step = 136;
+  const x0 = 36;
   return (
     <Figure
-      height={300}
+      height={312}
       label="An IEEE 802.1Q bridge with its control plane and its data plane stages, showing which TSN standard extends which existing stage"
       caption={
         caption ??
-        'Figure 1. TSN is not a new bridge: each tool extends one stage of the existing IEEE 802.1Q bridge. Lines starting with “+” are the TSN additions.'
+        'Figure 1. TSN is not a new bridge: each tool extends one stage of the existing IEEE 802.1Q bridge. Each box names the stage and the TSN tools added to it (802.1 standard in brackets).'
       }
       source={
         <>
@@ -71,23 +74,23 @@ export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): Reac
           chain in <Concepts slides="slides 7, 8 and 10." />
         </>
       }>
-      <Box x={15} y={24} w={690} h={250} lines={[]} dashed tone="muted" />
+      <Box x={15} y={24} w={690} h={278} lines={[]} dashed tone="muted" />
       <Txt x={28} y={12} size={12} bold anchor="start">IEEE 802.1Q bridge</Txt>
 
-      <Box x={35} y={40} w={650} h={48} lines={['Control plane: higher-layer entities or an external agent', '+ stream reservation (802.1Qat), TSN configuration (802.1Qcc), path control (802.1Qca)']} title size={12} tone={tone('control', 'arrival')} />
+      <Box x={x0} y={40} w={648} h={44} lines={['Control plane', 'SRP (Qat) · TSN configuration (Qcc) · path control (Qca)']} title size={12} tone={tone('control', 'arrival')} />
 
-      <Txt x={35} y={106} size={11.5} italic anchor="start">Data plane: frame in</Txt>
-      <Txt x={685} y={106} size={11.5} italic anchor="end">frame out</Txt>
+      <Txt x={x0} y={118} size={11.5} italic anchor="start">frame in</Txt>
+      <Txt x={x0 + 648} y={118} size={11.5} italic anchor="end">frame out</Txt>
       {stages.map((lines, i) => (
         <g key={lines[0]}>
-          <Box x={35 + i * 132} y={118} w={122} h={84} lines={lines} title size={11} tone={tone(dataStages[i], 'plain')} />
-          {i < 4 && <Arrow d={`M${157 + i * 132},160 H${167 + i * 132}`} />}
+          <Box x={x0 + i * step} y={130} w={w} h={70} lines={lines} title size={11.5} tone={tone(dataStages[i], 'plain')} />
+          {i < 4 && <Arrow d={`M${x0 + i * step + w},165 H${x0 + (i + 1) * step}`} />}
         </g>
       ))}
 
-      <Box x={35} y={218} w={650} h={40} lines={['Common time base: gPTP (802.1AS), required by gates, CQF and time-gated policing']} size={12} tone={tone('time', 'service')} />
-      <Arrow d="M360,118 V88" tone="arrival" heads="both" />
-      <Arrow d="M360,218 V202" tone="service" />
+      <Box x={x0} y={246} w={648} h={38} lines={['Common time: gPTP (802.1AS)']} title size={12} tone={tone('time', 'service')} />
+      <Arrow d="M360,130 V84" tone="arrival" heads="both" />
+      <Arrow d="M360,246 V200" tone="service" />
     </Figure>
   );
 }

@@ -49,13 +49,13 @@ The DetNet problem statement, as summarised in [3], gives five requirements. The
 
 | Requirement | Meaning |
 | --- | --- |
-| Time synchronisation | Every node shares a time base, with an accuracy between nanoseconds and microseconds |
-| Deterministic flows | Unicast or multicast; guaranteed minimum and maximum end-to-end latency; loss ratio of $10^{-9}$ to $10^{-12}$ on wired Ethernet; no throttling and no congestion feedback |
-| Per-node scheduling | Each node schedules, shapes, limits and controls its transmissions |
+| Time synchronisation | Every node(routers/switches) shares a time base, with an accuracy between nanoseconds and microseconds |
+| Deterministic flows | Unicast or multicast, with guaranteed minimum and maximum end-to-end latency(tighten jiter depending on its requirements), and loss ratio of $10^{-9}$ to $10^{-12}$ on wired Ethernet and $10^{-5}$ for mesh network, no throttling and no congestion feedback |
+| Per-node scheduling | Each node schedules, shapes, limits and controls its transmissions (over-provisioning not required) |
 | Protection | A misbehaving node or flow cannot degrade the others, even under high load |
 | Reservation | Resources are reserved in every node that carries the flow |
 
-Two points matter for the rest of this series. First, the source must declare a traffic contract: either a fixed transmission schedule, or a maximum bandwidth and a maximum packet size. That contract is exactly what an [arrival curve](/blog/arrival-curves) formalises. Second, "no congestion feedback" means the guarantee cannot rely on sources slowing down; it has to hold by construction.
+Two points matter for the rest of this series. First, the source must declare a traffic contract: either a fixed transmission schedule, or a maximum bandwidth and a maximum packet size. That contract is exactly what an [arrival curve](/blog/arrival-curves) formalises. Second, "no congestion feedback" means the guarantee cannot rely on sources slowing down, meanwhile it has to hold by construction.
 
 ## 4. Three techniques
 
@@ -63,11 +63,11 @@ The DetNet architecture groups the mechanisms into three techniques, which can b
 
 | Technique | What it does | What it protects against |
 | --- | --- | --- |
-| Resource allocation | Reserves buffer space and link bandwidth for a flow, or an aggregate of flows, at each hop | Loss caused by contention; unbounded latency |
-| Service protection | Sends copies of each packet over several paths and removes duplicates, or adds redundancy by packet encoding | Loss caused by equipment or media failure |
+| Resource allocation | Reserves buffer space and link bandwidth for a flow, or an aggregate of flows, at each hop based on predefined max transmission rate and packet size. Traffic policing and shaping functions at ingress ports limit data rates to mitigate packet out of scheduled time (next node additional buffer) | Loss caused by contention with unbounded end-to-end latency. Precise packet timestamps and sub-microsecond synchronization across network nodes enable low-latency, jitter-free communication, which is critical for audiovisual quality and deterministic industrial control applications |
+| Service protection | Sends copies of each packet over several paths (sequence number & timestamp to transport protocol) and removes duplicates with reordering packets, or adds redundancy & error correction by packet encoding (multi-trans packet unit) | Loss caused by equipment or media failure, bandwidth constraint assurance & delay equalization in failure recovery |
 | Explicit routes | Fixes the path in advance, so that it does not change at once when the topology changes | Interruptions while routing or bridging protocols reconverge |
 
-Resource allocation only works for a flow that is limited at the source in packet size and rate [4]. Explicit routes can be installed with RSVP-TE, Segment Routing, IS-IS or a centralised controller [3][4].
+Resource allocation only works for a flow that is limited at the source in a specified packet size and rate [4]. Explicit routes can be installed with [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209), [Segment Routing](https://www.rfc-editor.org/rfc/rfc8402), [IS-IS](https://en.wikipedia.org/wiki/IS-IS) or a centralised SDN controller [3][4]. In real-time
 
 <ReplicationFigure
   ends={['End system', 'End system']}
@@ -111,14 +111,14 @@ Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and
 | 1 | The physical link. The only change is the MAC Merge sublayer of 802.3br, which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
 | All | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
 
-In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. Traffic-engineering protocols maintained by the IETF TEAS working group, such as RSVP-TE and MPLS-TE, translate a DetNet flow specification into the corresponding TSN settings for the credit-based shaper, scheduled traffic, cyclic queuing, preemption and FRER [3].
+In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. Traffic-engineering protocols maintained by the IETF [TEAS](https://datatracker.ietf.org/wg/teas/about/) working group, such as RSVP-TE and [MPLS-TE](https://www.rfc-editor.org/rfc/rfc2702), translate a DetNet flow specification into the corresponding TSN settings for the credit-based shaper, scheduled traffic, cyclic queuing, preemption and FRER [3].
 
 ### IntServ and DiffServ in OSI layer 3
 
 Before DetNet, the IETF had two models for quality of service in IP networks. DetNet sits between them.
 
-- **Integrated Services (IntServ)**, from 1994, reserves resources **per flow** in every router along the path. Reservations are usually signalled with RSVP [5]. Its *Guaranteed Service* gives a mathematically provable upper bound on queuing delay for a flow described by a token bucket [6]. This is the same kind of bound that [network calculus](/blog/three-fundamental-bounds) derives. The price is per-flow state in every router, which does not scale to large networks.
-- **Differentiated Services (DiffServ)**, from 1998, does not track flows. The edge of the network classifies each packet and marks it with a 6-bit code point in the IP header (DSCP). Core routers then apply one of a few *per-hop behaviours* to whole classes [7]. DiffServ scales well, but it promises only relative treatment of a class, not a bound for an individual flow, and the service a class receives can differ from one operator to the next [8].
+- **[Integrated Services](https://en.wikipedia.org/wiki/Integrated_services) (IntServ)**, from 1994, reserves resources **per flow** in every router along the path. Reservations are usually signalled with [RSVP](https://www.rfc-editor.org/rfc/rfc2205) [5]. Its *Guaranteed Service* gives a mathematically provable upper bound on queuing delay for a flow described by a token bucket [6]. This is the same kind of bound that [network calculus](/blog/three-fundamental-bounds) derives. The price is per-flow state in every router, which does not scale to large networks.
+- **[Differentiated Services](https://en.wikipedia.org/wiki/Differentiated_services) (DiffServ)**, from 1998, does not track flows. The edge of the network classifies each packet and marks it with a 6-bit code point in the IP header ([DSCP](https://www.rfc-editor.org/rfc/rfc2474)). Core routers then apply one of a few *per-hop behaviours* to whole classes [7]. DiffServ scales well, but it promises only relative treatment of a class, not a bound for an individual flow, and the service a class receives can differ from one operator to the next [8].
 
 A long-standing compromise uses IntServ at the edges, to admit and shape each flow, and DiffServ in the core, to forward aggregates [8][9]. DetNet follows the same pattern. Each flow is admitted and policed individually, while nodes can treat aggregates of flows together. The aggregation analysis of [the multiplexing post](/blog/aggregate-multiplexing-residual-service) is what makes this safe.
 
@@ -128,7 +128,7 @@ The Wikipedia article on DetNet describes the Layer 3 part as working through a 
 
 1. it **computes explicit routes**, which do not change immediately when the topology changes, so routing protocols reconverging cause no interruption. RSVP-TE, Segment Routing, IS-IS or MPLS-TE can install the same routes [3];
 2. it **reserves resources** per flow at every node, with the knowledge of all other flows that admission control needs;
-3. it **configures the TSN segments** on the path, through the CNC of IEEE 802.1Qcc.
+3. it **configures the TSN segments** on the path, through the CNC of [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/).
 
 RFC 8655 places this logic in the *controller plane* of the DetNet architecture (see [the IETF DetNet post](/blog/ietf-detnet)). [The SDN post](/blog/sdn-and-tsn-configuration) shows the same structure on the TSN side.
 

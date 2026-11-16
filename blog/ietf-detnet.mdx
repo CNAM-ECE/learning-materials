@@ -36,7 +36,7 @@ The charter draws the boundary carefully [1].
 - networks under a single administrative control, or a closed group of administrative control, such as campus networks and private WANs;
 - the overall architecture: data plane, OAM, time synchronisation, management, control and security;
 - a data plane built on IP and MPLS, and on Layer 2 encapsulations that run over them, such as pseudowires and GRE;
-- a flow information model and YANG models, independent of the protocol that carries them;
+- a flow information model and [YANG](https://www.rfc-editor.org/rfc/rfc7950) models, independent of the protocol that carries them;
 - the ability to reserve resources in advance, then release and reuse them.
 
 **Out of scope**
@@ -69,7 +69,7 @@ Reading Figure 1 from left to right gives the vocabulary [2]:
 | Relay node | Service and forwarding | Interconnects forwarding paths to provide service protection, for instance replication and elimination |
 | Transit node | Forwarding only | Carries the flow along its explicit route with its allocated resources, for instance an MPLS label switching router |
 
-Two horizontal relations appear in the figure: the *end-to-end service* between applications, and the *DetNet flow* between the service sub-layers that implement it. Between nodes there is either a plain link or a **sub-network**, which may be a TSN bridged network, an MPLS-TE network or an optical transport network [2].
+Two horizontal relations appear in the figure: the *end-to-end service* between applications, and the *DetNet flow* between the service sub-layers that implement it. Between nodes there is either a plain link or a **sub-network**, which may be a TSN bridged network, an [MPLS-TE](https://www.rfc-editor.org/rfc/rfc2702) network or an optical transport network [2].
 
 ## 5. Three planes
 

@@ -22,7 +22,7 @@ Bounded latency is useless if a cable cut loses frames for the hundreds of milli
 
 ## 1. Definition
 
-**Frame Replication and Elimination for Reliability**, IEEE 802.1CB, is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing switches over, so a path failure causes no interruption [3].
+**Frame Replication and Elimination for Reliability**, [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing switches over, so a path failure causes no interruption [3].
 
 <ReplicationFigure
   ends={['Talker', 'Listener']}
@@ -50,14 +50,14 @@ Replication and elimination can happen in the end stations themselves or in brid
 | Stream identification | Both | Recognises the stream from frame fields, as in [PSFP](/blog/per-stream-filtering-and-policing) |
 | Sequence generation | Replicating | Gives each frame the next sequence number |
 | Stream splitting | Replicating | Makes one copy per *member stream*, one member per path |
-| Sequence encode / decode | Both | Carries the number in a tag: the 802.1CB redundancy tag (R-TAG), or the tags of the HSR and PRP industrial protocols |
+| Sequence encode / decode | Both | Carries the number in a tag: the 802.1CB redundancy tag (R-TAG), or the tags of the [HSR](https://en.wikipedia.org/wiki/High-availability_Seamless_Redundancy) and [PRP](https://en.wikipedia.org/wiki/Parallel_Redundancy_Protocol) industrial protocols (IEC 62439-3) |
 | Individual recovery | Eliminating, optional | Removes duplicates within one member stream |
 | Sequence recovery | Eliminating | Removes duplicates across members. The **vector** algorithm keeps a window of recently seen numbers and accepts frames out of order; the **match** algorithm only compares with the last number. |
 | Latent error detection | Eliminating | Raises an alarm when a path delivers nothing, so that a hidden failure is repaired before a second one causes loss |
 
 ## 3. Where the paths come from
 
-FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, 802.1Qca, where IS-IS computes defaults and a controller adds explicit trees, or from a CNC that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF DetNet provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
+FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/), where [IS-IS](https://en.wikipedia.org/wiki/IS-IS) computes defaults and a controller adds explicit trees, or from a CNC that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF DetNet provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
 
 ## 4. What FRER does to the traffic
 

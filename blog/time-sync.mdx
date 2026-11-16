@@ -22,7 +22,7 @@ Gates, cyclic queues and time-gated policing all assume that every bridge reads 
 
 ## 1. Definition
 
-**IEEE 802.1AS**, *Timing and Synchronization for Time-Sensitive Applications*, defines the **generalised Precision Time Protocol (gPTP)**. gPTP is a tightly constrained profile of IEEE 1588 PTP. It distributes time from one reference clock, the *grandmaster*, through bridges and end stations, with sub-microsecond precision [1][2].
+**[IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/)**, *Timing and Synchronization for Time-Sensitive Applications*, defines the **generalised Precision Time Protocol (gPTP)**. gPTP is a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) PTP. It distributes time from one reference clock, the *grandmaster*, through bridges and end stations, with sub-microsecond precision [1][2].
 
 Two properties set it apart from using PTP over an ordinary LAN:
 
@@ -38,7 +38,7 @@ The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which TSN tools dep
   caption="Figure 2. A gPTP domain. The grandmaster's time flows down a tree. On every link one end is a clock master port and the other a clock slave port. Bridges forward time and add the corrections for cable and residence delay."
 />
 
-The **best master clock algorithm (BMCA)** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 2 [2].
+The **best master clock algorithm ([BMCA](https://en.wikipedia.org/wiki/Precision_Time_Protocol))** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 2 [2].
 
 The figure uses the master/slave port names of the original standards. Recent revisions of IEEE 1588 also allow the names timeTransmitter and timeReceiver.
 

@@ -35,14 +35,14 @@ The vocabulary of Figure 2 maps directly onto the TSN components of Figure 1:
 | SDN application | The **CUC**, Centralized User Configuration, which collects the requirements of the end stations; also monitoring and reconfiguration applications |
 | Northbound interface | The **user/network interface** of 802.1Qcc, through which the CUC hands stream requirements to the CNC |
 | SDN controller | The **CNC**, Centralized Network Configuration |
-| Control–data-plane interface | **NETCONF** or **RESTCONF** with **YANG** data models; OpenFlow in SDN-native designs |
+| Control–data-plane interface | **[NETCONF](https://www.rfc-editor.org/rfc/rfc6241)** or **[RESTCONF](https://www.rfc-editor.org/rfc/rfc8040)** with **[YANG](https://www.rfc-editor.org/rfc/rfc7950)** data models; [OpenFlow](https://www.opennetworking.org/software-defined-standards/specifications/) in SDN-native designs |
 | Network element | A TSN bridge |
 
 ## 2. The three configuration models of 802.1Qcc
 
 <ConfigurationModelsFigure caption="Figure 3. The three configuration models of 802.1Qcc. In the fully distributed model, requirements travel hop by hop. In the centralised network / distributed user model, end stations still signal at the edge but a CNC configures the bridges. In the fully centralised model, a CUC also handles the end stations." />
 
-IEEE 802.1Qcc defines three ways to configure a TSN network [3][4]:
+[IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/) defines three ways to configure a TSN network [3][4]:
 
 1. **Fully distributed.** End stations and bridges exchange requirements hop by hop, with the reservation protocols of [the stream reservation post](/blog/stream-reservation). There is no central entity.
 2. **Centralised network, distributed user.** End stations still signal their streams to the first bridge, but a CNC with a view of the whole network computes and configures.
@@ -53,7 +53,7 @@ IEEE 802.1Qcc defines three ways to configure a TSN network [3][4]:
 Given the topology and the stream requirements, the CNC [3][4][5]:
 
 - **discovers the topology** and the capabilities of each bridge;
-- **computes paths**, including the disjoint paths needed by [FRER](/blog/frame-replication-and-elimination). It can install them as explicit trees with path control (802.1Qca), where IS-IS keeps the default paths and the controller adds the explicit ones [3];
+- **computes paths**, including the disjoint paths needed by [FRER](/blog/frame-replication-and-elimination). It can install them as explicit trees with path control ([802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/)), where [IS-IS](https://en.wikipedia.org/wiki/IS-IS) keeps the default paths and the controller adds the explicit ones [3];
 - **computes schedules**, in particular the gate control lists of the [Time-Aware Shaper](/blog/time-aware-shaper);
 - **runs admission control**, accepting a stream only if worst-case bounds still hold for all streams;
 - **configures the bridges** through NETCONF or RESTCONF with YANG models [4].

@@ -57,7 +57,7 @@ The task group presents its standards as a toolbox with four groups: time synchr
 
 *In depth: [the 802.1AS post](/blog/ieee-802-1as-time-synchronization).*
 
-IEEE 802.1AS defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of IEEE 1588 that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
+IEEE 802.1AS defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
 
 In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing and time-gated policing are meaningless without it, whereas the credit-based shaper and asynchronous shaping do not need it.
 
@@ -146,7 +146,7 @@ FRER avoids frame loss caused by equipment failure. It is a per-frame 1+1 (or 1+
 
 ### Path control: 802.1Qca
 
-Disjoint paths have to be installed. 802.1Qca extends the IS-IS routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
+Disjoint paths have to be installed. [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/) extends the [IS-IS](https://en.wikipedia.org/wiki/IS-IS) routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
 
 ## 6. Dedicated resources and configuration
 
@@ -168,7 +168,7 @@ The Stream Reservation Protocol performs distributed admission control. A talker
 - **centralised network, distributed user**: end stations still signal to the network edge, but a central entity computes and configures;
 - **fully centralised**: a Centralized User Configuration entity collects the requirements of the end stations and passes them to a Centralized Network Configuration entity.
 
-The CNC has a view of the whole network, performs reservation and scheduling centrally, and configures bridges through NETCONF or RESTCONF with YANG data models [2]. This is the architecture assumed by most work on online reconfiguration, including [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn): the CNC is the place where an admission test must run.
+The CNC has a view of the whole network, performs reservation and scheduling centrally, and configures bridges through [NETCONF](https://www.rfc-editor.org/rfc/rfc6241) or [RESTCONF](https://www.rfc-editor.org/rfc/rfc8040) with [YANG](https://www.rfc-editor.org/rfc/rfc7950) data models [2]. This is the architecture assumed by most work on online reconfiguration, including [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn): the CNC is the place where an admission test must run.
 
 ## 7. Summary
 

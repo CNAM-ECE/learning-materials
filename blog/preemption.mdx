@@ -24,8 +24,8 @@ Strict priority and gates decide which frame starts next. Neither can stop a fra
 
 **Frame preemption** lets an *express* frame suspend the transmission of a *preemptable* frame. The preemptable frame resumes from where it stopped once the express traffic has been sent. Two standards share the work [2][3]:
 
-- **IEEE 802.3br**, *Interspersing Express Traffic*, changes Ethernet. It splits the MAC into an express MAC and a preemptable MAC and adds a **MAC Merge sublayer** between them and the physical layer.
-- **IEEE 802.1Qbu**, now part of 802.1Q, changes the bridge. It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
+- **[IEEE 802.3br](https://www.ieee802.org/3/br/)**, *Interspersing Express Traffic*, changes Ethernet. It splits the MAC into an express MAC and a preemptable MAC and adds a **MAC Merge sublayer** between them and the physical layer.
+- **[IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/)**, now part of 802.1Q, changes the bridge. It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
 
 ## 2. Architecture
 

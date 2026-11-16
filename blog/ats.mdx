@@ -21,7 +21,7 @@ Class-based shapers let the bursts of a stream grow from hop to hop, and schedul
 
 ## 1. Definition
 
-**Asynchronous Traffic Shaping**, IEEE 802.1Qcr, is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **token bucket** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
+**Asynchronous Traffic Shaping**, [IEEE 802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/), is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **token bucket** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
 
 Two features distinguish it from plain per-flow shaping:
 

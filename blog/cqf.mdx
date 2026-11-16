@@ -21,7 +21,7 @@ Cyclic Queuing and Forwarding (CQF) makes latency independent of the other traff
 
 ## 1. Definition
 
-**Cyclic Queuing and Forwarding**, IEEE 802.1Qch (Annex T of IEEE 802.1Q), divides time into cycles of equal length $T$, synchronised across the network. Two queues serve one traffic class and swap roles every cycle:
+**Cyclic Queuing and Forwarding**, [IEEE 802.1Qch](https://1.ieee802.org/tsn/802-1qch/) (Annex T of [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/)), divides time into cycles of equal length $T$, synchronised across the network. Two queues serve one traffic class and swap roles every cycle:
 
 - during a cycle, frames **received** by a bridge are stored in one queue;
 - the frames received in the **previous** cycle are sent from the other queue.

@@ -130,7 +130,7 @@ A cell that breaks the contract is either dropped or tagged by setting its **cel
 - Each **label switch router (LSR)** looks up the label, swaps it, and forwards the packet [2].
 - The **egress LER** pops the label and forwards plain IP [2].
 - The sequence of labels forms a **label-switched path (LSP)**, much like a permanent virtual circuit in ATM, but independent of any layer-2 technology [2].
-- Labels are distributed by LDP, or by **RSVP-TE** when a path with a bandwidth reservation is needed [2].
+- Labels are distributed by [LDP](https://www.rfc-editor.org/rfc/rfc5036), or by **[RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209)** when a path with a bandwidth reservation is needed [2].
 - Each label stack entry has a 20-bit label, a 3-bit **traffic class** (TC) for QoS, a bottom-of-stack bit and a TTL (Figure 2). Labels can be stacked, which is how VPNs and tunnels nest [2].
 
 MPLS is now used mostly for traffic engineering, DiffServ quality of service and VPNs [2].
@@ -156,7 +156,7 @@ MPLS is now used mostly for traffic engineering, DiffServ quality of service and
 | Path | Virtual circuit (VPI/VCI) | Label-switched path | Stream on a configured path | DetNet flow on an explicit route |
 | Traffic contract | PCR, SCR, MBS, CDVT | Reserved bandwidth (RSVP-TE) or class | Traffic specification (token bucket) | Traffic specification |
 | Entry check | GCRA policing at the UNI | Policing at the ingress LER | [PSFP](/blog/per-stream-filtering-and-policing) | Ingress policing and shaping |
-| Admission control | Call admission control (PNNI) | Traffic-engineering reservation | [SRP, RAP or CNC](/blog/stream-reservation) | Controller plane |
+| Admission control | Call admission control ([PNNI](https://en.wikipedia.org/wiki/Private_Network-to-Network_Interface)) | Traffic-engineering reservation | [SRP, RAP or CNC](/blog/stream-reservation) | Controller plane |
 | Network calculus view | Staircase or two-piece arrival curve | Concatenation and aggregates | Arrival curves, shaper service curves | Same, across L2 and L3 segments |
 
 The vocabulary changed, but the structure did not: a contract at the edge, a known path, and a check before admission. This is why the bounds derived for ATM in the 1990s carry over to TSN and DetNet with only a change of units.

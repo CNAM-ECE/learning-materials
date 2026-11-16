@@ -1,6 +1,7 @@
 ---
 slug: dynamic-reconfiguration-of-tsn
-title: "9. Dynamic reconfiguration of TSN: where network calculus fits"
+title: "Dynamic reconfiguration of TSN: where network calculus fits"
+date: 2026-10-07
 authors: [trang]
 tags: [youtube, article, presentation, guide, tsn, sdn, tas, reconfiguration]
 description: A reading of two recent approaches to TSN reconfiguration, SDN-based path migration and resilient Time-Aware Shaper schedules, and the role of network calculus as a certificate.
@@ -79,8 +80,8 @@ The companion repository [4] implements such a gate with incremental Total Flow 
 ## 5. Open questions
 
 - **Transient states.** A certificate for the old and the new configuration does not cover the *transition*, during which bridges may apply updates at different instants. WPEx avoids the issue by not changing gate control lists; path migration must address it explicitly.
-- **Tightness versus speed.** TFA is fast and incremental but pessimistic; tighter path-based analyses are costlier and harder to update incrementally ([post 7](/blog/aggregate-multiplexing-residual-service)). Which analysis suits online admission is an empirical question.
-- **Faults and redundancy.** Rescue flows and 802.1CB redundancy change burstiness along merged paths ([post 8](/blog/network-calculus-for-tsn)); certificates must account for this.
+- **Tightness versus speed.** TFA is fast and incremental but pessimistic; tighter path-based analyses are costlier and harder to update incrementally ([the multiplexing post](/blog/aggregate-multiplexing-residual-service)). Which analysis suits online admission is an empirical question.
+- **Faults and redundancy.** Rescue flows and 802.1CB redundancy change burstiness along merged paths ([the TSN shapers post](/blog/network-calculus-for-tsn)); certificates must account for this.
 - **Model validity.** A certificate holds only as far as the network model does. Clock error, processing jitter and policing configuration must be included in the model for the guarantee to transfer to the physical network.
 
 ## Recommended viewing

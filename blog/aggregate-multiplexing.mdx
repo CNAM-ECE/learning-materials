@@ -1,6 +1,7 @@
 ---
 slug: aggregate-multiplexing-residual-service
-title: "7. Aggregate multiplexing and residual service"
+title: "Aggregate multiplexing and residual service"
+date: 2026-10-05
 authors: [trang]
 tags: [youtube, book, network-calculus, tsn]
 description: Blind, FIFO and non-preemptive static-priority multiplexing; residual service curves; Total Flow Analysis versus path-based analyses.
@@ -64,7 +65,7 @@ This is the per-hop formula used in the companion admission-control repository [
 
 Two families of methods extend these results to a network of switches.
 
-**Total Flow Analysis (TFA).** At each port, bound the delay of each class aggregate with the formula above. Propagate the bursts downstream with the output-burst rule of [post 5](/blog/three-fundamental-bounds), $b' = b + r\,d_k$, and sum the per-hop bounds along each path:
+**Total Flow Analysis (TFA).** At each port, bound the delay of each class aggregate with the formula above. Propagate the bursts downstream with the output-burst rule of [the fundamental bounds post](/blog/three-fundamental-bounds), $b' = b + r\,d_k$, and sum the per-hop bounds along each path:
 
 $$
 D = \sum_{h \in \mathcal{P}} d_k^{(h)} .

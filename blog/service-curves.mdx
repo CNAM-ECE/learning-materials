@@ -1,6 +1,7 @@
 ---
 slug: service-curves
-title: "4. Service curves: describing what a server guarantees"
+title: "Service curves: describing what a server guarantees"
+date: 2026-10-02
 authors: [trang]
 tags: [book, foundations, network-calculus, tas]
 description: Min-plus and strict service curves, rate-latency servers, and the service offered by a Time-Aware Shaper window.
@@ -24,7 +25,7 @@ Read operationally: for every $t$ there is some instant $s \le t$ such that the 
 
 A system offers a **strict service curve** $\beta$ if, during any *backlogged period* of duration $u$ (an interval in which the system is never empty), the output is at least $\beta(u)$.
 
-Every strict service curve is a min-plus service curve; the converse is false. The distinction matters because several results, in particular blind multiplexing in [post 7](/blog/aggregate-multiplexing-residual-service), require the strict version. Schedulers that serve as soon as they are backlogged, possibly after a bounded interruption, are naturally described by strict service curves.
+Every strict service curve is a min-plus service curve; the converse is false. The distinction matters because several results, in particular blind multiplexing in [the multiplexing post](/blog/aggregate-multiplexing-residual-service), require the strict version. Schedulers that serve as soon as they are backlogged, possibly after a bounded interruption, are naturally described by strict service curves.
 
 ## 3. Rate-latency servers
 
@@ -42,7 +43,7 @@ It models a server that, after a worst-case start-up latency $T$, serves at rate
 | Non-preemptive link, highest priority, max lower-priority frame $L_{lo}$ | $C$ | $L_{lo}/C$ |
 | Generalised Processor Sharing with weight $\phi_i$ | $\phi_i C / \sum_j \phi_j$ | $0$ |
 
-Rate-latency functions are convex, so by the concatenation rule of [post 2](/blog/min-plus-algebra) a tandem of rate-latency servers is again rate-latency.
+Rate-latency functions are convex, so by the concatenation rule of [the min-plus algebra post](/blog/min-plus-algebra) a tandem of rate-latency servers is again rate-latency.
 
 ## 4. Example: a Time-Aware Shaper window
 

@@ -1,6 +1,7 @@
 ---
 slug: why-deterministic-guarantees
-title: "1. Why deterministic guarantees? From TSN to worst-case bounds"
+title: "Why deterministic guarantees? From TSN to worst-case bounds"
+date: 2026-09-29
 authors: [trang]
 tags: [youtube, article, presentation, guide, book, tsn, sdn, tas, reconfiguration]
 description: Motivation for deterministic network calculus, and why measurement alone cannot certify a Time-Sensitive Network.
@@ -46,7 +47,7 @@ A measured maximum answers "what happened?". A network calculus bound answers "w
 
 ## 4. Static configuration and the reconfiguration problem
 
-TSN guarantees are usually established for a configuration that is computed and verified offline, then frozen. In practice, networks change: flows are added and removed, links fail, and production lines are reconfigured. Two recent lines of work, discussed in [post 9](/blog/dynamic-reconfiguration-of-tsn), illustrate the tension:
+TSN guarantees are usually established for a configuration that is computed and verified offline, then frozen. In practice, networks change: flows are added and removed, links fail, and production lines are reconfigured. Two recent lines of work, discussed in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn), illustrate the tension:
 
 - Sertbaş Bülbül, Ergenç and Fischer use a software-defined networking (SDN) controller to migrate time-sensitive flows to new paths at run time [5];
 - Boyer and Henia design a Time-Aware Shaper schedule that can absorb rescue flows after a permanent link fault without modifying existing windows [6].
@@ -55,16 +56,15 @@ Both raise the same question: *after* the change, does every admitted flow still
 
 ## 5. Plan of the series
 
-| Post | Topic |
+The posts are grouped by topic. Topics are meant to be read in this order, and posts in the order listed.
+
+| Topic | Posts |
 | --- | --- |
-| 2 | [Min-plus algebra](/blog/min-plus-algebra) |
-| 3 | [Arrival curves](/blog/arrival-curves) |
-| 4 | [Service curves](/blog/service-curves) |
-| 5 | [The three fundamental bounds](/blog/three-fundamental-bounds) |
-| 6 | [Concatenation and "pay bursts only once"](/blog/concatenation-pay-bursts-only-once) |
-| 7 | [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) |
-| 8 | [Network calculus for TSN](/blog/network-calculus-for-tsn) |
-| 9 | [Dynamic reconfiguration of TSN](/blog/dynamic-reconfiguration-of-tsn) |
+| Deterministic networks | This post · [Deterministic networking](/blog/deterministic-networking) |
+| Network calculus | [Min-plus algebra](/blog/min-plus-algebra) · [Arrival curves](/blog/arrival-curves) · [Service curves](/blog/service-curves) · [The three fundamental bounds](/blog/three-fundamental-bounds) · [Concatenation and "pay bursts only once"](/blog/concatenation-pay-bursts-only-once) · [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) |
+| IEEE 802.1 | [IEEE 802.1 and the TSN task group](/blog/ieee-802-1-tsn-task-group) |
+| IETF | [IETF DetNet](/blog/ietf-detnet) |
+| TSN | [The TSN toolbox](/blog/tsn-toolbox) · [Network calculus for TSN shapers](/blog/network-calculus-for-tsn) · [Dynamic reconfiguration of TSN](/blog/dynamic-reconfiguration-of-tsn) |
 
 ## Recommended viewing
 

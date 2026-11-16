@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react';
-import {Arrow, Box, Figure, Txt} from '@site/src/components/Diagram';
+import {Arrow, Box, Figure, Txt, type Tone} from '@site/src/components/Diagram';
 
 const concepts =
   'https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf';
@@ -24,8 +24,32 @@ function Intro({slides}: {slides: string}): ReactNode {
   );
 }
 
+/** A stage of the bridge that a TSN tool extends. */
+export type BridgeStage =
+  | 'control'
+  | 'ingress'
+  | 'relay'
+  | 'queuing'
+  | 'selection'
+  | 'mac'
+  | 'time';
+
+type CaptionProps = {
+  /** Replaces the default caption, for reuse in another post. */
+  caption?: ReactNode;
+};
+
+type BridgeProps = CaptionProps & {
+  /** Stages to emphasise; the others are drawn muted. */
+  highlight?: BridgeStage[];
+};
+
+const dataStages: BridgeStage[] = ['ingress', 'relay', 'queuing', 'selection', 'mac'];
+
 /** Where each TSN tool plugs into the existing IEEE 802.1Q bridge. */
-export function BridgeIntegrationFigure(): ReactNode {
+export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): ReactNode {
+  const tone = (stage: BridgeStage, base: Tone): Tone =>
+    !highlight ? base : highlight.includes(stage) ? 'service' : 'muted';
   const stages: string[][] = [
     ['Ingress port', 'filtering, tagging', '+ PSFP (802.1Qci)', '+ FRER (802.1CB)'],
     ['Relay', 'forwarding,', 'filtering', '+ explicit trees'],
@@ -37,7 +61,10 @@ export function BridgeIntegrationFigure(): ReactNode {
     <Figure
       height={300}
       label="An IEEE 802.1Q bridge with its control plane and its data plane stages, showing which TSN standard extends which existing stage"
-      caption="Figure 1. TSN is not a new bridge: each tool extends one stage of the existing IEEE 802.1Q bridge. Lines starting with “+” are the TSN additions."
+      caption={
+        caption ??
+        'Figure 1. TSN is not a new bridge: each tool extends one stage of the existing IEEE 802.1Q bridge. Lines starting with “+” are the TSN additions.'
+      }
       source={
         <>
           own drawing, after the bridge architecture, data-plane actions and QoS function
@@ -47,18 +74,18 @@ export function BridgeIntegrationFigure(): ReactNode {
       <Box x={15} y={24} w={690} h={250} lines={[]} dashed tone="muted" />
       <Txt x={28} y={12} size={12} bold anchor="start">IEEE 802.1Q bridge</Txt>
 
-      <Box x={35} y={40} w={650} h={48} lines={['Control plane: higher-layer entities or an external agent', '+ stream reservation (802.1Qat), TSN configuration (802.1Qcc), path control (802.1Qca)']} title size={12} tone="arrival" />
+      <Box x={35} y={40} w={650} h={48} lines={['Control plane: higher-layer entities or an external agent', '+ stream reservation (802.1Qat), TSN configuration (802.1Qcc), path control (802.1Qca)']} title size={12} tone={tone('control', 'arrival')} />
 
       <Txt x={35} y={106} size={11.5} italic anchor="start">Data plane: frame in</Txt>
       <Txt x={685} y={106} size={11.5} italic anchor="end">frame out</Txt>
       {stages.map((lines, i) => (
         <g key={lines[0]}>
-          <Box x={35 + i * 132} y={118} w={122} h={84} lines={lines} title size={11} />
+          <Box x={35 + i * 132} y={118} w={122} h={84} lines={lines} title size={11} tone={tone(dataStages[i], 'plain')} />
           {i < 4 && <Arrow d={`M${157 + i * 132},160 H${167 + i * 132}`} />}
         </g>
       ))}
 
-      <Box x={35} y={218} w={650} h={40} lines={['Common time base: gPTP (802.1AS), required by gates, CQF and time-gated policing']} size={12} tone="service" />
+      <Box x={35} y={218} w={650} h={40} lines={['Common time base: gPTP (802.1AS), required by gates, CQF and time-gated policing']} size={12} tone={tone('time', 'service')} />
       <Arrow d="M360,118 V88" tone="arrival" heads="both" />
       <Arrow d="M360,218 V202" tone="service" />
     </Figure>
@@ -87,7 +114,7 @@ export function ToolboxFigure(): ReactNode {
 }
 
 /** 802.1Qbv: gates opening and closing on a repeating cycle. */
-export function ScheduledTrafficFigure(): ReactNode {
+export function ScheduledTrafficFigure({caption}: CaptionProps): ReactNode {
   const x0 = 150;
   const cycle = 275;
   const cycles = [0, 1];
@@ -95,7 +122,10 @@ export function ScheduledTrafficFigure(): ReactNode {
     <Figure
       height={230}
       label="Two cycles of a time-aware schedule: the gate of the critical queue and the gate of the other queues open in alternation, with a guard band before each critical window"
-      caption="Figure 3. Scheduled traffic (802.1Qbv). Gates open and close on a repeating cycle; closing the non-critical gates in advance (guard band) keeps the critical window free."
+      caption={
+        caption ??
+        'Figure 3. Scheduled traffic (802.1Qbv). Gates open and close on a repeating cycle; closing the non-critical gates in advance (guard band) keeps the critical window free.'
+      }
       source={
         <>
           own drawing, after <Concepts slides="slide 11," /> and{' '}
@@ -136,12 +166,15 @@ export function ScheduledTrafficFigure(): ReactNode {
 }
 
 /** 802.3br / 802.1Qbu: an express frame suspends a preemptable frame. */
-export function PreemptionFigure(): ReactNode {
+export function PreemptionFigure({caption}: CaptionProps): ReactNode {
   return (
     <Figure
       height={200}
       label="Without preemption an express frame waits for a long preemptable frame to finish; with preemption the preemptable frame is suspended, the express frame is sent, and the rest of the preemptable frame follows"
-      caption="Figure 4. Frame preemption (802.3br and 802.1Qbu). The operation is local to one link: the fragments are reassembled at the next hop."
+      caption={
+        caption ??
+        'Figure 4. Frame preemption (802.3br and 802.1Qbu). The operation is local to one link: the fragments are reassembled at the next hop.'
+      }
       source={
         <>
           own drawing, after <Intro slides="slides 29 and 30," /> and{' '}
@@ -169,12 +202,15 @@ export function PreemptionFigure(): ReactNode {
 }
 
 /** 802.1Qci and 802.1Qcr: per-stream processing before the queues. */
-export function PerStreamFigure(): ReactNode {
+export function PerStreamFigure({caption}: CaptionProps): ReactNode {
   return (
     <Figure
       height={220}
       label="Per-stream processing of an incoming frame: stream filter, stream gate, then either a flow meter for policing or an asynchronous traffic shaper, then queuing"
-      caption="Figure 6. Per-stream processing ahead of the queues. PSFP (802.1Qci) meters and drops; ATS (802.1Qcr) reuses the filter and gate but delays each frame to an eligibility time instead."
+      caption={
+        caption ??
+        'Figure 6. Per-stream processing ahead of the queues. PSFP (802.1Qci) meters and drops; ATS (802.1Qcr) reuses the filter and gate but delays each frame to an eligibility time instead.'
+      }
       source={
         <>
           own drawing, after <Concepts slides="slides 13 and 15." />
@@ -202,7 +238,7 @@ export function PerStreamFigure(): ReactNode {
 }
 
 /** 802.1Qch: a frame advances exactly one hop per cycle. */
-export function CyclicQueuingFigure(): ReactNode {
+export function CyclicQueuingFigure({caption}: CaptionProps): ReactNode {
   const x0 = 150;
   const w = 135;
   const rows = ['bridge A sends', 'bridge B sends', 'bridge C sends'];
@@ -210,7 +246,10 @@ export function CyclicQueuingFigure(): ReactNode {
     <Figure
       height={215}
       label="Cyclic queuing and forwarding: a frame sent by bridge A in one cycle is sent by bridge B in the next cycle and by bridge C in the cycle after"
-      caption="Figure 5. Cyclic Queuing and Forwarding (802.1Qch). A frame received in one cycle is transmitted in the next, so latency depends only on the cycle time and the number of hops."
+      caption={
+        caption ??
+        'Figure 5. Cyclic Queuing and Forwarding (802.1Qch). A frame received in one cycle is transmitted in the next, so latency depends only on the cycle time and the number of hops.'
+      }
       source={
         <>
           own drawing, after <Intro slides="slides 35 and 36," /> and the{' '}
@@ -240,12 +279,15 @@ export function CyclicQueuingFigure(): ReactNode {
 }
 
 /** 802.1Qcc: the fully centralised configuration model. */
-export function ConfigurationFigure(): ReactNode {
+export function ConfigurationFigure({caption}: CaptionProps): ReactNode {
   return (
     <Figure
       height={275}
       label="Fully centralised TSN configuration: end stations give their stream requirements to a centralised user configuration entity, which talks to a centralised network configuration entity that configures the bridges"
-      caption="Figure 8. The fully centralised configuration model of 802.1Qcc. In the fully distributed model the same information travels hop by hop with the reservation protocol, without CUC or CNC."
+      caption={
+        caption ??
+        'Figure 8. The fully centralised configuration model of 802.1Qcc. In the fully distributed model the same information travels hop by hop with the reservation protocol, without CUC or CNC.'
+      }
       source={
         <>
           own drawing, after the three models named in <Concepts slides="slide 18," />{' '}

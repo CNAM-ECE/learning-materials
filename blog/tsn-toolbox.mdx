@@ -55,6 +55,8 @@ The task group presents its standards as a toolbox with four groups: time synchr
 
 ## 3. Time synchronisation: 802.1AS
 
+*In depth: [the 802.1AS post](/blog/ieee-802-1as-time-synchronization).*
+
 IEEE 802.1AS defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of IEEE 1588 that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
 
 In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing and time-gated policing are meaningless without it, whereas the credit-based shaper and asynchronous shaping do not need it.
@@ -62,6 +64,8 @@ In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing a
 ## 4. Bounded low latency
 
 ### Credit-Based Shaper: 802.1Qav
+
+*In depth: [the credit-based shaper post](/blog/credit-based-shaper).*
 
 The oldest shaper, inherited from AVB, spreads the frames of a class evenly over time so that bursts do not overflow buffers downstream. Each shaped queue has a credit, counted in bits, and may transmit only while its credit is not negative. The slope at which credit accumulates is the bandwidth reserved for the class [2].
 
@@ -71,6 +75,8 @@ AVB defines two shaped classes. Class A has a 125 µs transmission period and a 
 
 <ScheduledTrafficFigure />
 
+*In depth: [the Time-Aware Shaper post](/blog/time-aware-shaper).*
+
 A transmission gate is associated with each queue. A queue whose gate is closed is not considered by transmission selection; a queue whose gate is open is served by its usual algorithm. Gates follow a list that repeats periodically, relative to the common time base [3][4]. The result divides time on the link into windows reserved for given priorities, in the manner of time-division multiple access [2].
 
 This mechanism is the Time-Aware Shaper of the analysis literature. The service it offers to a queue is derived in [the service curves post](/blog/service-curves).
@@ -78,6 +84,8 @@ This mechanism is the Time-Aware Shaper of the analysis literature. The service 
 ### Frame preemption: 802.3br and 802.1Qbu
 
 <PreemptionFigure />
+
+*In depth: [the frame preemption post](/blog/frame-preemption).*
 
 A gate does not help if a long frame is already on the wire when the critical window opens. Preemption lets an *express* frame suspend the transmission of a *preemptable* frame, which resumes afterwards. Each traffic-class queue is assigned one of the two statuses [4]. The MAC is split into an express MAC and a preemptable MAC above a merge sublayer; the minimum fragment is 64 bytes including its check sequence [4].
 
@@ -87,9 +95,13 @@ Preemption reduces delay variation for express traffic and returns to preemptabl
 
 <CyclicQueuingFigure />
 
+*In depth: [the CQF post](/blog/cyclic-queuing-and-forwarding).*
+
 Two buffers per class are filled and drained in alternate cycles, synchronised across the network. Frames received during one cycle are sent during the next, so a frame stays one cycle at each hop [4]. Latency then depends only on the cycle time and the hop count, not on the topology or on the other flows [2].
 
 ### Asynchronous Traffic Shaping: 802.1Qcr
+
+*In depth: [the ATS post](/blog/asynchronous-traffic-shaping).*
 
 Asynchronous Traffic Shaping (ATS) achieves zero congestion loss without time synchronisation. Traffic is re-shaped at every hop, and urgent traffic is prioritised over relaxed traffic. It resembles per-flow shaping, with one important difference: all streams going from one input port to one output port share a queue, and the appropriate shaper state is applied to each frame in front of that queue [3]. The shaper applies a token-bucket rule using local clocks and assigns each frame an *eligibility time*; strict-priority selection then operates on eligible frames [3].
 
@@ -100,6 +112,8 @@ ATS reuses the per-stream stages shown in the next figure. Its network calculus 
 ### Per-Stream Filtering and Policing: 802.1Qci
 
 <PerStreamFigure />
+
+*In depth: [the PSFP post](/blog/per-stream-filtering-and-policing).*
 
 Guarantees computed for well-behaved streams are worthless if one talker exceeds its contract. PSFP protects the network against bandwidth violation, malfunction and attack by taking decisions per stream at the ingress [3]. A frame passes through three elements [3][4]:
 
@@ -126,6 +140,8 @@ In the terms of this series, PSFP is what makes the declared [arrival curve](/bl
   }
 />
 
+*In depth: [the FRER post](/blog/frame-replication-and-elimination).*
+
 FRER avoids frame loss caused by equipment failure. It is a per-frame 1+1 (or 1+n) redundancy: frames are numbered, sent on two or more maximally disjoint paths, then recombined with the extra copies deleted. There is no failure detection and no switch-over, hence no interruption when a path fails [3].
 
 ### Path control: 802.1Qca
@@ -136,11 +152,15 @@ Disjoint paths have to be installed. 802.1Qca extends the IS-IS routing protocol
 
 ### Stream reservation: 802.1Qat
 
+*In depth: [the stream reservation post](/blog/stream-reservation).*
+
 The Stream Reservation Protocol performs distributed admission control. A talker advertises a stream; the advertisement propagates towards the listeners while the worst-case latency is accumulated; a listener that accepts triggers the reservation of bandwidth back along the path. Streams are identified by a 64-bit stream identifier, made of a 48-bit MAC address and a 16-bit unique identifier [2].
 
 ### TSN configuration: 802.1Qcc
 
 <ConfigurationFigure />
+
+*In depth: [the SDN post](/blog/sdn-and-tsn-configuration).*
 
 802.1Qcc enhances the reservation protocol and defines three configuration models [3]:
 

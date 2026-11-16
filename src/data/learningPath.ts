@@ -25,6 +25,7 @@ export const learningPath: LearningPathTopic[] = [
       'three-fundamental-bounds',
       'concatenation-pay-bursts-only-once',
       'aggregate-multiplexing-residual-service',
+      'atm-and-mpls',
     ],
   },
   {
@@ -39,9 +40,21 @@ export const learningPath: LearningPathTopic[] = [
     label: 'TSN',
     posts: [
       'tsn-toolbox',
+      'ieee-802-1as-time-synchronization',
+      'credit-based-shaper',
+      'time-aware-shaper',
+      'frame-preemption',
+      'cyclic-queuing-and-forwarding',
+      'asynchronous-traffic-shaping',
+      'per-stream-filtering-and-policing',
+      'frame-replication-and-elimination',
+      'stream-reservation',
       'network-calculus-for-tsn',
-      'dynamic-reconfiguration-of-tsn',
     ],
+  },
+  {
+    label: 'SDN',
+    posts: ['sdn-and-tsn-configuration', 'dynamic-reconfiguration-of-tsn'],
   },
 ];
 

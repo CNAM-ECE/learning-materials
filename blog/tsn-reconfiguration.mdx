@@ -13,7 +13,7 @@ The guarantees developed in this series are established for a fixed configuratio
 
 ## 1. Why reconfigure?
 
-Three situations force a TSN configuration to change after deployment:
+Three situations force a [TSN](https://1.ieee802.org/tsn/) configuration to change after deployment:
 
 1. **New flows.** A production cell is extended and new streams request admission.
 2. **Resource fragmentation.** Flows admitted early occupy paths and windows that later prevent better placements.
@@ -23,7 +23,7 @@ In each case two problems arise: *finding* a new configuration (routes, prioriti
 
 ## 2. SDN-based dynamic path reconfiguration
 
-Sertbaş Bülbül, Ergenç and Fischer address problems 1 and 2 with a centralised SDN controller [1, 2]. A talker advertises the requirements of a new flow; a path computation element in the controller computes a route, possibly migrating existing flows to free capacity, and installs forwarding rules before confirming the reservation to the talker. This is close to the fully centralised configuration model of IEEE 802.1Qcc.
+Sertbaş Bülbül, Ergenç and Fischer address problems 1 and 2 with a centralised [SDN controller](https://www.rfc-editor.org/rfc/rfc7426) [1, 2]. A talker advertises the requirements of a new flow; a path computation element in the controller computes a route, possibly migrating existing flows to free capacity, and installs forwarding rules before confirming the reservation to the talker. This is close to the fully centralised configuration model of [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/).
 
 The path computation is formulated as a mixed-integer linear program, the **time-sensitive optimal routing** (TSOR) problem. Binary variables assign demands to paths; continuous variables $g_{es}$ give the fraction of time the gate of class $s$ is open on link $e$. The end-to-end latency of a path is modelled as a sum over its links of a base delay plus a queueing term proportional to $1 - g_{es}$. Four strategies differ in how much of the existing assignment may change:
 
@@ -81,7 +81,7 @@ The companion repository [4] implements such a gate with incremental Total Flow 
 
 - **Transient states.** A certificate for the old and the new configuration does not cover the *transition*, during which bridges may apply updates at different instants. WPEx avoids the issue by not changing gate control lists; path migration must address it explicitly.
 - **Tightness versus speed.** TFA is fast and incremental but pessimistic; tighter path-based analyses are costlier and harder to update incrementally ([the multiplexing post](/blog/aggregate-multiplexing-residual-service)). Which analysis suits online admission is an empirical question.
-- **Faults and redundancy.** Rescue flows and 802.1CB redundancy change burstiness along merged paths ([the TSN shapers post](/blog/network-calculus-for-tsn)); certificates must account for this.
+- **Faults and redundancy.** Rescue flows and [802.1CB](https://1.ieee802.org/tsn/802-1cb/) redundancy change burstiness along merged paths ([the TSN shapers post](/blog/network-calculus-for-tsn)); certificates must account for this.
 - **Model validity.** A certificate holds only as far as the network model does. Clock error, processing jitter and policing configuration must be included in the model for the guarantee to transfer to the physical network.
 
 ## Recommended viewing

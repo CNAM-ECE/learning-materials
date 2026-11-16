@@ -24,14 +24,14 @@ Strict priority and gates decide which frame starts next. Neither can stop a fra
 
 **Frame preemption** lets an *express* frame suspend the transmission of a *preemptable* frame. The preemptable frame resumes from where it stopped once the express traffic has been sent. Two standards share the work [2][3]:
 
-- **[IEEE 802.3br](https://www.ieee802.org/3/br/)**, *Interspersing Express Traffic*, changes Ethernet. It splits the MAC into an express MAC and a preemptable MAC and adds a **MAC Merge sublayer** between them and the physical layer.
-- **[IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/)**, now part of 802.1Q, changes the bridge. It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
+- **[IEEE 802.3br](https://www.ieee802.org/3/br/)**, *Interspersing Express Traffic*, changes [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). It splits the MAC into an express MAC and a preemptable MAC and adds a **MAC Merge sublayer** between them and the physical layer.
+- **[IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/)**, now part of [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), changes the bridge. It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
 
 ## 2. Architecture
 
 <MacMergeFigure caption="Figure 2. The MAC split of 802.3br. The bridge port hands each frame to the express or the preemptable MAC according to its priority. The MAC Merge sublayer interleaves them on one link." />
 
-The interruption is **local to one link**. The receiving MAC Merge sublayer reassembles the fragments before the frame goes up to the next bridge's relay [3]. Preemption is therefore not IP fragmentation, and the frame is never seen in pieces by any higher layer. The rules that make this work:
+The interruption is **local to one link**. The receiving MAC Merge sublayer reassembles the fragments before the frame goes up to the next bridge's relay [3]. Preemption is therefore not [IP](https://www.rfc-editor.org/rfc/rfc791) fragmentation, and the frame is never seen in pieces by any higher layer. The rules that make this work:
 
 - each fragment, including its check sequence, is at least **64 bytes** [3];
 - an express frame is never preempted;

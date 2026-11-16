@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {TasModelsFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-The Time-Aware Shaper (TAS) is the TSN tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the bridge is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
+The Time-Aware Shaper (TAS) is the [TSN](https://1.ieee802.org/tsn/) tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the bridge is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
 
 {/* truncate */}
 
@@ -29,7 +29,7 @@ The Time-Aware Shaper (TAS) is the TSN tool that gives the strongest timing guar
 
 The gate states follow a **gate control list (GCL)**. Each entry holds the open/closed state of every gate and a duration. The list repeats with a fixed **cycle time**, from a **base time** expressed in the synchronised time of [802.1AS](/blog/ieee-802-1as-time-synchronization). The result is a time-division schedule on each link, with windows reserved for given priorities [2].
 
-The GCL is built centrally. In the configuration model of 802.1Qcc, the CNC computes a schedule for the whole network and installs a list on every bridge [4]. The [SDN post](/blog/sdn-and-tsn-configuration) describes that controller.
+The GCL is built centrally. In the configuration model of [802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/), the CNC computes a schedule for the whole network and installs a list on every bridge [4]. The [SDN post](/blog/sdn-and-tsn-configuration) describes that controller.
 
 ## 2. Slices, infringement and the guard band
 
@@ -45,7 +45,7 @@ In Figure 2, frames of priority 3 never wait behind other traffic. During slice 
   caption="Figure 3. Time slice infringement. A best-effort frame that starts late in slice 2 is still being sent when slice 1 of the next cycle begins, and delays the time-critical traffic."
 />
 
-The remedy is a **guard band**: before each protected slice, no new frame of the other queues may start. To be safe the guard band must be as long as the largest interfering frame. For a full-size Ethernet frame with preamble and inter-frame gap, that is about 12 µs at 1 Gbit/s and about 123 µs at 100 Mbit/s.
+The remedy is a **guard band**: before each protected slice, no new frame of the other queues may start. To be safe the guard band must be as long as the largest interfering frame. For a full-size [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frame with preamble and inter-frame gap, that is about 12 µs at 1 Gbit/s and about 123 µs at 100 Mbit/s.
 
 <CommonsFigure
   id="qbv-guard-band"
@@ -77,7 +77,7 @@ The study ran all 17 methods on the same stream sets, in simulation and on an ei
 3. **Joint routing and scheduling can backfire.** On large networks it can do worse than fixed routing, because the problem becomes too large to solve.
 4. **Flexibility at the talker pays more than flexibility in the bridges.** Letting the scheduler choose release times helped more than letting frames wait in bridges.
 5. **With few queues, prefer no-wait.**
-6. **Real hardware adds constraints the models omit.** These include collisions between scheduled frames and PTP messages, a minimum gap between frames at end stations (about 50 µs on the testbed, far more than in bridges), and the time granularity of GCL entries.
+6. **Real hardware adds constraints the models omit.** These include collisions between scheduled frames and [PTP](https://standards.ieee.org/ieee/1588/6825/) messages, a minimum gap between frames at end stations (about 50 µs on the testbed, far more than in bridges), and the time granularity of GCL entries.
 
 ## 5. Where TAS fits
 

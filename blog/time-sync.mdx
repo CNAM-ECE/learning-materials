@@ -27,9 +27,9 @@ Gates, cyclic queues and time-gated policing all assume that every bridge reads 
 Two properties set it apart from using PTP over an ordinary LAN:
 
 - **Every device takes part.** Each bridge on the path is a *time-aware system* that measures its links and its own residence time. It is not a transparent box that adds unknown delay [2].
-- **Time travels with the network.** No separate timing network is needed. The messages are ordinary Ethernet frames between neighbours.
+- **Time travels with the network.** No separate timing network is needed. The messages are ordinary [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frames between neighbours.
 
-The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which TSN tools depend on gPTP. Scheduled traffic (802.1Qbv), cyclic queuing (802.1Qch) and time-based stream gates (802.1Qci) need it. The credit-based shaper and asynchronous traffic shaping do not.
+The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which TSN tools depend on gPTP. Scheduled traffic ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and time-based stream gates ([802.1Qci](https://1.ieee802.org/tsn/802-1qci/)) need it. The credit-based shaper and asynchronous traffic shaping do not.
 
 ## 2. Who is the master
 
@@ -38,7 +38,7 @@ The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which TSN tools dep
   caption="Figure 2. A gPTP domain. The grandmaster's time flows down a tree. On every link one end is a clock master port and the other a clock slave port. Bridges forward time and add the corrections for cable and residence delay."
 />
 
-The **best master clock algorithm ([BMCA](https://en.wikipedia.org/wiki/Precision_Time_Protocol))** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 2 [2].
+The **best master clock algorithm ([BMCA](https://standards.ieee.org/ieee/1588/6825/))** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 2 [2].
 
 The figure uses the master/slave port names of the original standards. Recent revisions of IEEE 1588 also allow the names timeTransmitter and timeReceiver.
 

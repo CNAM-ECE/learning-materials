@@ -44,7 +44,7 @@ Inside one queue, all frames then come from the same upstream queue, so they arr
 
 <DelaySegmentsFigure caption="Figure 3. Shaper-to-shaper delay segments. A segment starts when a frame becomes eligible at the upstream shaper and ends when it becomes eligible at the downstream shaper. The downstream bridge bounds the whole segment." />
 
-The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS latency analysis of Specht and Samii. It was proposed for the P802.1DD Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
+The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS latency analysis of Specht and Samii. It was proposed for the [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
 
 The choice matters because traffic leaving a token-bucket shaper is known to conform to $(b, r)$. Each segment therefore starts from a clean, well-defined arrival curve, whatever happened upstream. The downstream bridge computes the bound for the segment that ends in it, using what its neighbour tells it [4]. The [stream reservation post](/blog/stream-reservation) lists the information it receives.
 
@@ -68,7 +68,7 @@ The 2026 tutorial compares five decentralised latency models on industrial and l
 - **Strict priority with a network calculus bound can still win** at the highest priority, especially in bridges with very few ports, because frames from one ingress link cannot arrive faster than that link (serialisation). At lower priorities ATS consistently did better.
 - **The main disadvantage is hardware.** Per-stream state and extra queues make ATS costly and still rarely available.
 
-ATS is also a remedy for a redundancy side effect. After [FRER](/blog/frame-replication-and-elimination) eliminates duplicates, the merged stream can be burstier than the original. Placing ATS at the merge point reshapes it, although combining FRER and ATS is still being standardised [4].
+ATS is also a remedy for a redundancy side effect. After [FRER](/blog/frame-replication-and-elimination) eliminates duplicates, the merged stream can be burstier than the original. Placing ATS at the merge point reshapes it, although combining [FRER](https://1.ieee802.org/tsn/802-1cb/) and ATS is still being standardised [4].
 
 The industrial review summarises the division of labour. ATS suits sporadic or aperiodic critical traffic, such as alarms and events. The credit-based shaper suits regular but bursty traffic, and the time-aware shaper suits regular critical traffic [6].
 

@@ -18,7 +18,7 @@ import {
 } from '@site/src/components/figures/tsn';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 
-Time-Sensitive Networking (TSN) is a set of IEEE 802.1 standards for time-sensitive transmission over Ethernet. This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet bridge does this tool change?
+[Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) is a set of IEEE 802.1 standards for time-sensitive transmission over [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet bridge does this tool change?
 
 {/* truncate */}
 
@@ -26,7 +26,7 @@ Time-Sensitive Networking (TSN) is a set of IEEE 802.1 standards for time-sensit
 
 ## 1. Definition
 
-**TSN** is the set of standards produced by the TSN task group of IEEE 802.1 to provide deterministic services over IEEE 802 networks. Most of them are extensions of IEEE 802.1Q, the standard for bridges and virtual LANs, and aim at very low latency and high availability [1][2]. The organisation behind them is described in [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group).
+**TSN** is the set of standards produced by the TSN task group of IEEE 802.1 to provide deterministic services over IEEE 802 networks. Most of them are extensions of [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), the standard for bridges and virtual LANs, and aim at very low latency and high availability [1][2]. The organisation behind them is described in [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group).
 
 Figure 1 is the picture to keep in mind. A bridge already has a control plane and a data plane made of ingress processing, a relay, queues, transmission selection and a MAC [3]. Every TSN tool extends one of those existing stages. This is why TSN traffic and ordinary traffic can share a bridge: the eight priorities of 802.1Q are kept for backward compatibility, and the tools are added around them [2].
 
@@ -57,7 +57,7 @@ The task group presents its standards as a toolbox with four groups: time synchr
 
 *In depth: [the 802.1AS post](/blog/ieee-802-1as-time-synchronization).*
 
-IEEE 802.1AS defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
+[IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
 
 In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing and time-gated policing are meaningless without it, whereas the credit-based shaper and asynchronous shaping do not need it.
 
@@ -67,7 +67,7 @@ In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing a
 
 *In depth: [the credit-based shaper post](/blog/credit-based-shaper).*
 
-The oldest shaper, inherited from AVB, spreads the frames of a class evenly over time so that bursts do not overflow buffers downstream. Each shaped queue has a credit, counted in bits, and may transmit only while its credit is not negative. The slope at which credit accumulates is the bandwidth reserved for the class [2].
+The oldest shaper, inherited from [AVB](https://www.ieee802.org/1/pages/avbridges.html), spreads the frames of a class evenly over time so that bursts do not overflow buffers downstream. Each shaped queue has a credit, counted in bits, and may transmit only while its credit is not negative. The slope at which credit accumulates is the bandwidth reserved for the class [2].
 
 AVB defines two shaped classes. Class A has a 125 µs transmission period and a target worst-case latency of 2 ms over seven hops; class B has a 250 µs period and a 50 ms target. Together they may use at most 75 % of the link bandwidth [2]. Combined with stream reservation, the shaper gives a delay below 250 µs per bridge [4], which is too large for many control applications [2] and motivated the tools that follow.
 
@@ -89,7 +89,7 @@ This mechanism is the Time-Aware Shaper of the analysis literature. The service 
 
 A gate does not help if a long frame is already on the wire when the critical window opens. Preemption lets an *express* frame suspend the transmission of a *preemptable* frame, which resumes afterwards. Each traffic-class queue is assigned one of the two statuses [4]. The MAC is split into an express MAC and a preemptable MAC above a merge sublayer; the minimum fragment is 64 bytes including its check sequence [4].
 
-Preemption reduces delay variation for express traffic and returns to preemptable traffic the bandwidth that a guard band would otherwise waste. It is local to a link, not a form of IP fragmentation [3].
+Preemption reduces delay variation for express traffic and returns to preemptable traffic the bandwidth that a guard band would otherwise waste. It is local to a link, not a form of [IP](https://www.rfc-editor.org/rfc/rfc791) fragmentation [3].
 
 ### Cyclic Queuing and Forwarding: 802.1Qch
 
@@ -103,7 +103,7 @@ Two buffers per class are filled and drained in alternate cycles, synchronised a
 
 *In depth: [the ATS post](/blog/asynchronous-traffic-shaping).*
 
-Asynchronous Traffic Shaping (ATS) achieves zero congestion loss without time synchronisation. Traffic is re-shaped at every hop, and urgent traffic is prioritised over relaxed traffic. It resembles per-flow shaping, with one important difference: all streams going from one input port to one output port share a queue, and the appropriate shaper state is applied to each frame in front of that queue [3]. The shaper applies a token-bucket rule using local clocks and assigns each frame an *eligibility time*; strict-priority selection then operates on eligible frames [3].
+Asynchronous Traffic Shaping ([ATS](https://1.ieee802.org/tsn/802-1qcr/)) achieves zero congestion loss without time synchronisation. Traffic is re-shaped at every hop, and urgent traffic is prioritised over relaxed traffic. It resembles per-flow shaping, with one important difference: all streams going from one input port to one output port share a queue, and the appropriate shaper state is applied to each frame in front of that queue [3]. The shaper applies a token-bucket rule using local clocks and assigns each frame an *eligibility time*; strict-priority selection then operates on eligible frames [3].
 
 ATS reuses the per-stream stages shown in the next figure. Its network calculus model, the interleaved regulator, is discussed in [the TSN shapers post](/blog/network-calculus-for-tsn).
 
@@ -115,7 +115,7 @@ ATS reuses the per-stream stages shown in the next figure. Its network calculus 
 
 *In depth: [the PSFP post](/blog/per-stream-filtering-and-policing).*
 
-Guarantees computed for well-behaved streams are worthless if one talker exceeds its contract. PSFP protects the network against bandwidth violation, malfunction and attack by taking decisions per stream at the ingress [3]. A frame passes through three elements [3][4]:
+Guarantees computed for well-behaved streams are worthless if one talker exceeds its contract. [PSFP](https://1.ieee802.org/tsn/802-1qci/) protects the network against bandwidth violation, malfunction and attack by taking decisions per stream at the ingress [3]. A frame passes through three elements [3][4]:
 
 1. a **stream filter**, which identifies the stream and selects the gate and meter to apply;
 2. a **stream gate**, open or closed on a time schedule, which can also set the internal priority of the frame;
@@ -142,11 +142,11 @@ In the terms of this series, PSFP is what makes the declared [arrival curve](/bl
 
 *In depth: [the FRER post](/blog/frame-replication-and-elimination).*
 
-FRER avoids frame loss caused by equipment failure. It is a per-frame 1+1 (or 1+n) redundancy: frames are numbered, sent on two or more maximally disjoint paths, then recombined with the extra copies deleted. There is no failure detection and no switch-over, hence no interruption when a path fails [3].
+[FRER](https://1.ieee802.org/tsn/802-1cb/) avoids frame loss caused by equipment failure. It is a per-frame 1+1 (or 1+n) redundancy: frames are numbered, sent on two or more maximally disjoint paths, then recombined with the extra copies deleted. There is no failure detection and no switch-over, hence no interruption when a path fails [3].
 
 ### Path control: 802.1Qca
 
-Disjoint paths have to be installed. [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/) extends the [IS-IS](https://en.wikipedia.org/wiki/IS-IS) routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
+Disjoint paths have to be installed. [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/) extends the [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
 
 ## 6. Dedicated resources and configuration
 
@@ -162,7 +162,7 @@ The Stream Reservation Protocol performs distributed admission control. A talker
 
 *In depth: [the SDN post](/blog/sdn-and-tsn-configuration).*
 
-802.1Qcc enhances the reservation protocol and defines three configuration models [3]:
+[802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/) enhances the reservation protocol and defines three configuration models [3]:
 
 - **fully distributed**: end stations and bridges exchange requirements hop by hop;
 - **centralised network, distributed user**: end stations still signal to the network edge, but a central entity computes and configures;
@@ -175,15 +175,15 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 | Group | Tool | Standard | Stage of the bridge it extends | Needs time sync |
 | --- | --- | --- | --- | --- |
 | Time | gPTP | 802.1AS | Common time base | – |
-| Latency | Credit-Based Shaper | 802.1Qav | Queuing | No |
-| Latency | Scheduled traffic | 802.1Qbv | Transmission selection | Yes |
-| Latency | Frame preemption | 802.3br, 802.1Qbu | MAC | No |
-| Latency | Cyclic Queuing and Forwarding | 802.1Qch | Transmission selection | Yes |
+| Latency | Credit-Based Shaper | [802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/) | Queuing | No |
+| Latency | Scheduled traffic | [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) | Transmission selection | Yes |
+| Latency | Frame preemption | [802.3br](https://www.ieee802.org/3/br/), [802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) | MAC | No |
+| Latency | Cyclic Queuing and Forwarding | [802.1Qch](https://1.ieee802.org/tsn/802-1qch/) | Transmission selection | Yes |
 | Latency | Asynchronous Traffic Shaping | 802.1Qcr | Ingress and queuing | No |
 | Reliability | Per-Stream Filtering and Policing | 802.1Qci | Ingress port | For time-gated use |
 | Reliability | Frame Replication and Elimination | 802.1CB | Ingress and egress ports | No |
 | Reliability | Path control | 802.1Qca | Control plane | No |
-| Resources | Stream reservation | 802.1Qat | Control plane | No |
+| Resources | Stream reservation | [802.1Qat](https://standards.ieee.org/ieee/802.1Qat/4050/) | Control plane | No |
 | Resources | TSN configuration | 802.1Qcc | Control plane | No |
 
 ## Further reading

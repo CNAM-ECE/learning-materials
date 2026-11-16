@@ -35,7 +35,7 @@ $$
 \gamma_{r,b}(t) = \begin{cases} 0 & t = 0 \\ b + r\,t & t > 0 \end{cases}
 $$
 
-states that the flow never sends more than $b$ bits instantaneously (the *burst*) and has a long-term rate at most $r$. A token bucket with rate $r$ and depth $b$ is the classical device that enforces it, and 802.1Qci policers in TSN implement this kind of contract.
+states that the flow never sends more than $b$ bits instantaneously (the *burst*) and has a long-term rate at most $r$. A token bucket with rate $r$ and depth $b$ is the classical device that enforces it, and [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) policers in [TSN](https://1.ieee802.org/tsn/) implement this kind of contract.
 
 **Peak rate.** $\lambda_C(t) = C\,t$ constrains a flow that cannot exceed the line rate $C$. Combining it with a token bucket gives $\alpha = \min(\lambda_C, \gamma_{r,b})$, which is concave.
 
@@ -64,7 +64,7 @@ Two properties make shapers attractive in network design:
 1. **Shapers preserve arrival curves.** If the input has arrival curve $\alpha$, the output has arrival curve $\alpha \otimes \sigma$, and in particular still satisfies $\alpha$.
 2. **Re-shaping is for free.** If a flow is already constrained by $\sigma$ at the entrance of a network, inserting a greedy shaper with the same curve $\sigma$ after any sub-network does not increase the end-to-end delay *bound*. The shaper removes the burstiness accumulated inside the network without costing anything in the worst case.
 
-The second property is the theoretical basis of the Asynchronous Traffic Shaper (802.1Qcr), whose *interleaved* regulators extend it to aggregates of flows (see [the TSN shapers post](/blog/network-calculus-for-tsn)).
+The second property is the theoretical basis of the Asynchronous Traffic Shaper ([802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/)), whose *interleaved* regulators extend it to aggregates of flows (see [the TSN shapers post](/blog/network-calculus-for-tsn)).
 
 ## 5. Worked example
 

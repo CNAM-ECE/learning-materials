@@ -14,7 +14,7 @@ import {
   DetnetOverTsnFigure,
 } from '@site/src/components/figures/detnet';
 
-TSN makes a bridged network deterministic. The IETF Deterministic Networking (DetNet) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
+[TSN](https://1.ieee802.org/tsn/) makes a bridged network deterministic. The IETF Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
 
 {/* truncate */}
 
@@ -24,7 +24,7 @@ TSN makes a bridged network deterministic. The IETF Deterministic Networking (De
 
 **DetNet** is both a working group in the IETF Routing Area and the architecture it standardises. The group works on deterministic data paths that run over Layer 2 bridged and Layer 3 routed segments and that bound latency, loss, delay variation and reordering, with high reliability. It addresses the Layer 3 aspects and collaborates with IEEE 802.1 TSN, which is responsible for Layer 2, towards a common architecture [1].
 
-Figure 1 shows how DetNet integrates with what already exists. It does not replace IP or MPLS forwarding, and it does not replace TSN. It adds two sub-layers to the nodes on the path, and lets an end system that only speaks TSN take part through an edge node [2].
+Figure 1 shows how DetNet integrates with what already exists. It does not replace [IP](https://www.rfc-editor.org/rfc/rfc791) or [MPLS](https://www.rfc-editor.org/rfc/rfc3031) forwarding, and it does not replace TSN. It adds two sub-layers to the nodes on the path, and lets an end system that only speaks TSN take part through an edge node [2].
 
 ## 2. Scope of the working group
 
@@ -89,7 +89,7 @@ This is the same separation that makes centralised admission control possible. A
 
 When DetNet nodes are interconnected by a TSN network, the DetNet flow has to be mapped to a TSN Stream [2]. In Figure 4 the first IP node adds a Layer 2 flow identifier, and the bridges forward on that identifier alone. Each domain uses an identifier that is unique within that domain, either derived from the application flow or assigned by the domain.
 
-Within the bridged segment, the DetNet architecture relies on the IEEE 802.1 mechanisms rather than defining its own [2]: the credit-based shaper (802.1Qav), time-gated queues (802.1Qbv), cyclic queuing and forwarding (802.1Qch) and frame preemption (802.1Qbu with 802.3br). Bridges match a flow by destination MAC address, VLAN identifier and priority to find its Stream and quality-of-service requirements [3].
+Within the bridged segment, the DetNet architecture relies on the IEEE 802.1 mechanisms rather than defining its own [2]: the credit-based shaper ([802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/)), time-gated queues ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing and forwarding ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and frame preemption ([802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) with [802.3br](https://www.ieee802.org/3/br/)). Bridges match a flow by destination MAC address, VLAN identifier and priority to find its Stream and quality-of-service requirements [3].
 
 The vocabulary changes at the boundary, although the concepts do not [2]:
 

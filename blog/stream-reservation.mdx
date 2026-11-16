@@ -26,7 +26,7 @@ A shaper bounds latency only if the traffic it serves stays within what it was c
 
 | Standard | Protocol | Status |
 | --- | --- | --- |
-| [IEEE 802.1Qat](https://standards.ieee.org/ieee/802.1Qat/4050/) (now in 802.1Q) | **Stream Reservation Protocol (SRP)**, built on the Multiple Registration Protocol | Published; the basis of AVB |
+| [IEEE 802.1Qat](https://standards.ieee.org/ieee/802.1Qat/4050/) (now in [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/)) | **Stream Reservation Protocol (SRP)**, built on the Multiple Registration Protocol | Published; the basis of [AVB](https://www.ieee802.org/1/pages/avbridges.html) |
 | [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/) (now in 802.1Q) | SRP enhancements, plus the user/network interface and the centralised models | Published |
 | [IEEE P802.1DD](https://1.ieee802.org/tsn/802-1dd/) | **Resource Allocation Protocol (RAP)**, a publish–subscribe protocol over the Link-local Registration Protocol ([802.1CS](https://1.ieee802.org/tsn/802-1cs/)), for centralised and decentralised networks | In development [4] |
 
@@ -50,7 +50,7 @@ The 2026 tutorial on decentralised latency models works out exactly what a bridg
 | Information | When | Purpose |
 | --- | --- | --- |
 | Latency threshold $\Delta^P_{\text{seg}}$ per segment and priority | Configured beforehand | Upper limit on the latency a segment may consume; added to every stream's accumulated maximum latency |
-| Shaper of each upstream traffic class, and its parameters (CBS idle slope, CQF cycle) | Exchanged with neighbours beforehand | Estimate the burstiness of incoming traffic |
+| Shaper of each upstream traffic class, and its parameters (CBS idle slope, [CQF](https://1.ieee802.org/tsn/802-1qch/) cycle) | Exchanged with neighbours beforehand | Estimate the burstiness of incoming traffic |
 | Stream identifier and header fields | Per stream, at reservation | Match frames to the stream and its priority |
 | Traffic specification: burst $b$, rate $r$, minimum and maximum frame length | Per stream | Bound the traffic volume: $w(t) \le b + r t$ |
 | Accumulated maximum and minimum latency $L^{+}$, $L^{-}$ | Per stream, updated at each hop | Bound the extra burstiness caused by delay variation |
@@ -83,7 +83,7 @@ $$
 d^P_{\text{seg}} \le \frac{\sum_{i \in H} \left(b_i^{\text{eff}} + r_i\,\Delta^P_{\text{seg}}\right) + \sum_{i \in C} b_i^{\text{eff}} + \ell^{\max}}{R_{\text{seg}}}.
 $$
 
-Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter network calculus versions and versions for CQF, ATS and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
+Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter network calculus versions and versions for CQF, [ATS](https://1.ieee802.org/tsn/802-1qcr/) and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
 
 ## 5. Distributed or centralised?
 

@@ -47,7 +47,7 @@ Rate-latency functions are convex, so by the concatenation rule of [the min-plus
 
 ## 4. Example: a Time-Aware Shaper window
 
-Consider an egress queue controlled by an 802.1Qbv gate that is open for $w$ time units in every cycle of length $c$, on a link of rate $C$. Assume, for simplicity, that no other queue transmits during this window and ignore the guard band that prevents frames from overrunning the window.
+Consider an egress queue controlled by an [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) gate that is open for $w$ time units in every cycle of length $c$, on a link of rate $C$. Assume, for simplicity, that no other queue transmits during this window and ignore the guard band that prevents frames from overrunning the window.
 
 In the worst case, the queue becomes backlogged just as its gate closes. It then waits $c - w$, is served at rate $C$ for $w$, waits again, and so on. The resulting cumulative service is a staircase whose lower corners lie on the line of slope $Cw/c$ passing through $(c - w,\, 0)$. Hence the queue receives the strict rate-latency service curve
 
@@ -58,7 +58,7 @@ $$
 The rate is the reserved share of the link; the latency is the longest closed interval. Accounting for the guard band and for non-preemptive blocking increases the latency and slightly decreases the effective window.
 
 :::tip[Modelling choice]
-The rate-latency bound discards the staircase structure and is therefore pessimistic for traffic that is *synchronised* with the gate schedule. Time-triggered TSN analyses often exploit that synchronisation explicitly; network calculus remains the method of choice for traffic that is not synchronised, and for the residual service left to lower-priority classes.
+The rate-latency bound discards the staircase structure and is therefore pessimistic for traffic that is *synchronised* with the gate schedule. Time-triggered [TSN](https://1.ieee802.org/tsn/) analyses often exploit that synchronisation explicitly; network calculus remains the method of choice for traffic that is not synchronised, and for the residual service left to lower-priority classes.
 :::
 
 ## 5. Service curves are a contract, not a description

@@ -35,11 +35,11 @@ Every bound in this series assumes that each talker respects its arrival curve. 
   caption="Figure 2. An Ethernet frame before and after insertion of the 802.1Q header. The header carries the priority code point (PCP), the drop eligible indicator (DEI) and the VLAN ID (VID). Together with the MAC addresses, these are the fields from which a bridge recognises a stream."
 />
 
-Ethernet has no stream-ID field. A bridge recognises a stream by matching header fields that were agreed when the stream was set up. The **stream identification** functions defined with 802.1CB include [2]:
+[Ethernet](https://standards.ieee.org/ieee/802.3/10422/) has no stream-ID field. A bridge recognises a stream by matching header fields that were agreed when the stream was set up. The **stream identification** functions defined with [802.1CB](https://1.ieee802.org/tsn/802-1cb/) include [2]:
 
 - destination MAC address and VLAN ID;
 - source MAC address and VLAN ID;
-- IP addresses, protocol and ports, for streams carried over IP.
+- [IP](https://www.rfc-editor.org/rfc/rfc791) addresses, protocol and ports, for streams carried over IP.
 
 The match yields a **stream handle**, an internal number that the following tables use. The reservation protocols identify a stream by a talker MAC address plus a 16-bit number. In the data plane, the frames are matched on destination MAC, VLAN ID and priority [5].
 
@@ -50,8 +50,8 @@ The match yields a **stream handle**, an internal number that the following tabl
 | Element | Selected by | Decides |
 | --- | --- | --- |
 | **Stream filter** | Stream handle and priority (either may be a wildcard) | Which gate and meter apply. Also enforces a **maximum frame size**: an oversized frame is dropped and can block the stream. |
-| **Stream gate** | The filter | Whether the frame may pass **now**. The gate opens and closes on a gate control list, like the transmission gates of 802.1Qbv, and can set the frame's **internal priority value (IPV)**. |
-| **Flow meter** | The filter | Whether the stream is within its **bandwidth profile**. The meter uses the two-rate, two-bucket profile of MEF 10.3: committed rate and burst (CIR, CBS) and excess rate and burst (EIR, EBS). Frames are marked green, yellow or red; red frames are dropped, and yellow frames can be dropped or demoted. |
+| **Stream gate** | The filter | Whether the frame may pass **now**. The gate opens and closes on a gate control list, like the transmission gates of [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/), and can set the frame's **internal priority value (IPV)**. |
+| **Flow meter** | The filter | Whether the stream is within its **bandwidth profile**. The meter uses the two-rate, two-bucket profile of [MEF 10.3](https://www.mef.net/resources/mef-10-3-ethernet-services-attributes-phase-3/): committed rate and burst (CIR, CBS) and excess rate and burst (EIR, EBS). Frames are marked green, yellow or red; red frames are dropped, and yellow frames can be dropped or demoted. |
 
 ## 4. What PSFP does for the analysis
 

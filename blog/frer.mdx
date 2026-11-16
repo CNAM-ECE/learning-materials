@@ -50,14 +50,14 @@ Replication and elimination can happen in the end stations themselves or in brid
 | Stream identification | Both | Recognises the stream from frame fields, as in [PSFP](/blog/per-stream-filtering-and-policing) |
 | Sequence generation | Replicating | Gives each frame the next sequence number |
 | Stream splitting | Replicating | Makes one copy per *member stream*, one member per path |
-| Sequence encode / decode | Both | Carries the number in a tag: the 802.1CB redundancy tag (R-TAG), or the tags of the [HSR](https://en.wikipedia.org/wiki/High-availability_Seamless_Redundancy) and [PRP](https://en.wikipedia.org/wiki/Parallel_Redundancy_Protocol) industrial protocols (IEC 62439-3) |
+| Sequence encode / decode | Both | Carries the number in a tag: the 802.1CB redundancy tag (R-TAG), or the tags of the [HSR](https://webstore.iec.ch/en/publication/64423) and [PRP](https://webstore.iec.ch/en/publication/64423) industrial protocols (IEC 62439-3) |
 | Individual recovery | Eliminating, optional | Removes duplicates within one member stream |
 | Sequence recovery | Eliminating | Removes duplicates across members. The **vector** algorithm keeps a window of recently seen numbers and accepts frames out of order; the **match** algorithm only compares with the last number. |
 | Latent error detection | Eliminating | Raises an alarm when a path delivers nothing, so that a hidden failure is repaired before a second one causes loss |
 
 ## 3. Where the paths come from
 
-FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/), where [IS-IS](https://en.wikipedia.org/wiki/IS-IS) computes defaults and a controller adds explicit trees, or from a CNC that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF DetNet provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
+FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/), where [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) computes defaults and a controller adds explicit trees, or from a [CNC](https://1.ieee802.org/tsn/802-1qcc/) that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF [DetNet](https://www.rfc-editor.org/rfc/rfc8655) provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
 
 ## 4. What FRER does to the traffic
 
@@ -67,7 +67,7 @@ FRER removes loss, but it changes the traffic that the latency analysis sees. Th
 2. **A bigger burst after merging.** Even after elimination, the merged stream must often be given twice the original burst to cover the worst case.
 3. **Reordering after a repair.** Suppose the two paths have different delays and the faster path fails. When it comes back, the merge point receives old frames from the slower path and recent frames from the faster one. Both are valid and neither is eliminated, so the output is temporarily burstier, until the old frames are used up. Annex C.9 of 802.1CB discusses this case.
 
-The tutorial suggests placing [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping) at the merge point to restore the original burst at once. The combination of FRER and ATS is still being standardised [4].
+The tutorial suggests placing [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping) at the merge point to restore the original burst at once. The combination of FRER and [ATS](https://1.ieee802.org/tsn/802-1qcr/) is still being standardised [4].
 
 In network calculus terms, the arrival curve after elimination is not the talker's curve. It must allow for the extra burst of points 2 and 3. Any bound computed downstream of an elimination point is wrong if it uses the original curve.
 

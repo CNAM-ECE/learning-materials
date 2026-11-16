@@ -10,7 +10,7 @@ description: Asynchronous Transfer Mode and Multiprotocol Label Switching in bri
 import {AtmMplsFigure, HeaderFormatsFigure} from '@site/src/components/figures/atm';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-Network calculus grew up in the 1990s, when the networks that promised quality of service were ATM and, a little later, IP with IntServ, DiffServ and MPLS. That is why its textbooks speak of cells, leaky buckets, virtual circuits and label-switched paths. This post explains those networks just enough to read the classic examples, and shows that the same ideas reappear in TSN and DetNet.
+Network calculus grew up in the 1990s, when the networks that promised quality of service were [ATM](https://www.itu.int/rec/T-REC-I.150) and, a little later, [IP](https://www.rfc-editor.org/rfc/rfc791) with [IntServ](https://www.rfc-editor.org/rfc/rfc1633), [DiffServ](https://www.rfc-editor.org/rfc/rfc2475) and [MPLS](https://www.rfc-editor.org/rfc/rfc3031). That is why its textbooks speak of cells, leaky buckets, virtual circuits and label-switched paths. This post explains those networks just enough to read the classic examples, and shows that the same ideas reappear in [TSN](https://1.ieee802.org/tsn/) and [DetNet](https://www.rfc-editor.org/rfc/rfc8655).
 
 {/* truncate */}
 
@@ -27,7 +27,7 @@ Both networks fix the path before the data flows, check the traffic at the entry
 | Admission control before the circuit or path is set up | A check that the [delay and backlog bounds](/blog/three-fundamental-bounds) still hold |
 | Classes sharing a queue | [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) |
 
-The standard textbook by Le Boudec and Thiran uses the ATM generic cell rate algorithm among its first examples of arrival curves, and its second chapter applies the theory to IntServ and DiffServ [5]. The [deterministic networking post](/blog/deterministic-networking) summarises IntServ and DiffServ.
+The standard textbook by Le Boudec and Thiran uses the ATM [generic cell rate algorithm](https://www.itu.int/rec/T-REC-I.371) among its first examples of arrival curves, and its second chapter applies the theory to IntServ and DiffServ [5]. The [deterministic networking post](/blog/deterministic-networking) summarises IntServ and DiffServ.
 
 ## 2. ATM in brief
 
@@ -152,11 +152,11 @@ MPLS is now used mostly for traffic engineering, DiffServ quality of service and
 
 | | ATM | MPLS | TSN | DetNet |
 | --- | --- | --- | --- | --- |
-| Unit | 53-byte cell | Packet with a label stack | Ethernet frame | IP or MPLS packet |
+| Unit | 53-byte cell | Packet with a label stack | [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frame | IP or MPLS packet |
 | Path | Virtual circuit (VPI/VCI) | Label-switched path | Stream on a configured path | DetNet flow on an explicit route |
 | Traffic contract | PCR, SCR, MBS, CDVT | Reserved bandwidth (RSVP-TE) or class | Traffic specification (token bucket) | Traffic specification |
 | Entry check | GCRA policing at the UNI | Policing at the ingress LER | [PSFP](/blog/per-stream-filtering-and-policing) | Ingress policing and shaping |
-| Admission control | Call admission control ([PNNI](https://en.wikipedia.org/wiki/Private_Network-to-Network_Interface)) | Traffic-engineering reservation | [SRP, RAP or CNC](/blog/stream-reservation) | Controller plane |
+| Admission control | Call admission control ([PNNI](https://www.broadband-forum.org/technical/download/af-pnni-0055.000.pdf)) | Traffic-engineering reservation | [SRP, RAP or CNC](/blog/stream-reservation) | Controller plane |
 | Network calculus view | Staircase or two-piece arrival curve | Concatenation and aggregates | Arrival curves, shaper service curves | Same, across L2 and L3 segments |
 
 The vocabulary changed, but the structure did not: a contract at the edge, a known path, and a check before admission. This is why the bounds derived for ATM in the 1990s carry over to TSN and DetNet with only a change of units.

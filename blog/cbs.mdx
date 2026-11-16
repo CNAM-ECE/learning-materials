@@ -69,7 +69,7 @@ In network calculus terms, a CBS queue offers a rate-latency service with rate `
 
 A 2026 tutorial on decentralised latency models adds several points that matter in practice [4]:
 
-- **The 802.1BA formula is not a bound.** The example latency formula of the AVB profile was shown to be inaccurate. The tutorial derives a network calculus model with formal proofs instead.
+- **The [802.1BA](https://standards.ieee.org/ieee/802.1BA/4396/) formula is not a bound.** The example latency formula of the AVB profile was shown to be inaccurate. The tutorial derives a network calculus model with formal proofs instead.
 - **CBS shapes classes, not streams.** One shaper instance serves the aggregate of all streams in the class. Aggregation adds latency jitter, so the effective burstiness of each stream grows from hop to hop despite the shaping.
 - **CBS does not fit a clean shaper-to-shaper split.** Its credit reset depends on whether other frames of the class are still waiting. The shaping step therefore includes queuing and transmission, and each CBS bridge must compute its own queuing delay. With the other shapers studied, the downstream bridge computes the queuing delay of the upstream one. The [ATS post](/blog/asynchronous-traffic-shaping) shows that split.
 - **It works best when the egress slope covers the ingress slopes.** CBS performs very well when the `idleSlope` of an egress port is at least the sum of the `idleSlope`s feeding it. When that ratio falls below 1, which happened in almost all of the industrial topologies tested, performance degrades quickly. There, plain strict priority with a network calculus bound was the better choice [4].

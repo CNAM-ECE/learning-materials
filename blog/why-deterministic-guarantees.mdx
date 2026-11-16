@@ -7,7 +7,7 @@ tags: [youtube, article, presentation, guide, book, tsn, sdn, tas, reconfigurati
 description: Motivation for deterministic network calculus, and why measurement alone cannot certify a Time-Sensitive Network.
 ---
 
-Time-Sensitive Networking (TSN) promises that a standard Ethernet network can carry control traffic with *bounded* latency. This first post explains what "bounded" means, why it cannot be established by measurement alone, and why deterministic network calculus is the analytical tool of choice for establishing it.
+[Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) promises that a standard [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) network can carry control traffic with *bounded* latency. This first post explains what "bounded" means, why it cannot be established by measurement alone, and why deterministic network calculus is the analytical tool of choice for establishing it.
 
 {/* truncate */}
 
@@ -17,10 +17,10 @@ TSN is a family of IEEE 802.1 amendments that add deterministic behaviour to bri
 
 | Standard | Mechanism | Role in the guarantee |
 | --- | --- | --- |
-| 802.1AS | Generalised Precision Time Protocol (gPTP) | Common time base for all bridges and end stations |
-| 802.1Qbv | Time-Aware Shaper (TAS) | Gate control lists open and close queues at scheduled instants |
-| 802.1Qci | Per-Stream Filtering and Policing (PSFP) | Enforces the traffic contract declared by each stream |
-| 802.1CB | Frame Replication and Elimination (FRER) | Seamless redundancy over disjoint paths |
+| [802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) | Generalised [Precision Time Protocol](https://standards.ieee.org/ieee/1588/6825/) (gPTP) | Common time base for all bridges and end stations |
+| [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) | Time-Aware Shaper (TAS) | Gate control lists open and close queues at scheduled instants |
+| [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) | Per-Stream Filtering and Policing (PSFP) | Enforces the traffic contract declared by each stream |
+| [802.1CB](https://1.ieee802.org/tsn/802-1cb/) | Frame Replication and Elimination (FRER) | Seamless redundancy over disjoint paths |
 
 A shorter glossary is kept in the [TSN glossary](/reference/tsn-glossary).
 
@@ -49,7 +49,7 @@ A measured maximum answers "what happened?". A network calculus bound answers "w
 
 TSN guarantees are usually established for a configuration that is computed and verified offline, then frozen. In practice, networks change: flows are added and removed, links fail, and production lines are reconfigured. Two recent lines of work, discussed in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn), illustrate the tension:
 
-- Sertbaş Bülbül, Ergenç and Fischer use a software-defined networking (SDN) controller to migrate time-sensitive flows to new paths at run time [5];
+- Sertbaş Bülbül, Ergenç and Fischer use a [software-defined networking](https://www.rfc-editor.org/rfc/rfc7426) (SDN) controller to migrate time-sensitive flows to new paths at run time [5];
 - Boyer and Henia design a Time-Aware Shaper schedule that can absorb rescue flows after a permanent link fault without modifying existing windows [6].
 
 Both raise the same question: *after* the change, does every admitted flow still meet its deadline? Answering it quickly and soundly is the motivation for this series.

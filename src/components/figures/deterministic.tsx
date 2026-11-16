@@ -7,13 +7,24 @@ const farkasOverview =
   'https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-overview-1118-v01.pdf';
 const charter = 'https://datatracker.ietf.org/wg/detnet/about/';
 
+/** The seven OSI layers, with Layers 4 to 7 grouped as the end-to-end functions. */
+const osiLayers = [
+  'Application (L7)',
+  'Presentation (L6)',
+  'Session (L5)',
+  'Transport (L4)',
+  'Network (L3)',
+  'Data link (L2)',
+  'Physical (L1)',
+];
+
 /** Where the two standardisation efforts sit in the existing protocol stack. */
 export function StackPlacementFigure(): ReactNode {
-  const layers = ['Application', 'Transport', 'Network (L3)', 'Data link (L2)', 'Physical (L1)'];
+  const rowY = (i: number): number => 34 + i * 44;
   return (
     <Figure
-      height={290}
-      label="Protocol stack showing IETF DetNet at the network layer, IEEE 802.1 TSN at the data link layer, and network calculus as the analysis applied to both"
+      height={348}
+      label="The seven OSI layers, with IETF DetNet at the network layer, IEEE 802.1 TSN at the data link layer, and network calculus as the analysis applied to both"
       caption="Figure 1. Deterministic networking extends the existing stack at two layers, where network calculus is the analysis applied to the configured result."
       source={
         <>
@@ -22,26 +33,25 @@ export function StackPlacementFigure(): ReactNode {
           the scope stated in the <a href={charter}>IETF DetNet charter</a>.
         </>
       }>
-      <Txt x={95} y={16} size={12} bold>Existing layer</Txt>
-      <Txt x={360} y={16} size={12} bold>Deterministic extension</Txt>
-      <Txt x={625} y={16} size={12} bold>Guarantee</Txt>
+      <Txt x={95} y={16} size={12} bold>OSI layer</Txt>
+      <Txt x={375} y={16} size={12} bold>Deterministic extension</Txt>
+      <Txt x={650} y={16} size={12} bold>Guarantee</Txt>
 
-      {layers.map((layer, i) => (
-        <Box key={layer} x={20} y={34 + i * 50} w={150} h={40} lines={[layer]} tone={i < 2 ? 'muted' : 'plain'} />
+      {osiLayers.map((layer, i) => (
+        <g key={layer}>
+          <Box x={20} y={rowY(i)} w={150} h={38} lines={[layer]} size={12} tone={i < 4 ? 'muted' : 'plain'} />
+          <Arrow d={`M170,${rowY(i) + 19} H230`} heads="none" />
+        </g>
       ))}
 
-      <Box x={200} y={34} w={320} h={90} lines={['Interface ', 'applications and transport protocols', 'see a network with bounded latency']} tone="muted" dashed />
-      <Box x={200} y={134} w={320} h={40} lines={['IETF DetNet', 'routed segments: IP, MPLS']} title tone="arrival" size={12} />
-      <Box x={200} y={184} w={320} h={40} lines={['IEEE 802.1 TSN', 'bridged segments: IEEE 802.1Q']} title tone="service" size={12} />
-      <Box x={200} y={234} w={320} h={40} lines={['IEEE 802.3 Ethernet, IEEE 802.11, …']} tone="plain" size={12} />
+      <Box x={230} y={rowY(0)} w={290} h={3 * 44 + 38} lines={['End-to-end functions (L4–L7)', 'applications and transport protocols', 'see a network with bounded latency']} title size={12} tone="muted" dashed />
+      <Box x={230} y={rowY(4)} w={290} h={38} lines={['IETF DetNet', 'routed segments: IP, MPLS']} title tone="arrival" size={11} />
+      <Box x={230} y={rowY(5)} w={290} h={38} lines={['IEEE 802.1 TSN', 'bridged segments: IEEE 802.1Q']} title tone="service" size={11} />
+      <Box x={230} y={rowY(6)} w={290} h={38} lines={['IEEE 802.3 Ethernet, IEEE 802.11, …']} tone="plain" size={11.5} />
 
-      <Arrow d="M170,154 H200" heads="none" />
-      <Arrow d="M170,204 H200" heads="none" />
-      <Arrow d="M170,254 H200" heads="none" />
-
-      <Box x={550} y={134} w={150} h={90} lines={['Network calculus', 'worst-case delay', 'and backlog bounds']} title size={12} />
-      <Arrow d="M520,154 H550" tone="muted" dashed />
-      <Arrow d="M520,204 H550" tone="muted" dashed />
+      <Box x={590} y={rowY(4)} w={120} h={82} lines={['Network calculus', 'worst-case delay', 'and backlog bounds']} title size={11} />
+      <Arrow d={`M520,${rowY(4) + 19} H590`} tone="muted" dashed />
+      <Arrow d={`M520,${rowY(5) + 19} H590`} tone="muted" dashed />
     </Figure>
   );
 }
@@ -102,17 +112,36 @@ export function ServiceComparisonFigure(): ReactNode {
 
 /** What each layer contributes to a deterministic path, and where SDN sits. */
 export function LayerRolesFigure(): ReactNode {
-  const rows: {label: string; lines: string[]; tone: 'plain' | 'muted' | 'arrival' | 'service'; dashed?: boolean; size?: number}[] = [
-    {label: 'Layers 4–7', lines: ['Unchanged', 'applications see a bounded-latency, low-loss service'], tone: 'muted'},
-    {label: 'Layer 3', lines: ['IETF DetNet over IP and MPLS', 'service sub-layer: replication, elimination, ordering', 'forwarding sub-layer: resources and explicit routes'], tone: 'arrival'},
-    {label: 'L3 → L2', lines: ['DetNet flow → TSN stream, matched on destination MAC,', 'VLAN ID and priority (802.1CB stream identification)'], tone: 'plain', dashed: true, size: 10.5},
-    {label: 'Layer 2', lines: ['IEEE 802.1 TSN bridges', 'policing, shaping, gates, preemption, FRER, reservation'], tone: 'service'},
-    {label: 'Layer 1', lines: ['IEEE 802.3 Ethernet, IEEE 802.11, …', 'MAC Merge sublayer for preemption (802.3br)'], tone: 'plain'},
+  type Row = {
+    label: string;
+    lines: string[];
+    tone: 'plain' | 'muted' | 'arrival' | 'service';
+    h?: number;
+    dashed?: boolean;
+  };
+  const rows: Row[] = [
+    {label: 'Application (L7)', lines: ['Application services', 'control loops, audio and video, OPC UA'], tone: 'muted'},
+    {label: 'Presentation (L6)', lines: ['Data representation', 'encoding, compression, encryption'], tone: 'muted'},
+    {label: 'Session (L5)', lines: ['Dialogue control', 'open, synchronise and close sessions'], tone: 'muted'},
+    {label: 'Transport (L4)', lines: ['End-to-end transport', 'UDP or TCP; no congestion feedback on DetNet flows'], tone: 'muted'},
+    {label: 'Network (L3)', lines: ['IETF DetNet over IP and MPLS', 'service sub-layer: replication, elimination, ordering', 'forwarding sub-layer: resources, explicit routes'], tone: 'arrival', h: 52},
+    {label: 'L3 → L2', lines: ['DetNet flow → TSN stream', 'matched on destination MAC, VLAN ID and priority (802.1CB)'], tone: 'plain', dashed: true},
+    {label: 'Data link (L2)', lines: ['IEEE 802.1 TSN bridges', 'policing, shaping, gates, preemption, FRER, reservation'], tone: 'service'},
+    {label: 'Physical (L1)', lines: ['IEEE 802.3 Ethernet, IEEE 802.11, …', 'MAC Merge sublayer for preemption (802.3br)'], tone: 'plain'},
   ];
+  let y = 36;
+  const placed = rows.map((row) => {
+    const h = row.h ?? 38;
+    const at = {row, y, h};
+    y += h + 8;
+    return at;
+  });
+  const timeY = y + 4;
+  const center = (i: number): number => placed[i].y + placed[i].h / 2;
   return (
     <Figure
-      height={335}
-      label="Layer by layer: upper layers unchanged, DetNet at layer 3, a mapping of DetNet flows to TSN streams, TSN at layer 2, Ethernet at layer 1, common time across all layers, and an SDN controller configuring layers 3 and 2"
+      height={timeY + 44}
+      label="The seven OSI layers with the function each provides in a deterministic path: end-to-end functions in Layers 4 to 7, DetNet at Layer 3, a mapping of DetNet flows to TSN streams, TSN at Layer 2, Ethernet at Layer 1, a common time base under every layer, and an SDN controller configuring Layers 3 and 2"
       caption="Figure 4. What each layer contributes to a deterministic path. A software-defined controller configures both the routed (DetNet) and the bridged (TSN) segments, and every node shares one time base."
       source={
         <>
@@ -122,18 +151,23 @@ export function LayerRolesFigure(): ReactNode {
           <a href={farkasOverview}>IEEE 802.1 TSN TG Overview</a> (2018).
         </>
       }>
-      {rows.map((row, i) => (
+      <Txt x={77} y={16} size={12} bold>OSI layer</Txt>
+      <Txt x={355} y={16} size={12} bold>Function in a deterministic path</Txt>
+      <Txt x={652} y={16} size={12} bold>Control</Txt>
+
+      {placed.map(({row, y: top, h}) => (
         <g key={row.label}>
-          <Box x={10} y={15 + i * 54} w={125} h={46} lines={[row.label]} title size={12} tone="muted" />
-          <Box x={150} y={15 + i * 54} w={390} h={46} lines={row.lines} title size={row.size ?? 11} tone={row.tone} dashed={row.dashed} />
+          <Box x={10} y={top} w={135} h={h} lines={[row.label]} title size={11.5} tone="muted" dashed={row.dashed} />
+          <Arrow d={`M145,${top + h / 2} H185`} heads="none" />
+          <Box x={185} y={top} w={340} h={h} lines={row.lines} title size={10.5} tone={row.tone} dashed={row.dashed} />
         </g>
       ))}
-      <Box x={10} y={285} w={125} h={40} lines={['All layers']} title size={12} tone="muted" />
-      <Box x={150} y={285} w={560} h={40} lines={['Common time at every node: gPTP (802.1AS), a profile of IEEE 1588 PTP']} size={11.5} tone="service" />
 
-      <Box x={560} y={69} w={150} h={154} lines={['SDN controller', 'explicit routes', 'resource reservation', 'IntServ + DiffServ', 'integration', 'TSN: the CNC']} title size={11} tone="arrival" />
-      <Arrow d="M560,92 H542" tone="arrival" dashed />
-      <Arrow d="M560,200 H542" tone="arrival" dashed />
+      <Box x={10} y={timeY} w={515} h={32} lines={['Common time at every node: gPTP (802.1AS), a profile of IEEE 1588 PTP']} size={11} tone="service" />
+
+      <Box x={595} y={placed[4].y} w={115} h={placed[6].y + placed[6].h - placed[4].y} lines={['SDN controller', 'explicit routes', 'resource', 'reservation', 'IntServ + DiffServ', 'TSN: the CNC']} title size={10.5} tone="arrival" />
+      <Arrow d={`M595,${center(4)} H527`} tone="arrival" dashed />
+      <Arrow d={`M595,${center(6)} H527`} tone="arrival" dashed />
     </Figure>
   );
 }

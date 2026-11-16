@@ -67,7 +67,7 @@ The DetNet architecture groups the mechanisms into three techniques, which can b
 | Service protection | Sends copies of each packet over several paths (sequence number & timestamp to transport protocol) and removes duplicates with reordering packets, or adds redundancy & error correction by packet encoding (multi-trans packet unit) | Loss caused by equipment or media failure, bandwidth constraint assurance & delay equalization in failure recovery |
 | Explicit routes | Fixes the path in advance, so that it does not change at once when the topology changes | Interruptions while routing or bridging protocols reconverge |
 
-Resource allocation only works for a flow that is limited at the source in a specified packet size and rate [4]. Explicit routes can be installed with [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209), [Segment Routing](https://www.rfc-editor.org/rfc/rfc8402), [IS-IS](https://en.wikipedia.org/wiki/IS-IS) or a centralised SDN controller [3][4]. In real-time
+Resource allocation only works for a flow that is limited at the source in a specified packet size and rate [4]. Explicit routes can be installed with [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209), [Segment Routing](https://www.rfc-editor.org/rfc/rfc8402), [IS-IS](https://en.wikipedia.org/wiki/IS-IS) or a centralised SDN controller [3][4]. In this context, mesh network topology changes can disrupt traffic and cause out-of-order packet delivery. Meanwhile, real-time networks often use redundant ring topologies, increasing hop count and latency. DetNet instead uses predefined, stable routes to avoid immediate reconfiguration and interruptions caused by routing or bridging convergence.
 
 <ReplicationFigure
   ends={['End system', 'End system']}
@@ -102,14 +102,17 @@ The terminology row follows the mapping given in the DetNet architecture [4]; th
 
 Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and shows what each layer contributes, and where the control logic sits.
 
-| Layer | Contribution to the deterministic path |
+| OSI layer | Function in the deterministic path |
 | --- | --- |
-| 4 to 7 | Nothing new. Applications and transport protocols simply receive a service with bounded latency and very low loss. |
-| 3 (DetNet) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary IT traffic from a misbehaving DetNet source [3]. |
-| 3 → 2 | Where a routed path crosses a bridged segment, each DetNet flow becomes a TSN stream. The bridge recognises it by destination MAC address, VLAN ID and priority, using the stream identification functions of 802.1CB [3]. |
-| 2 (TSN) | Provides the queuing, shaping, scheduling, preemption and replication mechanisms that actually bound delay on each hop (see the [TSN toolbox](/blog/tsn-toolbox)) [3]. |
-| 1 | The physical link. The only change is the MAC Merge sublayer of 802.3br, which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
-| All | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
+| Application (L7) | Application services: control loops, audio and video, industrial protocols such as OPC UA. They receive bounded latency and very low loss without changing. |
+| Presentation (L6) | Data representation: encoding, compression and encryption. Unchanged by DetNet and TSN. |
+| Session (L5) | Dialogue control: opening, synchronising and closing sessions between applications. Unchanged by DetNet and TSN. |
+| Transport (L4) | End-to-end transport, usually UDP or TCP. DetNet adds no transport protocol, and its flows need no congestion feedback [3]. |
+| Network (L3) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary IT traffic from a misbehaving DetNet source [3]. |
+| L3 → L2 | Where a routed path crosses a bridged segment, each DetNet flow becomes a TSN stream. The bridge recognises it by destination MAC address, VLAN ID and priority, using the stream identification functions of 802.1CB [3]. |
+| Data link (L2) | Provides the queuing, shaping, scheduling, preemption and replication mechanisms that actually bound delay on each hop (see the [TSN toolbox](/blog/tsn-toolbox)) [3]. |
+| Physical (L1) | The physical link. The only change is the MAC Merge sublayer of 802.3br, which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
+| Under every layer | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
 
 In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. Traffic-engineering protocols maintained by the IETF [TEAS](https://datatracker.ietf.org/wg/teas/about/) working group, such as RSVP-TE and [MPLS-TE](https://www.rfc-editor.org/rfc/rfc2702), translate a DetNet flow specification into the corresponding TSN settings for the credit-based shaper, scheduled traffic, cyclic queuing, preemption and FRER [3].
 

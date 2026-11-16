@@ -7,7 +7,11 @@ tags: [standard, presentation, deterministic-networking, detnet, ieee-802-1, tsn
 description: What a deterministic service is, what it requires from a network, and how IEEE 802.1 TSN and IETF DetNet divide the work between Layer 2 and Layer 3.
 ---
 
-import {StackPlacementFigure, ServiceComparisonFigure} from '@site/src/components/figures/deterministic';
+import {
+  StackPlacementFigure,
+  ServiceComparisonFigure,
+  LayerRolesFigure,
+} from '@site/src/components/figures/deterministic';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 
 "Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded latency, with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
@@ -25,7 +29,7 @@ Nothing above the network layer changes. As Figure 1 shows, the extension happen
 - at **Layer 2**, the IEEE 802.1 Time-Sensitive Networking (TSN) task group extends bridged Ethernet (see [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group) and [the TSN toolbox post](/blog/tsn-toolbox));
 - at **Layer 3**, the IETF DetNet working group extends routed IP and MPLS networks (see [the IETF DetNet post](/blog/ietf-detnet)).
 
-The two groups collaborate on a common architecture, so that a routed deterministic path can cross bridged deterministic segments [1]. Network calculus, the subject of the next group of posts, is not a third technology: it is the analysis that proves the bound once the network is configured.
+The two groups collaborate on a common architecture, so that a routed deterministic path can cross bridged deterministic segments [1]. Network calculus, the subject of the next group of posts, is one of the common tool to successfully take the analysis that proves the bound once the network is configured in the industrial applications.
 
 ## 2. Deterministic versus traditional service
 
@@ -92,7 +96,43 @@ When the paths have different lengths, the merging node needs extra buffering to
 
 The terminology row follows the mapping given in the DetNet architecture [4]; the scope row follows the DetNet charter, which explicitly excludes solutions for large groups of domains such as the Internet [1].
 
-## 6. Where it is used
+## 6. What each layer provides
+
+<LayerRolesFigure />
+
+Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and shows what each layer contributes, and where the control logic sits.
+
+| Layer | Contribution to the deterministic path |
+| --- | --- |
+| 4 to 7 | Nothing new. Applications and transport protocols simply receive a service with bounded latency and very low loss. |
+| 3 (DetNet) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary IT traffic from a misbehaving DetNet source [3]. |
+| 3 → 2 | Where a routed path crosses a bridged segment, each DetNet flow becomes a TSN stream. The bridge recognises it by destination MAC address, VLAN ID and priority, using the stream identification functions of 802.1CB [3]. |
+| 2 (TSN) | Provides the queuing, shaping, scheduling, preemption and replication mechanisms that actually bound delay on each hop (see the [TSN toolbox](/blog/tsn-toolbox)) [3]. |
+| 1 | The physical link. The only change is the MAC Merge sublayer of 802.3br, which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
+| All | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
+
+In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. Traffic-engineering protocols maintained by the IETF TEAS working group, such as RSVP-TE and MPLS-TE, translate a DetNet flow specification into the corresponding TSN settings for the credit-based shaper, scheduled traffic, cyclic queuing, preemption and FRER [3].
+
+### IntServ and DiffServ in OSI layer 3
+
+Before DetNet, the IETF had two models for quality of service in IP networks. DetNet sits between them.
+
+- **Integrated Services (IntServ)**, from 1994, reserves resources **per flow** in every router along the path. Reservations are usually signalled with RSVP [5]. Its *Guaranteed Service* gives a mathematically provable upper bound on queuing delay for a flow described by a token bucket [6]. This is the same kind of bound that [network calculus](/blog/three-fundamental-bounds) derives. The price is per-flow state in every router, which does not scale to large networks.
+- **Differentiated Services (DiffServ)**, from 1998, does not track flows. The edge of the network classifies each packet and marks it with a 6-bit code point in the IP header (DSCP). Core routers then apply one of a few *per-hop behaviours* to whole classes [7]. DiffServ scales well, but it promises only relative treatment of a class, not a bound for an individual flow, and the service a class receives can differ from one operator to the next [8].
+
+A long-standing compromise uses IntServ at the edges, to admit and shape each flow, and DiffServ in the core, to forward aggregates [8][9]. DetNet follows the same pattern. Each flow is admitted and policed individually, while nodes can treat aggregates of flows together. The aggregation analysis of [the multiplexing post](/blog/aggregate-multiplexing-residual-service) is what makes this safe.
+
+### Where SDN fits
+
+The Wikipedia article on DetNet describes the Layer 3 part as working through a **software-defined networking layer** that brings IntServ and DiffServ together [3]. In practice, a logically central controller does three jobs that neither IntServ nor DiffServ could do alone:
+
+1. it **computes explicit routes**, which do not change immediately when the topology changes, so routing protocols reconverging cause no interruption. RSVP-TE, Segment Routing, IS-IS or MPLS-TE can install the same routes [3];
+2. it **reserves resources** per flow at every node, with the knowledge of all other flows that admission control needs;
+3. it **configures the TSN segments** on the path, through the CNC of IEEE 802.1Qcc.
+
+RFC 8655 places this logic in the *controller plane* of the DetNet architecture (see [the IETF DetNet post](/blog/ietf-detnet)). [The SDN post](/blog/sdn-and-tsn-configuration) shows the same structure on the TSN side.
+
+## 7. Where it is used
 
 The application areas named by the two groups overlap widely [1][3]: professional and home audio and video, industrial automation and machine-to-machine control, in-vehicle networks, electrical generation and distribution, building automation, and cellular fronthaul and backhaul. A common motivation is to move time-critical applications from dedicated fieldbus networks onto packet networks that also carry ordinary IT traffic [3].
 
@@ -102,3 +142,8 @@ The application areas named by the two groups overlap widely [1][3]: professiona
 2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 3. Wikipedia, "Deterministic Networking." [Article](https://en.wikipedia.org/wiki/Deterministic_Networking)
 4. N. Finn, P. Thubert, B. Varga, J. Farkas, *Deterministic Networking Architecture*, RFC 8655, October 2019. [RFC Editor](https://www.rfc-editor.org/rfc/rfc8655)
+5. R. Braden, D. Clark, S. Shenker, *Integrated Services in the Internet Architecture: an Overview*, RFC 1633, June 1994. [RFC Editor](https://www.rfc-editor.org/rfc/rfc1633)
+6. S. Shenker, C. Partridge, R. Guerin, *Specification of Guaranteed Quality of Service*, RFC 2212, September 1997. [RFC Editor](https://www.rfc-editor.org/rfc/rfc2212)
+7. S. Blake et al., *An Architecture for Differentiated Services*, RFC 2475, December 1998. [RFC Editor](https://www.rfc-editor.org/rfc/rfc2475)
+8. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
+9. Y. Bernet et al., *A Framework for Integrated Services Operation over Diffserv Networks*, RFC 2998, November 2000. [RFC Editor](https://www.rfc-editor.org/rfc/rfc2998)

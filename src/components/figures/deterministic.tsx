@@ -14,11 +14,11 @@ export function StackPlacementFigure(): ReactNode {
     <Figure
       height={290}
       label="Protocol stack showing IETF DetNet at the network layer, IEEE 802.1 TSN at the data link layer, and network calculus as the analysis applied to both"
-      caption="Figure 1. Deterministic networking extends the existing stack at two layers; network calculus is the analysis applied to the configured result."
+      caption="Figure 1. Deterministic networking extends the existing stack at two layers, where network calculus is the analysis applied to the configured result."
       source={
         <>
-          own drawing, after the IEEE 802 / OSI placement in J. Farkas,{' '}
-          <a href={farkasOverview}>IEEE 802.1 TSN TG Overview</a> (2018), slide 4, and
+          Inspiration from the IEEE 802 / OSI placement in J. Farkas,{' '}
+          <a href={farkasOverview}>IEEE 802.1 TSN TG Overview</a> (slide 4, 2018), and
           the scope stated in the <a href={charter}>IETF DetNet charter</a>.
         </>
       }>
@@ -30,7 +30,7 @@ export function StackPlacementFigure(): ReactNode {
         <Box key={layer} x={20} y={34 + i * 50} w={150} h={40} lines={[layer]} tone={i < 2 ? 'muted' : 'plain'} />
       ))}
 
-      <Box x={200} y={34} w={320} h={90} lines={['unchanged:', 'applications and transport protocols', 'see a network with bounded latency']} tone="muted" dashed />
+      <Box x={200} y={34} w={320} h={90} lines={['Interface ', 'applications and transport protocols', 'see a network with bounded latency']} tone="muted" dashed />
       <Box x={200} y={134} w={320} h={40} lines={['IETF DetNet', 'routed segments: IP, MPLS']} title tone="arrival" size={12} />
       <Box x={200} y={184} w={320} h={40} lines={['IEEE 802.1 TSN', 'bridged segments: IEEE 802.1Q']} title tone="service" size={12} />
       <Box x={200} y={234} w={320} h={40} lines={['IEEE 802.3 Ethernet, IEEE 802.11, …']} tone="plain" size={12} />
@@ -52,11 +52,11 @@ export function ServiceComparisonFigure(): ReactNode {
     <Figure
       height={250}
       label="Two latency distributions: a traditional service with a long tail beyond the application requirement, and a deterministic service entirely below the requirement"
-      caption="Figure 2. A traditional service has a good average and a long tail; a deterministic service has no tail beyond the bound."
+      caption="Figure 2. A traditional service has a good average and a long tail whereas a deterministic service has no tail beyond the bound."
       source={
         <>
           redrawn after J. Farkas, <a href={farkasConcepts}>TSN Basic Concepts</a>,
-          DetNet–TSN workshop, 11 November 2018, slide 4.
+          DetNet–TSN workshop (slide 4), 11 November 2018.
         </>
       }>
       <Txt x={185} y={16} size={13} bold>Traditional service</Txt>
@@ -96,6 +96,44 @@ export function ServiceComparisonFigure(): ReactNode {
       <Txt x={520} y={48} size={11}>bounded, no tail</Txt>
       <Arrow d="M472,214 H568" tone="service" heads="both" />
       <Txt x={520} y={232} size={11} tone="service">bounded delay variation</Txt>
+    </Figure>
+  );
+}
+
+/** What each layer contributes to a deterministic path, and where SDN sits. */
+export function LayerRolesFigure(): ReactNode {
+  const rows: {label: string; lines: string[]; tone: 'plain' | 'muted' | 'arrival' | 'service'; dashed?: boolean; size?: number}[] = [
+    {label: 'Layers 4–7', lines: ['Unchanged', 'applications see a bounded-latency, low-loss service'], tone: 'muted'},
+    {label: 'Layer 3', lines: ['IETF DetNet over IP and MPLS', 'service sub-layer: replication, elimination, ordering', 'forwarding sub-layer: resources and explicit routes'], tone: 'arrival'},
+    {label: 'L3 → L2', lines: ['DetNet flow → TSN stream, matched on destination MAC,', 'VLAN ID and priority (802.1CB stream identification)'], tone: 'plain', dashed: true, size: 10.5},
+    {label: 'Layer 2', lines: ['IEEE 802.1 TSN bridges', 'policing, shaping, gates, preemption, FRER, reservation'], tone: 'service'},
+    {label: 'Layer 1', lines: ['IEEE 802.3 Ethernet, IEEE 802.11, …', 'MAC Merge sublayer for preemption (802.3br)'], tone: 'plain'},
+  ];
+  return (
+    <Figure
+      height={335}
+      label="Layer by layer: upper layers unchanged, DetNet at layer 3, a mapping of DetNet flows to TSN streams, TSN at layer 2, Ethernet at layer 1, common time across all layers, and an SDN controller configuring layers 3 and 2"
+      caption="Figure 4. What each layer contributes to a deterministic path. A software-defined controller configures both the routed (DetNet) and the bridged (TSN) segments, and every node shares one time base."
+      source={
+        <>
+          own drawing, after the operation and traffic-engineering sections of the{' '}
+          <a href="https://en.wikipedia.org/wiki/Deterministic_Networking">Wikipedia article on DetNet</a>,
+          the sub-layers of <a href="https://www.rfc-editor.org/rfc/rfc8655">RFC 8655</a>, and J. Farkas,{' '}
+          <a href={farkasOverview}>IEEE 802.1 TSN TG Overview</a> (2018).
+        </>
+      }>
+      {rows.map((row, i) => (
+        <g key={row.label}>
+          <Box x={10} y={15 + i * 54} w={125} h={46} lines={[row.label]} title size={12} tone="muted" />
+          <Box x={150} y={15 + i * 54} w={390} h={46} lines={row.lines} title size={row.size ?? 11} tone={row.tone} dashed={row.dashed} />
+        </g>
+      ))}
+      <Box x={10} y={285} w={125} h={40} lines={['All layers']} title size={12} tone="muted" />
+      <Box x={150} y={285} w={560} h={40} lines={['Common time at every node: gPTP (802.1AS), a profile of IEEE 1588 PTP']} size={11.5} tone="service" />
+
+      <Box x={560} y={69} w={150} h={154} lines={['SDN controller', 'explicit routes', 'resource reservation', 'IntServ + DiffServ', 'integration', 'TSN: the CNC']} title size={11} tone="arrival" />
+      <Arrow d="M560,92 H542" tone="arrival" dashed />
+      <Arrow d="M560,200 H542" tone="arrival" dashed />
     </Figure>
   );
 }

@@ -21,7 +21,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/blog/why-deterministic-guarantees">
-            Start with Part I
+            Start the learning path
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"

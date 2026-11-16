@@ -13,37 +13,37 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    step: 'Part I',
-    title: 'Min-plus foundations',
+    step: 'Deterministic networks',
+    title: 'Why bounds, and what they require',
+    to: '/blog/why-deterministic-guarantees',
+    description: (
+      <>
+        What a deterministic service is, why measurement cannot certify it,
+        and how the work is divided between Layer 2 and Layer 3.
+      </>
+    ),
+  },
+  {
+    step: 'Network calculus',
+    title: 'Min-plus foundations and worst-case bounds',
     to: '/blog/min-plus-algebra',
     description: (
       <>
-        Cumulative functions, min-plus convolution and deconvolution, and the
-        arrival and service curve abstractions on which every bound rests.
+        Arrival and service curves; delay, backlog and output bounds;
+        concatenation and the &ldquo;pay bursts only once&rdquo; principle;
+        residual service under aggregate scheduling.
       </>
     ),
   },
   {
-    step: 'Part II',
-    title: 'Worst-case bounds',
-    to: '/blog/three-fundamental-bounds',
+    step: 'IEEE 802.1 · IETF · TSN',
+    title: 'Standards, tools and reconfiguration',
+    to: '/blog/ieee-802-1-tsn-task-group',
     description: (
       <>
-        Delay, backlog and output bounds; concatenation and the
-        &ldquo;pay bursts only once&rdquo; principle; residual service under
-        aggregate scheduling.
-      </>
-    ),
-  },
-  {
-    step: 'Part III',
-    title: 'TSN and reconfiguration',
-    to: '/blog/dynamic-reconfiguration-of-tsn',
-    description: (
-      <>
-        Network calculus models of TSN shapers, and the open problem of
-        reconfiguring a deterministic network online without losing its
-        guarantees.
+        The TSN task group and IETF DetNet, the TSN toolbox and its network
+        calculus models, and the open problem of reconfiguring a
+        deterministic network online without losing its guarantees.
       </>
     ),
   },

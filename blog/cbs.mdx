@@ -10,7 +10,7 @@ description: The credit-based shaper of IEEE 802.1Qav, now part of IEEE 802.1Q. 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-The credit-based shaper (CBS) is the oldest TSN shaper. It comes from Audio Video Bridging (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
+The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) shaper. It comes from [Audio Video Bridging](https://www.ieee802.org/1/pages/avbridges.html) (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
 
 {/* truncate */}
 
@@ -61,20 +61,20 @@ AVB defines two shaped stream reservation classes [2]:
 | A | 125 µs | 2 ms over 7 hops |
 | B | 250 µs | 50 ms over 7 hops |
 
-Together, the reserved classes may use at most 75 % of the link bandwidth [2]. The `idleSlope` of each class is the sum of the bandwidths reserved by the stream reservation protocol, described in [the stream reservation post](/blog/stream-reservation). Figure 3 shows why a reservation needs every bridge on the path: a single non-AVB bridge breaks the guarantee [2].
+Together, the reserved classes may use at most 75 % of the link bandwidth [2]. The `idleSlope` of each class is the sum of the bandwidths reserved by the stream reservation protocol, described in [the stream reservation post](/blog/stream-reservation). Figure 3 shows why a reservation needs every [bridge](https://en.wikipedia.org/wiki/Network_bridge) on the path: a single non-AVB bridge breaks the guarantee [2].
 
 ## 4. Worst-case latency
 
-In network calculus terms, a CBS queue offers a rate-latency service with rate `idleSlope`. Its latency term grows with the largest frame of lower priority, which may already be on the wire, and with the bursts of higher classes. [The TSN shapers post](/blog/network-calculus-for-tsn) gives the service curve and its residual for lower classes.
+In [network calculus](https://en.wikipedia.org/wiki/Network_calculus) terms, a CBS queue offers a rate-latency service with rate `idleSlope`. Its [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) term grows with the largest frame of lower priority, which may already be on the wire, and with the bursts of higher classes. [The TSN shapers post](/blog/network-calculus-for-tsn) gives the service curve and its residual for lower classes.
 
 A 2026 tutorial on decentralised latency models adds several points that matter in practice [4]:
 
 - **The [802.1BA](https://standards.ieee.org/ieee/802.1BA/4396/) formula is not a bound.** The example latency formula of the AVB profile was shown to be inaccurate. The tutorial derives a network calculus model with formal proofs instead.
-- **CBS shapes classes, not streams.** One shaper instance serves the aggregate of all streams in the class. Aggregation adds latency jitter, so the effective burstiness of each stream grows from hop to hop despite the shaping.
+- **CBS shapes classes, not streams.** One shaper instance serves the aggregate of all streams in the class. Aggregation adds latency [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation), so the effective burstiness of each stream grows from hop to hop despite the shaping.
 - **CBS does not fit a clean shaper-to-shaper split.** Its credit reset depends on whether other frames of the class are still waiting. The shaping step therefore includes queuing and transmission, and each CBS bridge must compute its own queuing delay. With the other shapers studied, the downstream bridge computes the queuing delay of the upstream one. The [ATS post](/blog/asynchronous-traffic-shaping) shows that split.
 - **It works best when the egress slope covers the ingress slopes.** CBS performs very well when the `idleSlope` of an egress port is at least the sum of the `idleSlope`s feeding it. When that ratio falls below 1, which happened in almost all of the industrial topologies tested, performance degrades quickly. There, plain strict priority with a network calculus bound was the better choice [4].
 
-A review of industrial IoT networking places CBS between the other shapers. CBS fits traffic that is regular but occasionally bursty. Scheduled traffic fits regular, critical traffic. Asynchronous shaping fits sporadic critical events [5].
+A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_of_things) networking places CBS between the other shapers. CBS fits traffic that is regular but occasionally bursty. Scheduled traffic fits regular, critical traffic. Asynchronous shaping fits sporadic critical events [5].
 
 ## 5. Summary
 

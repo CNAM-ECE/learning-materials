@@ -7,7 +7,7 @@ tags: [youtube, article, book, foundations, network-calculus]
 description: Definition of arrival curves, token buckets, staircase curves for periodic TSN streams, good arrival curves and greedy shapers.
 ---
 
-An arrival curve is the traffic *contract* of a flow: an upper bound on how much data the flow may send in any time window. It is the first of the two envelopes on which network calculus is built.
+An arrival curve is the traffic *contract* of a flow: an upper bound on how much data the flow may send in any time window. It is the first of the two envelopes on which [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is built.
 
 {/* truncate */}
 
@@ -29,7 +29,7 @@ The definition constrains *every* interval, not only intervals starting at time 
 
 ## 2. Standard families
 
-**Token bucket (leaky bucket).** The affine function
+**[Token bucket](https://en.wikipedia.org/wiki/Token_bucket) ([leaky bucket](https://en.wikipedia.org/wiki/Leaky_bucket)).** The affine function
 
 $$
 \gamma_{r,b}(t) = \begin{cases} 0 & t = 0 \\ b + r\,t & t > 0 \end{cases}
@@ -45,7 +45,7 @@ $$
 \alpha(t) = L \left\lceil \frac{t}{P} \right\rceil.
 $$
 
-If the release instants may deviate by up to a jitter $J$, the curve becomes $L \lceil (t + J)/P \rceil$. A staircase is upper-bounded by the token bucket $\gamma_{L/P,\,L}$ (or $\gamma_{L/P,\,L(1 + J/P)}$ with jitter); analyses frequently use the token bucket because it keeps closed forms simple, at the cost of some pessimism.
+If the release instants may deviate by up to a [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation) $J$, the curve becomes $L \lceil (t + J)/P \rceil$. A staircase is upper-bounded by the token bucket $\gamma_{L/P,\,L}$ (or $\gamma_{L/P,\,L(1 + J/P)}$ with jitter); analyses frequently use the token bucket because it keeps closed forms simple, at the cost of some pessimism.
 
 ## 3. Good arrival curves
 

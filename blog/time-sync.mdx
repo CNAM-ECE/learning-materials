@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {PeerDelayFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-Gates, cyclic queues and time-gated policing all assume that every bridge reads the same time. IEEE 802.1AS is the standard that provides that time. This post explains how it works and what an analysis has to assume about it.
+Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post explains how it works and what an analysis has to assume about it.
 
 {/* truncate */}
 
@@ -22,14 +22,14 @@ Gates, cyclic queues and time-gated policing all assume that every bridge reads 
 
 ## 1. Definition
 
-**[IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/)**, *Timing and Synchronization for Time-Sensitive Applications*, defines the **generalised Precision Time Protocol (gPTP)**. gPTP is a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) PTP. It distributes time from one reference clock, the *grandmaster*, through bridges and end stations, with sub-microsecond precision [1][2].
+**[IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/)**, *Timing and Synchronization for Time-Sensitive Applications*, defines the **generalised [Precision Time Protocol](https://standards.ieee.org/ieee/1588/6825/) (gPTP)**. gPTP is a tightly constrained profile of [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) PTP. It distributes time from one reference clock, the *grandmaster*, through bridges and end stations, with sub-microsecond precision [1][2].
 
 Two properties set it apart from using PTP over an ordinary LAN:
 
 - **Every device takes part.** Each bridge on the path is a *time-aware system* that measures its links and its own residence time. It is not a transparent box that adds unknown delay [2].
 - **Time travels with the network.** No separate timing network is needed. The messages are ordinary [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frames between neighbours.
 
-The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which TSN tools depend on gPTP. Scheduled traffic ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and time-based stream gates ([802.1Qci](https://1.ieee802.org/tsn/802-1qci/)) need it. The credit-based shaper and asynchronous traffic shaping do not.
+The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which [TSN](https://1.ieee802.org/tsn/) tools depend on gPTP. Scheduled traffic ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and time-based stream gates ([802.1Qci](https://1.ieee802.org/tsn/802-1qci/)) need it. The credit-based shaper and asynchronous [traffic shaping](https://en.wikipedia.org/wiki/Traffic_shaping) do not.
 
 ## 2. Who is the master
 
@@ -79,7 +79,7 @@ Errors therefore accumulate hop by hop. Queuing does not add error, because each
 
 ## 4. What changed in the 2020 revision
 
-The 2020 revision of 802.1AS improved the accuracy of time measurement and added **multiple time domains**, so that a device can follow several grandmasters for redundancy [2]. The task group's work on the revision also covered link aggregation, faster changeover between grandmasters, and redundant paths [3].
+The 2020 revision of 802.1AS improved the accuracy of time measurement and added **multiple time domains**, so that a device can follow several grandmasters for redundancy [2]. The task group's work on the revision also covered [link aggregation](https://en.wikipedia.org/wiki/Link_aggregation), faster changeover between grandmasters, and redundant paths [3].
 
 ## 5. What an analysis must assume about time
 
@@ -90,7 +90,7 @@ Two practical lessons come from a testbed study of 17 scheduling methods [4]:
 1. **Synchronisation messages are traffic too.** If time-triggered frames collide with PTP messages, synchronisation can fail within its period. The runtime error then exceeds the bound the schedule assumed, causing missed deadlines or network failure. The schedule must leave room for gPTP.
 2. **The error bound is an input to the guarantee.** A worst-case delay computed for scheduled traffic is only as valid as the synchronisation error it assumed.
 
-A review of industrial IoT technologies makes the same point from the other side. With even small time errors, carefully aligned windows can drift apart. Scheduled traffic is then delayed by a whole cycle, and the problem grows with the size of the network [5].
+A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_of_things) technologies makes the same point from the other side. With even small time errors, carefully aligned windows can drift apart. Scheduled traffic is then delayed by a whole cycle, and the problem grows with the size of the network [5].
 
 ## 6. Summary
 

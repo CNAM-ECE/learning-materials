@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {ReservationFlowFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-A shaper bounds latency only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the bridges themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
+A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the [bridges](https://en.wikipedia.org/wiki/Network_bridge) themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
 
 {/* truncate */}
 
@@ -22,7 +22,7 @@ A shaper bounds latency only if the traffic it serves stays within what it was c
 
 ## 1. Definition
 
-**Stream reservation** is distributed admission control. A talker declares a stream and its traffic, listeners declare interest, and every bridge on the path checks and commits its resources before the stream may send [2]. Three generations of standards do this [2][3]:
+**Stream reservation** is distributed [admission control](https://en.wikipedia.org/wiki/Admission_control). A talker declares a stream and its traffic, listeners declare interest, and every bridge on the path checks and commits its resources before the stream may send [2]. Three generations of standards do this [2][3]:
 
 | Standard | Protocol | Status |
 | --- | --- | --- |
@@ -37,7 +37,7 @@ A shaper bounds latency only if the traffic it serves stays within what it was c
   caption="Figure 2. A talker advertise spreading through the bridges. In each bridge the advertise is registered (R) on the port where it arrived and declared (D) on the other ports, so it reaches the intended listener and other end stations."
 />
 
-In SRP a talker sends a **talker advertise** carrying the stream identifier, its traffic class and frame rate, and an **accumulated latency** that each bridge increases. A listener that wants the stream answers with a **listener ready**, which travels back towards the talker. Each bridge it passes commits bandwidth for the stream. If a bridge lacks resources, the advertise becomes a **talker failed** and carries the reason [2]. Streams are identified by 64 bits: the talker's 48-bit MAC address and a 16-bit number [2].
+In SRP a talker sends a **talker advertise** carrying the stream identifier, its traffic class and frame rate, and an **accumulated latency** that each bridge increases. A listener that wants the stream answers with a **listener ready**, which travels back towards the talker. Each bridge it passes commits bandwidth for the stream. If a bridge lacks resources, the advertise becomes a **talker failed** and carries the reason [2]. Streams are identified by 64 bits: the talker's 48-bit [MAC address](https://en.wikipedia.org/wiki/MAC_address) and a 16-bit number [2].
 
 The weakness of SRP was its analysis, not its signalling. The standards gave example latency formulas for the accumulated latency, but these lacked formal proof and were later shown to be inaccurate [4].
 
@@ -53,7 +53,7 @@ The 2026 tutorial on decentralised latency models works out exactly what a bridg
 | Shaper of each upstream traffic class, and its parameters (CBS idle slope, [CQF](https://1.ieee802.org/tsn/802-1qch/) cycle) | Exchanged with neighbours beforehand | Estimate the burstiness of incoming traffic |
 | Stream identifier and header fields | Per stream, at reservation | Match frames to the stream and its priority |
 | Traffic specification: burst $b$, rate $r$, minimum and maximum frame length | Per stream | Bound the traffic volume: $w(t) \le b + r t$ |
-| Accumulated maximum and minimum latency $L^{+}$, $L^{-}$ | Per stream, updated at each hop | Bound the extra burstiness caused by delay variation |
+| Accumulated maximum and minimum latency $L^{+}$, $L^{-}$ | Per stream, updated at each hop | Bound the extra burstiness caused by [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) |
 | Upstream traffic class | Per stream | Compute the upstream queuing delay with the upstream bridge's own class mapping |
 | Speed of the previous link | Per stream | Tighter bound using serialisation (optional) |
 
@@ -63,7 +63,7 @@ $$
 L^{+} \leftarrow L^{+} + \Delta^P_{\text{seg}}, \qquad L^{-} \leftarrow L^{-} + \frac{\ell^{\min}}{R_{\text{seg}}}.
 $$
 
-The pre-configured threshold is used rather than the actual current bound. The actual bound changes with every new reservation, whereas the threshold stays valid as other streams come and go [4]. The traffic specification follows the token-bucket model of [the arrival curves post](/blog/arrival-curves), which replaces SRP's frames-per-interval description [4].
+The pre-configured threshold is used rather than the actual current bound. The actual bound changes with every new reservation, whereas the threshold stays valid as other streams come and go [4]. The traffic specification follows the [token-bucket](https://en.wikipedia.org/wiki/Token_bucket) model of [the arrival curves post](/blog/arrival-curves), which replaces SRP's frames-per-interval description [4].
 
 ## 4. The bound a bridge computes
 
@@ -83,11 +83,11 @@ $$
 d^P_{\text{seg}} \le \frac{\sum_{i \in H} \left(b_i^{\text{eff}} + r_i\,\Delta^P_{\text{seg}}\right) + \sum_{i \in C} b_i^{\text{eff}} + \ell^{\max}}{R_{\text{seg}}}.
 $$
 
-Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter network calculus versions and versions for CQF, [ATS](https://1.ieee802.org/tsn/802-1qcr/) and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
+Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter [network calculus](https://en.wikipedia.org/wiki/Network_calculus) versions and versions for CQF, [ATS](https://1.ieee802.org/tsn/802-1qcr/) and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
 
 ## 5. Distributed or centralised?
 
-A distributed protocol has no single point of failure and copes with bridges whose internals a central controller would not know [4]. A review of industrial IoT technologies points out the other side. A reservation can fail at any bridge, and some failures only appear at run time. A small change in the network can reroute traffic and invalidate earlier reservations. This is the argument for a central controller that sees the whole network [5].
+A distributed protocol has no single point of failure and copes with bridges whose internals a central controller would not know [4]. A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_of_things) technologies points out the other side. A reservation can fail at any bridge, and some failures only appear at run time. A small change in the network can reroute traffic and invalidate earlier reservations. This is the argument for a central controller that sees the whole network [5].
 
 RAP is designed for both cases. Decentralised models can also join two centrally configured domains, as shown in the tutorial's motivating scenarios [4].
 

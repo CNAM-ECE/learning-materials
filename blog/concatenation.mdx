@@ -7,7 +7,7 @@ tags: [article, book, network-calculus]
 description: End-to-end service curves by min-plus convolution, and why they give tighter bounds than summing per-hop delays.
 ---
 
-A flow in a [TSN](https://1.ieee802.org/tsn/) network crosses several bridges. There are two ways to bound its end-to-end delay: add the per-hop bounds, or first compose the hops into a single equivalent server. The second is never worse and often much better. This post explains why.
+A flow in a [TSN](https://1.ieee802.org/tsn/) network crosses several [bridges](https://en.wikipedia.org/wiki/Network_bridge). There are two ways to bound its end-to-end delay: add the per-hop bounds, or first compose the hops into a single equivalent server. The second is never worse and often much better. This post explains why.
 
 {/* truncate */}
 
@@ -27,11 +27,11 @@ $$
 \bigotimes_{i=1}^{n} \beta_{R_i, T_i} = \beta_{\min_i R_i,\; \sum_i T_i}.
 $$
 
-The path behaves like a single server whose rate is the bottleneck rate and whose latency is the sum of the latencies.
+The path behaves like a single server whose rate is the bottleneck rate and whose [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is the sum of the latencies.
 
 ## 2. Two ways to bound a two-hop path
 
-Consider a token-bucket flow $\gamma_{r,b}$ crossing two rate-latency servers $\beta_{R_1,T_1}$ and $\beta_{R_2,T_2}$, with $r \le \min(R_1, R_2)$.
+Consider a [token-bucket](https://en.wikipedia.org/wiki/Token_bucket) flow $\gamma_{r,b}$ crossing two rate-latency servers $\beta_{R_1,T_1}$ and $\beta_{R_2,T_2}$, with $r \le \min(R_1, R_2)$.
 
 **Additive (hop-by-hop) analysis.** At hop 1 the delay is $T_1 + b/R_1$ and the output burst is $b + rT_1$. At hop 2 the delay is $T_2 + (b + rT_1)/R_2$. Summing,
 
@@ -65,7 +65,7 @@ PBOO is the reason per-flow, path-based analyses can be much tighter than per-no
 - It requires a *per-flow* service curve at each hop. When flows share a queue, one must first derive the service left to the flow of interest, the **residual service curve**, which is the subject of the [next post](/blog/aggregate-multiplexing-residual-service).
 - For aggregate scheduling, a related principle, **pay multiplexing only once** (PMOO), avoids paying the interference of a cross flow at every hop it shares with the flow of interest. PMOO is established for blind multiplexing; FIFO multiplexing requires different techniques.
 
-The trade-off between per-node analyses (simple, incremental, fast) and path-based analyses (tighter, more expensive) recurs in the discussion of online admission control in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
+The trade-off between per-node analyses (simple, incremental, fast) and path-based analyses (tighter, more expensive) recurs in the discussion of online [admission control](https://en.wikipedia.org/wiki/Admission_control) in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
 
 ## References
 

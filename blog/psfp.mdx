@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {PsfpTablesFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-Every bound in this series assumes that each talker respects its arrival curve. Per-Stream Filtering and Policing (PSFP) is the TSN mechanism that makes that assumption hold. It checks each stream where it enters a bridge and stops a faulty or malicious talker before it can harm the streams that behave.
+Every bound in this series assumes that each talker respects its arrival curve. Per-Stream Filtering and [Policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) ([PSFP](https://1.ieee802.org/tsn/802-1qci/)) is the [TSN](https://1.ieee802.org/tsn/) mechanism that makes that assumption hold. It checks each stream where it enters a [bridge](https://en.wikipedia.org/wiki/Network_bridge) and stops a faulty or malicious talker before it can harm the streams that behave.
 
 {/* truncate */}
 
@@ -37,7 +37,7 @@ Every bound in this series assumes that each talker respects its arrival curve. 
 
 [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) has no stream-ID field. A bridge recognises a stream by matching header fields that were agreed when the stream was set up. The **stream identification** functions defined with [802.1CB](https://1.ieee802.org/tsn/802-1cb/) include [2]:
 
-- destination MAC address and VLAN ID;
+- destination [MAC address](https://en.wikipedia.org/wiki/MAC_address) and [VLAN](https://en.wikipedia.org/wiki/VLAN) ID;
 - source MAC address and VLAN ID;
 - [IP](https://www.rfc-editor.org/rfc/rfc791) addresses, protocol and ports, for streams carried over IP.
 
@@ -55,7 +55,7 @@ The match yields a **stream handle**, an internal number that the following tabl
 
 ## 4. What PSFP does for the analysis
 
-**It enforces the arrival curve.** The committed rate and burst of the meter form a token bucket, so traffic leaving the meter conforms to the arrival curve $\gamma_{r,b}(t) = b + r t$ of [the arrival curves post](/blog/arrival-curves). Without policing, that curve is a promise. With policing, it is a property of the network.
+**It enforces the arrival curve.** The committed rate and burst of the meter form a [token bucket](https://en.wikipedia.org/wiki/Token_bucket), so traffic leaving the meter conforms to the arrival curve $\gamma_{r,b}(t) = b + r t$ of [the arrival curves post](/blog/arrival-curves). Without policing, that curve is a promise. With policing, it is a property of the network.
 
 **It contains faults.** A "babbling idiot" talker that floods the network loses its excess frames at the first bridge. Streams that share later queues with it keep their bounds.
 

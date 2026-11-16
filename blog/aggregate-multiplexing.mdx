@@ -7,7 +7,7 @@ tags: [youtube, book, network-calculus, tsn]
 description: Blind, FIFO and non-preemptive static-priority multiplexing; residual service curves; Total Flow Analysis versus path-based analyses.
 ---
 
-In a real switch, a flow does not have a server to itself: it shares an egress port with other flows, possibly in the same queue. To apply the results of the previous posts to one flow, we need the service that remains for it once the competing traffic has been served. This is the **residual service curve**, and its form depends on the multiplexing policy.
+In a real [switch](https://en.wikipedia.org/wiki/Network_switch), a flow does not have a server to itself: it shares an egress port with other flows, possibly in the same queue. To apply the results of the previous posts to one flow, we need the service that remains for it once the competing traffic has been served. This is the **residual service curve**, and its form depends on the multiplexing policy.
 
 {/* truncate */}
 
@@ -21,13 +21,13 @@ $$
 
 provided this function is wide-sense increasing (otherwise one takes its largest increasing lower bound). The strictness of $\beta$ is essential: the result is false for general min-plus service curves.
 
-For a rate-latency server and a token-bucket cross flow, the residual service is again rate-latency:
+For a rate-latency server and a [token-bucket](https://en.wikipedia.org/wiki/Token_bucket) cross flow, the residual service is again rate-latency:
 
 $$
 \bigl[\beta_{C,T} - \gamma_{r_2,b_2}\bigr]^+ = \beta_{\,C - r_2,\; \frac{C T + b_2}{C - r_2}} .
 $$
 
-The residual rate is what the cross flow leaves on average; the residual latency includes the time needed to serve the cross flow's burst and its backlog accumulated during $T$.
+The residual rate is what the cross flow leaves on average; the residual [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) includes the time needed to serve the cross flow's burst and its backlog accumulated during $T$.
 
 ## 2. FIFO multiplexing
 

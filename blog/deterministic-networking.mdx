@@ -14,7 +14,7 @@ import {
 } from '@site/src/components/figures/deterministic';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 
-"Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded latency, with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
+"Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
 
 {/* truncate */}
 
@@ -22,14 +22,14 @@ import {ReplicationFigure} from '@site/src/components/figures/shared';
 
 ## 1. Definition
 
-A **deterministic network** carries, on shared packet infrastructure, flows whose end-to-end latency is bounded, whose delay variation is low, and whose loss is extremely low, while ordinary best-effort traffic continues to use the same links. The IETF Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group describes its subject as deterministic data paths that run over Layer 2 bridged segments and Layer 3 routed segments and that can bound latency, loss, delay variation and reordering, with high reliability [1].
+A **deterministic network** carries, on shared packet infrastructure, flows whose end-to-end latency is bounded, whose [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) is low, and whose loss is extremely low, while ordinary [best-effort](https://en.wikipedia.org/wiki/Best-effort_delivery) traffic continues to use the same links. The [IETF](https://www.ietf.org/) Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group describes its subject as deterministic data paths that run over Layer 2 bridged segments and Layer 3 routed segments and that can bound latency, loss, delay variation and reordering, with high reliability [1].
 
 Nothing above the network layer changes. As Figure 1 shows, the extension happens at two existing layers:
 
-- at **Layer 2**, the IEEE 802.1 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) task group extends bridged [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) (see [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group) and [the TSN toolbox post](/blog/tsn-toolbox));
+- at **Layer 2**, the [IEEE 802.1](https://1.ieee802.org/) [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) task group extends bridged [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) (see [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group) and [the TSN toolbox post](/blog/tsn-toolbox));
 - at **Layer 3**, the IETF DetNet working group extends routed [IP](https://www.rfc-editor.org/rfc/rfc791) and [MPLS](https://www.rfc-editor.org/rfc/rfc3031) networks (see [the IETF DetNet post](/blog/ietf-detnet)).
 
-The two groups collaborate on a common architecture, so that a routed deterministic path can cross bridged deterministic segments [1]. Network calculus, the subject of the next group of posts, is one of the common tool to successfully take the analysis that proves the bound once the network is configured in the industrial applications.
+The two groups collaborate on a common architecture, so that a routed deterministic path can cross bridged deterministic segments [1]. [Network calculus](https://en.wikipedia.org/wiki/Network_calculus), the subject of the next group of posts, is one of the common tool to successfully take the analysis that proves the bound once the network is configured in the industrial applications.
 
 ## 2. Deterministic versus traditional service
 
@@ -37,11 +37,11 @@ The two groups collaborate on a common architecture, so that a routed determinis
 
 A traditional packet service is engineered for a good average. Its latency distribution has a long tail, and the only ways to shorten the tail are to drop late packets or to over-provision. A deterministic service is specified differently [2]:
 
-- packet loss is caused at most by equipment failure, never by congestion ("zero congestion loss");
+- packet loss is caused at most by equipment failure, never by [congestion](https://en.wikipedia.org/wiki/Network_congestion) ("zero congestion loss");
 - latency is bounded, so the distribution has no tail beyond the application's requirement;
 - the aim is the right packet at the right time, not the fastest packet on average.
 
-The reason standard equipment cannot offer this is that queuing in switches and routers is not controlled per flow: a burst from one source delays every other flow sharing the queue. Larger buffers reduce loss but lengthen the delay, which is the wrong trade for a control loop [3].
+The reason standard equipment cannot offer this is that queuing in [switches](https://en.wikipedia.org/wiki/Network_switch) and [routers](https://en.wikipedia.org/wiki/Router_(computing)) is not controlled per flow: a burst from one source delays every other flow sharing the queue. Larger buffers reduce loss but lengthen the delay, which is the wrong trade for a [control loop](https://en.wikipedia.org/wiki/Control_loop) [3].
 
 ## 3. What a deterministic flow requires
 
@@ -50,7 +50,7 @@ The DetNet problem statement, as summarised in [3], gives five requirements. The
 | Requirement | Meaning |
 | --- | --- |
 | Time synchronisation | Every node(routers/switches) shares a time base, with an accuracy between nanoseconds and microseconds |
-| Deterministic flows | Unicast or multicast, with guaranteed minimum and maximum end-to-end latency(tighten jiter depending on its requirements), and loss ratio of $10^{-9}$ to $10^{-12}$ on wired Ethernet and $10^{-5}$ for mesh network, no throttling and no congestion feedback |
+| Deterministic flows | [Unicast](https://en.wikipedia.org/wiki/Unicast) or [multicast](https://en.wikipedia.org/wiki/Multicast), with guaranteed minimum and maximum end-to-end latency(tighten jiter depending on its requirements), and loss ratio of $10^{-9}$ to $10^{-12}$ on wired Ethernet and $10^{-5}$ for mesh network, no throttling and no congestion feedback |
 | Per-node scheduling | Each node schedules, shapes, limits and controls its transmissions (over-provisioning not required) |
 | Protection | A misbehaving node or flow cannot degrade the others, even under high load |
 | Reservation | Resources are reserved in every node that carries the flow |
@@ -63,7 +63,7 @@ The DetNet architecture groups the mechanisms into three techniques, which can b
 
 | Technique | What it does | What it protects against |
 | --- | --- | --- |
-| Resource allocation | Reserves buffer space and link bandwidth for a flow, or an aggregate of flows, at each hop based on predefined max transmission rate and packet size. Traffic policing and shaping functions at ingress ports limit data rates to mitigate packet out of scheduled time (next node additional buffer) | Loss caused by contention with unbounded end-to-end latency. Precise packet timestamps and sub-microsecond synchronization across network nodes enable low-latency, jitter-free communication, which is critical for audiovisual quality and deterministic industrial control applications |
+| Resource allocation | Reserves buffer space and link bandwidth for a flow, or an aggregate of flows, at each hop based on predefined max transmission rate and packet size. [Traffic policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) and shaping functions at ingress ports limit data rates to mitigate packet out of scheduled time (next node additional buffer) | Loss caused by contention with unbounded end-to-end latency. Precise packet timestamps and sub-microsecond synchronization across network nodes enable low-latency, jitter-free communication, which is critical for audiovisual quality and deterministic industrial control applications |
 | Service protection | Sends copies of each packet over several paths (sequence number & timestamp to transport protocol) and removes duplicates with reordering packets, or adds redundancy & error correction by packet encoding (multi-trans packet unit) | Loss caused by equipment or media failure, bandwidth constraint assurance & delay equalization in failure recovery |
 | Explicit routes | Fixes the path in advance, so that it does not change at once when the topology changes | Interruptions while routing or bridging protocols reconverge |
 
@@ -89,7 +89,7 @@ When the paths have different lengths, the merging node needs extra buffering to
 | | IEEE 802.1 TSN | IETF DetNet |
 | --- | --- | --- |
 | Layer | 2, bridged networks | 3, routed networks |
-| Data plane | [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) bridges over IEEE 802 media | IP and MPLS, and Layer 2 encapsulations carried over them |
+| Data plane | [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) [bridges](https://en.wikipedia.org/wiki/Network_bridge) over [IEEE 802](https://www.ieee802.org/) media | IP and MPLS, and Layer 2 encapsulations carried over them |
 | Scope | IEEE 802 networks | Networks under a single administrative control, such as campus networks and private WANs |
 | Flow terminology | Talker, Listener, Stream | Source, destination, flow |
 | Queuing mechanisms | Defined here: shapers, gates, preemption | Reused from the sub-network; DetNet focuses on the data path |
@@ -110,7 +110,7 @@ The two efforts meet where a routed DetNet path crosses a bridged TSN segment. W
 
 ### Matching a DetNet flow to a TSN stream
 
-The interworking itself is defined in [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/). Its stream identification functions, in particular *active destination MAC and VLAN stream identification*, are how a TSN sub-network makes its capabilities known to DetNet flows [3]. When a DetNet flow enters the bridged segment, the edge bridge recognises it from three header fields: the destination [MAC address](https://en.wikipedia.org/wiki/MAC_address), the [VLAN](https://en.wikipedia.org/wiki/VLAN) ID and the priority. It then maps the flow to a TSN stream identifier and to the [quality-of-service](https://en.wikipedia.org/wiki/Quality_of_service) requirements of the talkers and listeners in the [AVB](https://www.ieee802.org/1/pages/avbridges.html)/[TSN](https://1.ieee802.org/tsn/) sub-network [3].
+The interworking itself is defined in [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/). Its stream identification functions, in particular *active destination MAC and [VLAN](https://en.wikipedia.org/wiki/VLAN) stream identification*, are how a TSN sub-network makes its capabilities known to DetNet flows [3]. When a DetNet flow enters the bridged segment, the edge bridge recognises it from three header fields: the destination [MAC address](https://en.wikipedia.org/wiki/MAC_address), the [VLAN](https://en.wikipedia.org/wiki/VLAN) ID and the priority. It then maps the flow to a TSN stream identifier and to the [quality-of-service](https://en.wikipedia.org/wiki/Quality_of_service) requirements of the talkers and listeners in the [AVB](https://www.ieee802.org/1/pages/avbridges.html)/[TSN](https://1.ieee802.org/tsn/) sub-network [3].
 
 | [DetNet](https://www.rfc-editor.org/rfc/rfc8655) side (Layer 3) | TSN side (Layer 2) |
 | --- | --- |
@@ -133,7 +133,7 @@ Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and
 | Presentation (L6) | Data representation: encoding, compression and encryption. Unchanged by DetNet and TSN. |
 | Session (L5) | Dialogue control: opening, synchronising and closing sessions between applications. Unchanged by DetNet and TSN. |
 | Transport (L4) | End-to-end transport, usually [UDP](https://www.rfc-editor.org/rfc/rfc768) or [TCP](https://www.rfc-editor.org/rfc/rfc9293). DetNet adds no transport protocol, and its flows need no congestion feedback [3]. |
-| Network (L3) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary IT traffic from a misbehaving DetNet source [3]. |
+| Network (L3) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary [IT](https://en.wikipedia.org/wiki/Information_technology) traffic from a misbehaving DetNet source [3]. |
 | L3 → L2 | Where a routed path crosses a bridged segment, each DetNet flow becomes a TSN stream. The bridge recognises it by destination MAC address, VLAN ID and priority, using the stream identification functions of [802.1CB](https://1.ieee802.org/tsn/802-1cb/) [3]. |
 | Data link (L2) | Provides the queuing, shaping, scheduling, preemption and replication mechanisms that actually bound delay on each hop (see the [TSN toolbox](/blog/tsn-toolbox)) [3]. |
 | Physical (L1) | The physical link. The only change is the MAC Merge sublayer of [802.3br](https://www.ieee802.org/3/br/), which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
@@ -145,7 +145,7 @@ In other words, the TSN algorithms for queuing, shaping and scheduling are not t
 
 Before DetNet, the IETF had two models for quality of service in IP networks. DetNet sits between them.
 
-- **[Integrated Services](https://www.rfc-editor.org/rfc/rfc1633) (IntServ)**, from 1994, reserves resources **per flow** in every router along the path. Reservations are usually signalled with [RSVP](https://www.rfc-editor.org/rfc/rfc2205) [5]. Its *Guaranteed Service* gives a mathematically provable upper bound on queuing delay for a flow described by a token bucket [6]. This is the same kind of bound that [network calculus](/blog/three-fundamental-bounds) derives. The price is per-flow state in every router, which does not scale to large networks.
+- **[Integrated Services](https://www.rfc-editor.org/rfc/rfc1633) (IntServ)**, from 1994, reserves resources **per flow** in every router along the path. Reservations are usually signalled with [RSVP](https://www.rfc-editor.org/rfc/rfc2205) [5]. Its *Guaranteed Service* gives a mathematically provable upper bound on queuing delay for a flow described by a [token bucket](https://en.wikipedia.org/wiki/Token_bucket) [6]. This is the same kind of bound that [network calculus](/blog/three-fundamental-bounds) derives. The price is per-flow state in every router, which does not scale to large networks.
 - **[Differentiated Services](https://www.rfc-editor.org/rfc/rfc2475) (DiffServ)**, from 1998, does not track flows. The edge of the network classifies each packet and marks it with a 6-bit code point in the IP header ([DSCP](https://www.rfc-editor.org/rfc/rfc2474)). Core routers then apply one of a few *per-hop behaviours* to whole classes [7]. DiffServ scales well, but it promises only relative treatment of a class, not a bound for an individual flow, and the service a class receives can differ from one operator to the next [8].
 
 A long-standing compromise uses IntServ at the edges, to admit and shape each flow, and DiffServ in the core, to forward aggregates [8][9]. DetNet follows the same pattern. Each flow is admitted and policed individually, while nodes can treat aggregates of flows together. The aggregation analysis of [the multiplexing post](/blog/aggregate-multiplexing-residual-service) is what makes this safe.
@@ -155,14 +155,14 @@ A long-standing compromise uses IntServ at the edges, to admit and shape each fl
 The Wikipedia article on DetNet describes the Layer 3 part as working through a **software-defined networking layer** that brings IntServ and DiffServ together [3]. In practice, a logically central controller does three jobs that neither IntServ nor DiffServ could do alone:
 
 1. it **computes explicit routes**, which do not change immediately when the topology changes, so routing protocols reconverging cause no interruption. RSVP-TE, Segment Routing, IS-IS or MPLS-TE can install the same routes [3];
-2. it **reserves resources** per flow at every node, with the knowledge of all other flows that admission control needs;
-3. it **configures the TSN segments** on the path, through the CNC of [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/).
+2. it **reserves resources** per flow at every node, with the knowledge of all other flows that [admission control](https://en.wikipedia.org/wiki/Admission_control) needs;
+3. it **configures the TSN segments** on the path, through the [CNC](https://1.ieee802.org/tsn/802-1qcc/) of [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/).
 
 RFC 8655 places this logic in the *controller plane* of the DetNet architecture (see [the IETF DetNet post](/blog/ietf-detnet)). [The SDN post](/blog/sdn-and-tsn-configuration) shows the same structure on the TSN side.
 
 ## 7. Where it is used
 
-The application areas named by the two groups overlap widely [1][3]: professional and home audio and video, industrial automation and machine-to-machine control, in-vehicle networks, electrical generation and distribution, building automation, and cellular fronthaul and backhaul. A common motivation is to move time-critical applications from dedicated fieldbus networks onto packet networks that also carry ordinary IT traffic [3].
+The application areas named by the two groups overlap widely [1][3]: professional and home audio and video, industrial automation and machine-to-machine control, in-vehicle networks, electrical generation and distribution, building automation, and cellular [fronthaul](https://en.wikipedia.org/wiki/Fronthaul) and backhaul. A common motivation is to move time-critical applications from dedicated [fieldbus](https://en.wikipedia.org/wiki/Fieldbus) networks onto packet networks that also carry ordinary IT traffic [3].
 
 ## References
 

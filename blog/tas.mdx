@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {TasModelsFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-The Time-Aware Shaper (TAS) is the [TSN](https://1.ieee802.org/tsn/) tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the bridge is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
+The Time-Aware Shaper ([TAS](https://standards.ieee.org/ieee/802.1Qbv/6068/)) is the [TSN](https://1.ieee802.org/tsn/) tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the [bridge](https://en.wikipedia.org/wiki/Network_bridge) is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
 
 {/* truncate */}
 
@@ -63,10 +63,10 @@ A 2023 systematic review and experimental study of TAS scheduling [4] starts fro
 - **GCL length is bounded.** Bridges support only a limited number of entries, typically between 8 and 1024.
 - **Priority-to-queue mapping may differ from bridge to bridge**, so the same stream can sit in different queues along its path.
 - **Traffic models differ.** A *fully schedulable* model lets the scheduler choose the release time of each stream at the talker. A *partially schedulable* model takes release times as given.
-- **Delay models differ.** In a *no-wait* schedule, frames are forwarded without queuing at any hop. *Wait-allowed* schedules let frames wait in egress queues and have a larger solution space. *Window-based* models reserve windows for groups of streams and allow some jitter.
+- **Delay models differ.** In a *no-wait* schedule, frames are forwarded without queuing at any hop. *Wait-allowed* schedules let frames wait in egress queues and have a larger solution space. *Window-based* models reserve windows for groups of streams and allow some [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation).
 - **Queue isolation.** If two streams share a queue, the FIFO order must match the schedule. Otherwise a lost or delayed frame shifts the others. Methods enforce FIFO, frame-based or stream-based isolation, with stream-based the strictest.
 
-The 17 methods then split along three lines: fixed routing or joint routing and scheduling, no-wait or wait-allowed, and exact solutions (SMT or ILP solvers) or heuristics [4].
+The 17 methods then split along three lines: fixed routing or joint routing and scheduling, no-wait or wait-allowed, and exact solutions ([SMT](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) or [ILP](https://en.wikipedia.org/wiki/Integer_programming) solvers) or heuristics [4].
 
 ## 4. Lessons from the experimental study
 

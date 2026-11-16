@@ -10,7 +10,7 @@ description: Cyclic Queuing and Forwarding as a joint configuration of stream ga
 import {BridgeIntegrationFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
 import {CqfGatesFigure} from '@site/src/components/figures/standards';
 
-Cyclic Queuing and Forwarding (CQF) makes latency independent of the other traffic. A frame advances exactly one hop per cycle, so its delay depends only on the path length. No new hardware is needed: CQF is a particular way of configuring two [TSN](https://1.ieee802.org/tsn/) tools that already exist.
+Cyclic Queuing and Forwarding ([CQF](https://1.ieee802.org/tsn/802-1qch/)) makes [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) independent of the other traffic. A frame advances exactly one hop per cycle, so its delay depends only on the path length. No new hardware is needed: CQF is a particular way of configuring two [TSN](https://1.ieee802.org/tsn/) tools that already exist.
 
 {/* truncate */}
 
@@ -23,7 +23,7 @@ Cyclic Queuing and Forwarding (CQF) makes latency independent of the other traff
 
 **Cyclic Queuing and Forwarding**, [IEEE 802.1Qch](https://1.ieee802.org/tsn/802-1qch/) (Annex T of [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/)), divides time into cycles of equal length $T$, synchronised across the network. Two queues serve one traffic class and swap roles every cycle:
 
-- during a cycle, frames **received** by a bridge are stored in one queue;
+- during a cycle, frames **received** by a [bridge](https://en.wikipedia.org/wiki/Network_bridge) are stored in one queue;
 - the frames received in the **previous** cycle are sent from the other queue.
 
 A frame received in one cycle is therefore sent in the next [2][3].
@@ -45,14 +45,14 @@ When bridge A opens a gate and sends, bridge B classifies those frames into its 
 
 CQF works only if every frame sent in a cycle reaches the next bridge and is queued before that cycle ends. The cycle must therefore cover:
 
-- the transmission time of all frames the bridge may send in one cycle, which is what admission control limits;
+- the transmission time of all frames the bridge may send in one cycle, which is what [admission control](https://en.wikipedia.org/wiki/Admission_control) limits;
 - the propagation delay of the link;
 - the processing delay of the receiving bridge;
 - the synchronisation error between the two bridges.
 
 The tutorial on decentralised latency models expresses this as a latency threshold per hop, $\Delta \le T - d_{\text{misc}}$. Here $d_{\text{misc}}$ accounts for synchronisation inaccuracy. If admission control keeps the worst-case delay of the hop below $\Delta$, the queue is guaranteed to be empty at the end of its cycle. The downstream shaper then sees every frame as eligible exactly $T$ after the upstream one [4].
 
-End to end, the latency is about $T$ per hop. It varies by at most about one cycle, depending on where in a cycle the frame first arrives. This is why CQF gives very low jitter and why its bound needs no knowledge of the other flows [2].
+End to end, the latency is about $T$ per hop. It varies by at most about one cycle, depending on where in a cycle the frame first arrives. This is why CQF gives very low [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation) and why its bound needs no knowledge of the other flows [2].
 
 ## 4. Costs and comparison
 
@@ -60,7 +60,7 @@ The same tutorial evaluates CQF against strict priority, [ATS](https://1.ieee802
 
 - **Half the traffic classes.** Each class needs two queues, so with eight queues only four classes remain for reserved traffic. Priorities are merged, for example 7 and 6 into 7, which increases interference within a class.
 - **Best jitter under a global configuration.** When one setting is applied network-wide, CQF minimised jitter.
-- **Beaten by per-hop tuning.** When latency thresholds could be optimised hop by hop, strict priority with a network calculus bound gave better latency and jitter than CQF.
+- **Beaten by per-hop tuning.** When latency thresholds could be optimised hop by hop, strict priority with a [network calculus](https://en.wikipedia.org/wiki/Network_calculus) bound gave better latency and jitter than CQF.
 - **A cycle is a hard minimum.** Even a lightly loaded path pays $T$ per hop, so $T$ trades bandwidth per cycle against latency.
 
 For network calculus, CQF is the simplest case of all. Each hop is a delay element of $T$ with no burst growth. The burstiness cascade that complicates [aggregate multiplexing](/blog/aggregate-multiplexing-residual-service) does not occur.

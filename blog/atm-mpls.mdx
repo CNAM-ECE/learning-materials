@@ -10,7 +10,7 @@ description: Asynchronous Transfer Mode and Multiprotocol Label Switching in bri
 import {AtmMplsFigure, HeaderFormatsFigure} from '@site/src/components/figures/atm';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 
-Network calculus grew up in the 1990s, when the networks that promised quality of service were [ATM](https://www.itu.int/rec/T-REC-I.150) and, a little later, [IP](https://www.rfc-editor.org/rfc/rfc791) with [IntServ](https://www.rfc-editor.org/rfc/rfc1633), [DiffServ](https://www.rfc-editor.org/rfc/rfc2475) and [MPLS](https://www.rfc-editor.org/rfc/rfc3031). That is why its textbooks speak of cells, leaky buckets, virtual circuits and label-switched paths. This post explains those networks just enough to read the classic examples, and shows that the same ideas reappear in [TSN](https://1.ieee802.org/tsn/) and [DetNet](https://www.rfc-editor.org/rfc/rfc8655).
+[Network calculus](https://en.wikipedia.org/wiki/Network_calculus) grew up in the 1990s, when the networks that promised [quality of service](https://en.wikipedia.org/wiki/Quality_of_service) were [ATM](https://www.itu.int/rec/T-REC-I.150) and, a little later, [IP](https://www.rfc-editor.org/rfc/rfc791) with [IntServ](https://www.rfc-editor.org/rfc/rfc1633), [DiffServ](https://www.rfc-editor.org/rfc/rfc2475) and [MPLS](https://www.rfc-editor.org/rfc/rfc3031). That is why its textbooks speak of cells, [leaky bucket](https://en.wikipedia.org/wiki/Leaky_bucket)s, virtual circuits and label-switched paths. This post explains those networks just enough to read the classic examples, and shows that the same ideas reappear in [TSN](https://1.ieee802.org/tsn/) and [DetNet](https://www.rfc-editor.org/rfc/rfc8655).
 
 {/* truncate */}
 
@@ -18,22 +18,22 @@ Network calculus grew up in the 1990s, when the networks that promised quality o
 
 ## 1. Why these two networks
 
-Both networks fix the path before the data flows, check the traffic at the entry, and switch on a short label instead of a full address. Each of those choices maps onto a network calculus object:
+Both networks fix the path before the data flows, check the traffic at the entry, and [switch](https://en.wikipedia.org/wiki/Network_switch) on a short label instead of a full address. Each of those choices maps onto a network calculus object:
 
 | Network choice | Network calculus object |
 | --- | --- |
 | A traffic contract checked at the entry | An [arrival curve](/blog/arrival-curves), enforced by a policer or a greedy shaper |
 | A fixed path through known switches | A [concatenation](/blog/concatenation-pay-bursts-only-once) of [service curves](/blog/service-curves) |
-| Admission control before the circuit or path is set up | A check that the [delay and backlog bounds](/blog/three-fundamental-bounds) still hold |
+| [Admission control](https://en.wikipedia.org/wiki/Admission_control) before the circuit or path is set up | A check that the [delay and backlog bounds](/blog/three-fundamental-bounds) still hold |
 | Classes sharing a queue | [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) |
 
 The standard textbook by Le Boudec and Thiran uses the ATM [generic cell rate algorithm](https://www.itu.int/rec/T-REC-I.371) among its first examples of arrival curves, and its second chapter applies the theory to IntServ and DiffServ [5]. The [deterministic networking post](/blog/deterministic-networking) summarises IntServ and DiffServ.
 
 ## 2. ATM in brief
 
-**Asynchronous Transfer Mode** is a cell-switching standard of the ITU-T and ANSI, designed in the late 1980s for the broadband ISDN. It aimed to carry voice, video and data on one network [1]. Its main features:
+**Asynchronous Transfer Mode** is a cell-switching standard of the [ITU-T](https://www.itu.int/en/ITU-T/) and ANSI, designed in the late 1980s for the broadband [ISDN](https://en.wikipedia.org/wiki/Integrated_Services_Digital_Network). It aimed to carry voice, video and data on one network [1]. Its main features:
 
-- **Fixed cells of 53 bytes**: a 5-byte header and a 48-byte payload. Small, equal cells keep queuing delay and delay variation low. At 155 Mbit/s a 1500-byte packet occupies the link for about 77 µs, and on a 1.544 Mbit/s T1 line for about 7.8 ms, far too long for voice to wait behind several of them. The 48-byte payload was a political compromise between the 64 bytes proposed by the United States and the 32 bytes proposed by Europe [1].
+- **Fixed cells of 53 bytes**: a 5-byte header and a 48-byte payload. Small, equal cells keep queuing delay and [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) low. At 155 Mbit/s a 1500-byte packet occupies the link for about 77 µs, and on a 1.544 Mbit/s T1 line for about 7.8 ms, far too long for voice to wait behind several of them. The 48-byte payload was a political compromise between the 64 bytes proposed by the United States and the 32 bytes proposed by Europe [1].
 - **Connection-oriented**. A *virtual circuit* is set up before any cell is sent. It is either permanent, configured by the operator, or switched, set up by signalling for each call. When a switched circuit is requested, the network performs **call admission control**: it checks that a route exists with enough resources for the requested traffic [1].
 - **Label swapping**. Each cell carries a virtual path identifier (VPI) and a virtual channel identifier (VCI). Every switch replaces them with the values for the next link. The values change from hop to hop, but the circuit, and so the path, stays the same for every cell [1].
 - **Adaptation layers** (AAL1, AAL2, AAL5, …) adapt services such as circuit emulation, variable-rate media and data to the cell stream [1].
@@ -49,7 +49,7 @@ When a circuit is set up, each switch on it learns the **traffic contract** of t
 | CBR, constant bit rate | Peak cell rate (PCR) | Circuit emulation, voice |
 | VBR, variable bit rate (real-time and non-real-time) | Sustainable cell rate (SCR), PCR, maximum burst size (MBS) | Compressed video, bursty data |
 | ABR, available bit rate | A guaranteed minimum rate | Data that adapts to feedback |
-| UBR, unspecified bit rate | None: whatever capacity remains | Best effort |
+| UBR, unspecified bit rate | None: whatever capacity remains | [Best effort](https://en.wikipedia.org/wiki/Best-effort_delivery) |
 
 Most categories also define a **cell delay variation tolerance (CDVT)**. It states how much cells may bunch together after crossing earlier equipment [1].
 
@@ -68,7 +68,7 @@ $$
 \alpha(t) = \left\lceil \frac{t + \tau}{T} \right\rceil \text{ cells}, \qquad t > 0,
 $$
 
-which is upper-bounded by the token bucket $\gamma_{r,b}$ with $r = 1/T$ cells per second and $b = 1 + \tau/T$ cells [5]. This is the staircase of [the arrival curves post](/blog/arrival-curves), where the tolerance $\tau$ plays the role of the jitter $J$.
+which is upper-bounded by the [token bucket](https://en.wikipedia.org/wiki/Token_bucket) $\gamma_{r,b}$ with $r = 1/T$ cells per second and $b = 1 + \tau/T$ cells [5]. This is the staircase of [the arrival curves post](/blog/arrival-curves), where the tolerance $\tau$ plays the role of the jitter $J$.
 
 ### VBR: two buckets, one concave curve
 
@@ -124,14 +124,14 @@ A cell that breaks the contract is either dropped or tagged by setting its **cel
   caption="Figure 7. An MPLS cloud. Customer routers (outside) connect to label edge routers on the border (red), which push and pop labels. Label switch routers inside the cloud (blue) forward on the label alone."
 />
 
-**Multiprotocol Label Switching**, standardised by the IETF in RFC 3031, forwards packets on a short label instead of the destination address [2][4]. It grew out of IP switching over ATM and Cisco's tag switching, and the IETF working group was formed in 1997 [2]. MPLS kept what made ATM attractive, connection-oriented paths and traffic engineering, while dropping cells and ATM signalling. Modern links are fast enough that a full 1500-byte packet no longer causes a significant queuing delay: about 1.2 µs at 10 Gbit/s [1][2].
+**Multiprotocol Label Switching**, standardised by the [IETF](https://www.ietf.org/) in RFC 3031, forwards packets on a short label instead of the destination address [2][4]. It grew out of IP switching over ATM and Cisco's tag switching, and the IETF working group was formed in 1997 [2]. MPLS kept what made ATM attractive, connection-oriented paths and traffic engineering, while dropping cells and ATM signalling. Modern links are fast enough that a full 1500-byte packet no longer causes a significant queuing delay: about 1.2 µs at 10 Gbit/s [1][2].
 
-- The **ingress label edge router (LER)** assigns each packet to a *forwarding equivalence class* (FEC) and pushes a label [2].
+- The **ingress label edge [router](https://en.wikipedia.org/wiki/Router_(computing)) (LER)** assigns each packet to a *forwarding equivalence class* (FEC) and pushes a label [2].
 - Each **label switch router (LSR)** looks up the label, swaps it, and forwards the packet [2].
 - The **egress LER** pops the label and forwards plain IP [2].
 - The sequence of labels forms a **label-switched path (LSP)**, much like a permanent virtual circuit in ATM, but independent of any layer-2 technology [2].
 - Labels are distributed by [LDP](https://www.rfc-editor.org/rfc/rfc5036), or by **[RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209)** when a path with a bandwidth reservation is needed [2].
-- Each label stack entry has a 20-bit label, a 3-bit **traffic class** (TC) for QoS, a bottom-of-stack bit and a TTL (Figure 2). Labels can be stacked, which is how VPNs and tunnels nest [2].
+- Each label stack entry has a 20-bit label, a 3-bit **traffic class** (TC) for QoS, a bottom-of-stack bit and a TTL (Figure 2). Labels can be stacked, which is how [VPNs](https://en.wikipedia.org/wiki/Virtual_private_network) and tunnels nest [2].
 
 MPLS is now used mostly for traffic engineering, DiffServ quality of service and VPNs [2].
 
@@ -155,7 +155,7 @@ MPLS is now used mostly for traffic engineering, DiffServ quality of service and
 | Unit | 53-byte cell | Packet with a label stack | [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frame | IP or MPLS packet |
 | Path | Virtual circuit (VPI/VCI) | Label-switched path | Stream on a configured path | DetNet flow on an explicit route |
 | Traffic contract | PCR, SCR, MBS, CDVT | Reserved bandwidth (RSVP-TE) or class | Traffic specification (token bucket) | Traffic specification |
-| Entry check | GCRA policing at the UNI | Policing at the ingress LER | [PSFP](/blog/per-stream-filtering-and-policing) | Ingress policing and shaping |
+| Entry check | GCRA [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) at the UNI | Policing at the ingress LER | [PSFP](/blog/per-stream-filtering-and-policing) | Ingress policing and shaping |
 | Admission control | Call admission control ([PNNI](https://www.broadband-forum.org/technical/download/af-pnni-0055.000.pdf)) | Traffic-engineering reservation | [SRP, RAP or CNC](/blog/stream-reservation) | Controller plane |
 | Network calculus view | Staircase or two-piece arrival curve | Concatenation and aggregates | Arrival curves, shaper service curves | Same, across L2 and L3 segments |
 

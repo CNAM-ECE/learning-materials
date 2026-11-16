@@ -7,7 +7,7 @@ tags: [book, foundations, network-calculus, tas]
 description: Min-plus and strict service curves, rate-latency servers, and the service offered by a Time-Aware Shaper window.
 ---
 
-The arrival curve bounds the demand; the **service curve** bounds the supply. It abstracts a scheduler, a link or a whole switch into a single function that lower-bounds the service it delivers.
+The arrival curve bounds the demand; the **service curve** bounds the supply. It abstracts a scheduler, a link or a whole [switch](https://en.wikipedia.org/wiki/Network_switch) into a single function that lower-bounds the service it delivers.
 
 {/* truncate */}
 
@@ -19,7 +19,7 @@ $$
 R^* \ge R \otimes \beta, \qquad \text{i.e.} \qquad R^*(t) \ge \inf_{0 \le s \le t} \{\, R(s) + \beta(t - s) \,\}.
 $$
 
-Read operationally: for every $t$ there is some instant $s \le t$ such that the system has delivered at least $\beta(t - s)$ bits since $s$ on top of everything that arrived before $s$. The definition mirrors the impulse response of linear systems: an ideal pipe with latency $T$ has service curve $\delta_T$, a constant-rate link of rate $C$ has $\lambda_C$.
+Read operationally: for every $t$ there is some instant $s \le t$ such that the system has delivered at least $\beta(t - s)$ bits since $s$ on top of everything that arrived before $s$. The definition mirrors the impulse response of linear systems: an ideal pipe with [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) $T$ has service curve $\delta_T$, a constant-rate link of rate $C$ has $\lambda_C$.
 
 ## 2. Strict service curve
 
@@ -41,7 +41,7 @@ It models a server that, after a worst-case start-up latency $T$, serves at rate
 | --- | --- | --- |
 | Link of rate $C$ with processing delay $t_{proc}$ | $C$ | $t_{proc}$ |
 | Non-preemptive link, highest priority, max lower-priority frame $L_{lo}$ | $C$ | $L_{lo}/C$ |
-| Generalised Processor Sharing with weight $\phi_i$ | $\phi_i C / \sum_j \phi_j$ | $0$ |
+| [Generalised Processor Sharing](https://en.wikipedia.org/wiki/Generalized_processor_sharing) with weight $\phi_i$ | $\phi_i C / \sum_j \phi_j$ | $0$ |
 
 Rate-latency functions are convex, so by the concatenation rule of [the min-plus algebra post](/blog/min-plus-algebra) a tandem of rate-latency servers is again rate-latency.
 
@@ -58,7 +58,7 @@ $$
 The rate is the reserved share of the link; the latency is the longest closed interval. Accounting for the guard band and for non-preemptive blocking increases the latency and slightly decreases the effective window.
 
 :::tip[Modelling choice]
-The rate-latency bound discards the staircase structure and is therefore pessimistic for traffic that is *synchronised* with the gate schedule. Time-triggered [TSN](https://1.ieee802.org/tsn/) analyses often exploit that synchronisation explicitly; network calculus remains the method of choice for traffic that is not synchronised, and for the residual service left to lower-priority classes.
+The rate-latency bound discards the staircase structure and is therefore pessimistic for traffic that is *synchronised* with the gate schedule. Time-triggered [TSN](https://1.ieee802.org/tsn/) analyses often exploit that synchronisation explicitly; [network calculus](https://en.wikipedia.org/wiki/Network_calculus) remains the method of choice for traffic that is not synchronised, and for the residual service left to lower-priority classes.
 :::
 
 ## 5. Service curves are a contract, not a description

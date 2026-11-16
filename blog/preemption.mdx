@@ -25,7 +25,7 @@ Strict priority and gates decide which frame starts next. Neither can stop a fra
 **Frame preemption** lets an *express* frame suspend the transmission of a *preemptable* frame. The preemptable frame resumes from where it stopped once the express traffic has been sent. Two standards share the work [2][3]:
 
 - **[IEEE 802.3br](https://www.ieee802.org/3/br/)**, *Interspersing Express Traffic*, changes [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). It splits the MAC into an express MAC and a preemptable MAC and adds a **MAC Merge sublayer** between them and the physical layer.
-- **[IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/)**, now part of [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), changes the bridge. It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
+- **[IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/)**, now part of [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), changes the [bridge](https://en.wikipedia.org/wiki/Network_bridge). It assigns each priority a **frame preemption status**, express or preemptable, and coordinates preemption with scheduled traffic.
 
 ## 2. Architecture
 
@@ -53,13 +53,13 @@ Because of the 64-byte rule, a preemptable frame shorter than 128 bytes cannot b
 
 [The TAS post](/blog/time-aware-shaper) explains why a schedule needs a guard band as long as the largest interfering frame. With preemption, the guard band only has to cover the largest piece that cannot be cut. 802.1Qbu lets the gate control list hold back preemptable traffic slightly before a protected window opens and release it afterwards. The window then starts on an idle link [2][3].
 
-Preemption reduces delay variation for express traffic and gives preemptable traffic back the bandwidth that a full guard band would waste [3].
+Preemption reduces [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) for express traffic and gives preemptable traffic back the bandwidth that a full guard band would waste [3].
 
 ## 5. What preemption does not change
 
 The scheduling study of [the TAS post](/blog/time-aware-shaper) compares preemption with a scheduler that fragments large payloads into separate frames [4]. Two observations:
 
-- **Preemption does not shorten store-and-forward delay.** The next bridge reassembles a preempted frame before forwarding it, so the frame still crosses each hop as one unit. Splitting a payload into separate frames, by contrast, lets the first part move on while the rest is still being sent.
+- **Preemption does not shorten [store-and-forward](https://en.wikipedia.org/wiki/Store_and_forward) delay.** The next bridge reassembles a preempted frame before forwarding it, so the frame still crosses each hop as one unit. Splitting a payload into separate frames, by contrast, lets the first part move on while the rest is still being sent.
 - **Preemption can make an infeasible schedule feasible.** Without it, some express streams miss their deadlines behind long frames. Because fragmentation happens only when needed, preemption also wastes less bandwidth than always splitting [4].
 
 For worst-case analysis, preemption changes two terms. The blocking of an express class by lower priorities drops from one maximum frame to one non-preemptable piece. Preemptable traffic pays a small overhead for each interruption, because every fragment carries its own preamble, header and check sequence.

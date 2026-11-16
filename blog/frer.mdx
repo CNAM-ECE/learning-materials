@@ -11,7 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {FrerFunctionsFigure} from '@site/src/components/figures/standards';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 
-Bounded latency is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability (FRER) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
+Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability ([FRER](https://1.ieee802.org/tsn/802-1cb/)) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
 
 {/* truncate */}
 
@@ -22,7 +22,7 @@ Bounded latency is useless if a cable cut loses frames for the hundreds of milli
 
 ## 1. Definition
 
-**Frame Replication and Elimination for Reliability**, [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing switches over, so a path failure causes no interruption [3].
+**Frame Replication and Elimination for Reliability**, [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing [switches](https://en.wikipedia.org/wiki/Network_switch) over, so a path failure causes no interruption [3].
 
 <ReplicationFigure
   ends={['Talker', 'Listener']}
@@ -39,7 +39,7 @@ Bounded latency is useless if a cable cut loses frames for the hundreds of milli
   }
 />
 
-Replication and elimination can happen in the end stations themselves or in bridges. A non-redundant talker can then use a redundant network.
+Replication and elimination can happen in the end stations themselves or in [bridges](https://en.wikipedia.org/wiki/Network_bridge). A non-redundant talker can then use a redundant network.
 
 ## 2. The functions on each side
 
@@ -57,7 +57,7 @@ Replication and elimination can happen in the end stations themselves or in brid
 
 ## 3. Where the paths come from
 
-FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/), where [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) computes defaults and a controller adds explicit trees, or from a [CNC](https://1.ieee802.org/tsn/802-1qcc/) that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF [DetNet](https://www.rfc-editor.org/rfc/rfc8655) provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
+FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/), where [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) computes defaults and a controller adds explicit trees, or from a [CNC](https://1.ieee802.org/tsn/802-1qcc/) that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, [IETF](https://www.ietf.org/) [DetNet](https://www.rfc-editor.org/rfc/rfc8655) provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
 
 ## 4. What FRER does to the traffic
 
@@ -69,7 +69,7 @@ FRER removes loss, but it changes the traffic that the latency analysis sees. Th
 
 The tutorial suggests placing [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping) at the merge point to restore the original burst at once. The combination of FRER and [ATS](https://1.ieee802.org/tsn/802-1qcr/) is still being standardised [4].
 
-In network calculus terms, the arrival curve after elimination is not the talker's curve. It must allow for the extra burst of points 2 and 3. Any bound computed downstream of an elimination point is wrong if it uses the original curve.
+In [network calculus](https://en.wikipedia.org/wiki/Network_calculus) terms, the arrival curve after elimination is not the talker's curve. It must allow for the extra burst of points 2 and 3. Any bound computed downstream of an elimination point is wrong if it uses the original curve.
 
 ## 5. Summary
 

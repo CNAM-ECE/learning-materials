@@ -16,16 +16,16 @@ The previous posts developed a general theory. This post maps each [TSN](https:/
 | Mechanism | Standard | Network calculus object | Effect on analysis |
 | --- | --- | --- | --- |
 | Strict priority, non-preemptive | [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) | Residual service curve per class | Blocking term $L_{lo}/C$ ([the multiplexing post](/blog/aggregate-multiplexing-residual-service)) |
-| Time-Aware Shaper | [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) | Periodic service curve per gated queue | Rate $Cw/c$, latency up to $c - w$ ([the service curves post](/blog/service-curves)) |
+| Time-Aware Shaper | [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) | Periodic service curve per gated queue | Rate $Cw/c$, [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) up to $c - w$ ([the service curves post](/blog/service-curves)) |
 | Credit-Based Shaper | [802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/) | Rate-latency service curve per [AVB](https://www.ieee802.org/1/pages/avbridges.html) class | Rate set by the idle slope |
 | Asynchronous Traffic Shaper | [802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/) | Interleaved regulator (shaper) | Resets burstiness at each hop |
-| Per-Stream Filtering and Policing | [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) | Enforced arrival curve | Makes the input contract hold |
+| Per-Stream Filtering and [Policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) | [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) | Enforced arrival curve | Makes the input contract hold |
 | Frame Replication and Elimination | [802.1CB](https://1.ieee802.org/tsn/802-1cb/) | Merge of redundant paths | Can increase burstiness |
-| Time synchronisation | [802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) | Bounded clock error | Enters as a jitter term |
+| Time synchronisation | [802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) | Bounded clock error | Enters as a [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation) term |
 
 ## 2. Time-Aware Shaper
 
-For flows that are *scheduled*, i.e. whose emission times are synchronised with the gate control lists, the delay is determined by the schedule itself and network calculus is not needed for them. It becomes necessary in three situations:
+For flows that are *scheduled*, i.e. whose emission times are synchronised with the gate control lists, the delay is determined by the schedule itself and [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is not needed for them. It becomes necessary in three situations:
 
 1. for traffic that shares the scheduled port but is not itself scheduled, which receives the *residual* of the gate schedule;
 2. for scheduled traffic whose emission is not perfectly aligned, for instance because of clock error or application jitter;
@@ -56,7 +56,7 @@ Every network calculus bound is conditional on its arrival curves. **802.1Qci** 
 | Nancy | C# library for min-plus operations on piecewise-affine curves | [rzippo/nancy](https://github.com/rzippo/nancy) |
 | tsnkit | Python; implementations and benchmarks of 802.1Qbv scheduling algorithms | [ChuanyuXue/tsnkit](https://github.com/ChuanyuXue/tsnkit) |
 
-Cross-checking an analysis against an independent tool is a cheap form of validation. The companion repository on certified admission control compares its TFA bounds against panco and reports a relative difference of $2.5 \times 10^{-16}$ per hop [7].
+Cross-checking an analysis against an independent tool is a cheap form of validation. The companion repository on certified [admission control](https://en.wikipedia.org/wiki/Admission_control) compares its TFA bounds against panco and reports a relative difference of $2.5 \times 10^{-16}$ per hop [7].
 
 ## Recommended viewing
 

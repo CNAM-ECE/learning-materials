@@ -9,7 +9,7 @@ description: Horizontal and vertical deviations, the output arrival curve, and c
 
 import BoundsFigure from '@site/src/components/BoundsFigure';
 
-With an arrival curve $\alpha$ for the input and a service curve $\beta$ for the system, network calculus yields three bounds. They are the core results of the theory; everything that follows in this series composes them.
+With an arrival curve $\alpha$ for the input and a service curve $\beta$ for the system, [network calculus](https://en.wikipedia.org/wiki/Network_calculus) yields three bounds. They are the core results of the theory; everything that follows in this series composes them.
 
 {/* truncate */}
 
@@ -59,7 +59,7 @@ $$
 
 Each formula has a direct reading.
 
-- **Delay.** A burst of $b$ bits arrives just as the server starts its worst-case latency $T$; it is then drained at rate $R$.
+- **Delay.** A burst of $b$ bits arrives just as the server starts its worst-case [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) $T$; it is then drained at rate $R$.
 - **Backlog.** During the latency $T$ nothing leaves, while the burst $b$ and a further $rT$ bits may arrive.
 - **Output burst.** The long-term rate is unchanged, but the burst grows by $rT$: data held back during the latency may leave back-to-back. This *burstiness increase* is what makes multi-hop analysis non-trivial.
 
@@ -67,7 +67,7 @@ If $r > R$, both $v$ and $h$ are infinite: no finite bound exists, which is the 
 
 ## 4. Numerical example
 
-Reuse the control stream of [the arrival curves post](/blog/arrival-curves), $b = 12\,000$ bits, $r = 12$ Mbit/s, and a switch port offering $\beta_{R,T}$ with $R = 100$ Mbit/s and $T = 20\ \mu s$.
+Reuse the control stream of [the arrival curves post](/blog/arrival-curves), $b = 12\,000$ bits, $r = 12$ Mbit/s, and a [switch](https://en.wikipedia.org/wiki/Network_switch) port offering $\beta_{R,T}$ with $R = 100$ Mbit/s and $T = 20\ \mu s$.
 
 | Quantity | Formula | Value |
 | --- | --- | --- |

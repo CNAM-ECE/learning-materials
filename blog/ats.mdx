@@ -10,7 +10,7 @@ description: Asynchronous Traffic Shaping reshapes every stream at every hop wit
 import {BridgeIntegrationFigure, PerStreamFigure} from '@site/src/components/figures/tsn';
 import {DelaySegmentsFigure} from '@site/src/components/figures/standards';
 
-Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping (ATS) avoids both problems: it restores each stream's original traffic contract at every hop, using only the bridge's local clock.
+Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping ([ATS](https://1.ieee802.org/tsn/802-1qcr/)) avoids both problems: it restores each stream's original traffic contract at every hop, using only the [bridge](https://en.wikipedia.org/wiki/Network_bridge)'s local clock.
 
 {/* truncate */}
 
@@ -21,7 +21,7 @@ Class-based shapers let the bursts of a stream grow from hop to hop, and schedul
 
 ## 1. Definition
 
-**Asynchronous Traffic Shaping**, [IEEE 802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/), is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **token bucket** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
+**Asynchronous Traffic Shaping**, [IEEE 802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/), is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **[token bucket](https://en.wikipedia.org/wiki/Token_bucket)** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
 
 Two features distinguish it from plain per-flow shaping:
 
@@ -32,7 +32,7 @@ Two features distinguish it from plain per-flow shaping:
 
 ## 2. Queue allocation rules
 
-Sharing a queue between streams can cause head-of-line blocking: a frame that is not yet eligible holds up an eligible frame behind it. ATS limits this with **queue allocation rules**. Frames go to separate shaped queues if they differ in [4]:
+Sharing a queue between streams can cause [head-of-line blocking](https://en.wikipedia.org/wiki/Head-of-line_blocking): a frame that is not yet eligible holds up an eligible frame behind it. ATS limits this with **queue allocation rules**. Frames go to separate shaped queues if they differ in [4]:
 
 - the ingress port they arrived on (the upstream transmitter);
 - the egress port;
@@ -44,13 +44,13 @@ Inside one queue, all frames then come from the same upstream queue, so they arr
 
 <DelaySegmentsFigure caption="Figure 3. Shaper-to-shaper delay segments. A segment starts when a frame becomes eligible at the upstream shaper and ends when it becomes eligible at the downstream shaper. The downstream bridge bounds the whole segment." />
 
-The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS latency analysis of Specht and Samii. It was proposed for the [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
+The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) analysis of Specht and Samii. It was proposed for the [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
 
 The choice matters because traffic leaving a token-bucket shaper is known to conform to $(b, r)$. Each segment therefore starts from a clean, well-defined arrival curve, whatever happened upstream. The downstream bridge computes the bound for the segment that ends in it, using what its neighbour tells it [4]. The [stream reservation post](/blog/stream-reservation) lists the information it receives.
 
 ## 4. Why the bound does not cascade
 
-With class-based shapers or plain strict priority, a stream's burst grows by its rate times the delay variation it has accumulated:
+With class-based shapers or plain strict priority, a stream's burst grows by its rate times the [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) it has accumulated:
 
 $$
 b^{\text{eff}} = b + r\,(L^{+} - L^{-}),
@@ -58,7 +58,7 @@ $$
 
 where $L^{+}$ and $L^{-}$ are its accumulated maximum and minimum latencies (the [fundamental bounds post](/blog/three-fundamental-bounds) gives the general result). ATS removes the extra term at every hop. Its per-segment bound uses the **original** burst $b$ declared by the talker. It also needs no pre-configured latency threshold, although its queue allocation rules require more queues [4].
 
-In network calculus, the ATS shaper is an **interleaved regulator**. Its key property, shown by Le Boudec, is that an interleaved regulator placed after a FIFO system does not increase that system's worst-case delay. Re-shaping is therefore "for free" in the worst case [5]. A review of industrial IoT networking cites the same property: ATS does not increase the worst-case delay through the network [6].
+In [network calculus](https://en.wikipedia.org/wiki/Network_calculus), the ATS shaper is an **interleaved regulator**. Its key property, shown by Le Boudec, is that an interleaved regulator placed after a FIFO system does not increase that system's worst-case delay. Re-shaping is therefore "for free" in the worst case [5]. A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_of_things) networking cites the same property: ATS does not increase the worst-case delay through the network [6].
 
 ## 5. How ATS compares
 

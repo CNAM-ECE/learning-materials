@@ -14,7 +14,7 @@ import {
   DetnetOverTsnFigure,
 } from '@site/src/components/figures/detnet';
 
-[TSN](https://1.ieee802.org/tsn/) makes a bridged network deterministic. The IETF Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
+[TSN](https://1.ieee802.org/tsn/) makes a bridged network deterministic. The [IETF](https://www.ietf.org/) Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
 
 {/* truncate */}
 
@@ -22,7 +22,7 @@ import {
 
 ## 1. Definition
 
-**DetNet** is both a working group in the IETF Routing Area and the architecture it standardises. The group works on deterministic data paths that run over Layer 2 bridged and Layer 3 routed segments and that bound latency, loss, delay variation and reordering, with high reliability. It addresses the Layer 3 aspects and collaborates with IEEE 802.1 TSN, which is responsible for Layer 2, towards a common architecture [1].
+**DetNet** is both a working group in the IETF Routing Area and the architecture it standardises. The group works on deterministic data paths that run over Layer 2 bridged and Layer 3 routed segments and that bound [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), loss, [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) and reordering, with high reliability. It addresses the Layer 3 aspects and collaborates with [IEEE 802.1](https://1.ieee802.org/) TSN, which is responsible for Layer 2, towards a common architecture [1].
 
 Figure 1 shows how DetNet integrates with what already exists. It does not replace [IP](https://www.rfc-editor.org/rfc/rfc791) or [MPLS](https://www.rfc-editor.org/rfc/rfc3031) forwarding, and it does not replace TSN. It adds two sub-layers to the nodes on the path, and lets an end system that only speaks TSN take part through an edge node [2].
 
@@ -32,7 +32,7 @@ The charter draws the boundary carefully [1].
 
 **In scope**
 
-- unicast and multicast (point-to-multipoint) flows, over wired and wireless networks;
+- [unicast](https://en.wikipedia.org/wiki/Unicast) and [multicast](https://en.wikipedia.org/wiki/Multicast) (point-to-multipoint) flows, over wired and wireless networks;
 - networks under a single administrative control, or a closed group of administrative control, such as campus networks and private WANs;
 - the overall architecture: data plane, OAM, time synchronisation, management, control and security;
 - a data plane built on IP and MPLS, and on Layer 2 encapsulations that run over them, such as pseudowires and GRE;
@@ -65,7 +65,7 @@ Reading Figure 1 from left to right gives the vocabulary [2]:
 | Node | Sub-layers | Role |
 | --- | --- | --- |
 | End system | Depends on the system | Source or destination of a flow. It may be unaware of DetNet, as the TSN end system in Figure 1 is |
-| Edge node | Service and forwarding | Start or end of the DetNet service; can run a *service proxy* on behalf of an end system that is not DetNet-aware. Comparable to a provider edge router |
+| Edge node | Service and forwarding | Start or end of the DetNet service; can run a *service proxy* on behalf of an end system that is not DetNet-aware. Comparable to a provider edge [router](https://en.wikipedia.org/wiki/Router_(computing)) |
 | Relay node | Service and forwarding | Interconnects forwarding paths to provide service protection, for instance replication and elimination |
 | Transit node | Forwarding only | Carries the flow along its explicit route with its allocated resources, for instance an MPLS label switching router |
 
@@ -81,15 +81,15 @@ RFC 8655 separates three planes [2]:
 - the **controller plane**, the aggregation of the control and management planes. Its Controller Plane Functions compute deterministic paths and install per-flow, per-hop behaviour. A Path Computation Element is the standard example [1][2];
 - the **network plane**, made of the network interfaces of end systems and of the DetNet nodes.
 
-This is the same separation that makes centralised admission control possible. A controller that receives a flow request through the northbound interface must decide whether the flow can be admitted without breaking existing guarantees before it writes anything through the southbound interface. That decision is the problem studied in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
+This is the same separation that makes centralised [admission control](https://en.wikipedia.org/wiki/Admission_control) possible. A controller that receives a flow request through the northbound interface must decide whether the flow can be admitted without breaking existing guarantees before it writes anything through the southbound interface. That decision is the problem studied in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
 
 ## 6. Crossing a TSN sub-network
 
 <DetnetOverTsnFigure />
 
-When DetNet nodes are interconnected by a TSN network, the DetNet flow has to be mapped to a TSN Stream [2]. In Figure 4 the first IP node adds a Layer 2 flow identifier, and the bridges forward on that identifier alone. Each domain uses an identifier that is unique within that domain, either derived from the application flow or assigned by the domain.
+When DetNet nodes are interconnected by a TSN network, the DetNet flow has to be mapped to a TSN Stream [2]. In Figure 4 the first IP node adds a Layer 2 flow identifier, and the [bridges](https://en.wikipedia.org/wiki/Network_bridge) forward on that identifier alone. Each domain uses an identifier that is unique within that domain, either derived from the application flow or assigned by the domain.
 
-Within the bridged segment, the DetNet architecture relies on the IEEE 802.1 mechanisms rather than defining its own [2]: the credit-based shaper ([802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/)), time-gated queues ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing and forwarding ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and frame preemption ([802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) with [802.3br](https://www.ieee802.org/3/br/)). Bridges match a flow by destination MAC address, VLAN identifier and priority to find its Stream and quality-of-service requirements [3].
+Within the bridged segment, the DetNet architecture relies on the IEEE 802.1 mechanisms rather than defining its own [2]: the credit-based shaper ([802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/)), time-gated queues ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing and forwarding ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and frame preemption ([802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) with [802.3br](https://www.ieee802.org/3/br/)). Bridges match a flow by destination [MAC address](https://en.wikipedia.org/wiki/MAC_address), [VLAN](https://en.wikipedia.org/wiki/VLAN) identifier and priority to find its Stream and [quality-of-service](https://en.wikipedia.org/wiki/Quality_of_service) requirements [3].
 
 The vocabulary changes at the boundary, although the concepts do not [2]:
 
@@ -102,12 +102,12 @@ The vocabulary changes at the boundary, although the concepts do not [2]:
 
 ## 7. Current work
 
-Beyond the base architecture, the charter lists a controller plane framework, YANG models for device and link capabilities, and DetNet over wireless segments, naming IEEE 802.15.4 TSCH, 3GPP 5G URLLC, IEEE 802.11ax/be and LDACS as target radio technologies [1]. Two of these items are recorded as done on the working group page: the controller plane framework (RFC 9938) and the architecture for reliable and available wireless (RFC 9912). The remaining milestones concern an enhanced data plane and the requirements for scaling deterministic networks [1].
+Beyond the base architecture, the charter lists a controller plane framework, YANG models for device and link capabilities, and DetNet over wireless segments, naming IEEE 802.15.4 TSCH, 3GPP [5G](https://en.wikipedia.org/wiki/5G) URLLC, IEEE 802.11ax/be and LDACS as target radio technologies [1]. Two of these items are recorded as done on the working group page: the controller plane framework (RFC 9938) and the architecture for reliable and available wireless (RFC 9912). The remaining milestones concern an enhanced data plane and the requirements for scaling deterministic networks [1].
 
 Use cases are collected in RFC 8578 and the problem statement in RFC 8557 [3].
 
 :::note[Relation to this series]
-DetNet says *that* resources must be allocated so that latency is bounded; it does not prescribe how to compute the bound. Network calculus is one way to compute it, hop by hop or end to end, for whatever queuing mechanism the sub-network uses.
+DetNet says *that* resources must be allocated so that latency is bounded; it does not prescribe how to compute the bound. [Network calculus](https://en.wikipedia.org/wiki/Network_calculus) is one way to compute it, hop by hop or end to end, for whatever queuing mechanism the sub-network uses.
 :::
 
 ## References

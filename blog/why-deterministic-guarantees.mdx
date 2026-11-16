@@ -7,24 +7,24 @@ tags: [youtube, article, presentation, guide, book, tsn, sdn, tas, reconfigurati
 description: Motivation for deterministic network calculus, and why measurement alone cannot certify a Time-Sensitive Network.
 ---
 
-[Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) promises that a standard [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) network can carry control traffic with *bounded* latency. This first post explains what "bounded" means, why it cannot be established by measurement alone, and why deterministic network calculus is the analytical tool of choice for establishing it.
+[Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) promises that a standard [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) network can carry control traffic with *bounded* [latency](https://en.wikipedia.org/wiki/Latency_(engineering)). This first post explains what "bounded" means, why it cannot be established by measurement alone, and why deterministic [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is the analytical tool of choice for establishing it.
 
 {/* truncate */}
 
 ## 1. The promise of TSN
 
-TSN is a family of IEEE 802.1 amendments that add deterministic behaviour to bridged Ethernet. Industrial guides typically single out four of them [3]:
+TSN is a family of [IEEE 802.1](https://1.ieee802.org/) amendments that add deterministic behaviour to bridged Ethernet. Industrial guides typically single out four of them [3]:
 
 | Standard | Mechanism | Role in the guarantee |
 | --- | --- | --- |
-| [802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) | Generalised [Precision Time Protocol](https://standards.ieee.org/ieee/1588/6825/) (gPTP) | Common time base for all bridges and end stations |
+| [802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) | Generalised [Precision Time Protocol](https://standards.ieee.org/ieee/1588/6825/) (gPTP) | Common time base for all [bridges](https://en.wikipedia.org/wiki/Network_bridge) and end stations |
 | [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) | Time-Aware Shaper (TAS) | Gate control lists open and close queues at scheduled instants |
-| [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) | Per-Stream Filtering and Policing (PSFP) | Enforces the traffic contract declared by each stream |
+| [802.1Qci](https://1.ieee802.org/tsn/802-1qci/) | Per-Stream Filtering and [Policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) (PSFP) | Enforces the traffic contract declared by each stream |
 | [802.1CB](https://1.ieee802.org/tsn/802-1cb/) | Frame Replication and Elimination (FRER) | Seamless redundancy over disjoint paths |
 
 A shorter glossary is kept in the [TSN glossary](/reference/tsn-glossary).
 
-The promise is converged traffic: control loops, video and best-effort traffic share one physical network, and the control traffic still meets its deadlines. That promise is only as strong as the argument that supports it.
+The promise is converged traffic: [control loops](https://en.wikipedia.org/wiki/Control_loop), video and [best-effort](https://en.wikipedia.org/wiki/Best-effort_delivery) traffic share one physical network, and the control traffic still meets its deadlines. That promise is only as strong as the argument that supports it.
 
 ## 2. Average-case versus worst-case performance
 
@@ -37,9 +37,9 @@ Deterministic network calculus replaces probabilistic assumptions with *envelope
 
 ## 3. Why measurement does not suffice
 
-The practical TSN migration guide by TSF Technology proposes a five-phase method: audit the existing network and identify critical flows, design the TSN topology and synchronisation domains, pilot on a segment, configure scheduled traffic with 802.1Qbv, and finally *validate latency and jitter against requirements* [3]. The last phase is usually carried out by measurement.
+The practical TSN migration guide by TSF Technology proposes a five-phase method: audit the existing network and identify critical flows, design the TSN topology and synchronisation domains, pilot on a segment, configure scheduled traffic with 802.1Qbv, and finally *validate latency and [jitter](https://en.wikipedia.org/wiki/Packet_delay_variation) against requirements* [3]. The last phase is usually carried out by measurement.
 
-Measurement establishes a *lower* bound on the worst-case delay: the largest observed value. A certificate needs an *upper* bound. The gap between the two can be large, because the worst case arises from a precise alignment of bursts on every hop of a path, which a test campaign is unlikely to provoke. In the companion repository on certified admission control, packet-level simulation of 4,915 admitted flows observed a median worst delay of only 19 % (control traffic) and 10 % (stream traffic) of the analytical bound [4]. These figures are a sanity check, not a tightness measure: they illustrate that the observed maximum and the provable maximum are different quantities.
+Measurement establishes a *lower* bound on the worst-case delay: the largest observed value. A certificate needs an *upper* bound. The gap between the two can be large, because the worst case arises from a precise alignment of bursts on every hop of a path, which a test campaign is unlikely to provoke. In the companion repository on certified [admission control](https://en.wikipedia.org/wiki/Admission_control), packet-level simulation of 4,915 admitted flows observed a median worst delay of only 19 % (control traffic) and 10 % (stream traffic) of the analytical bound [4]. These figures are a sanity check, not a tightness measure: they illustrate that the observed maximum and the provable maximum are different quantities.
 
 :::note[Key distinction]
 A measured maximum answers "what happened?". A network calculus bound answers "what *can* happen, under the stated assumptions?". Only the second can be used as a guarantee.
@@ -63,7 +63,7 @@ The posts are grouped by topic. Topics are meant to be read in this order, and p
 | Deterministic networks | This post · [Deterministic networking](/blog/deterministic-networking) |
 | Network calculus | [Min-plus algebra](/blog/min-plus-algebra) · [Arrival curves](/blog/arrival-curves) · [Service curves](/blog/service-curves) · [The three fundamental bounds](/blog/three-fundamental-bounds) · [Concatenation and "pay bursts only once"](/blog/concatenation-pay-bursts-only-once) · [Aggregate multiplexing and residual service](/blog/aggregate-multiplexing-residual-service) · [ATM and MPLS](/blog/atm-and-mpls) |
 | IEEE 802.1 | [IEEE 802.1 and the TSN task group](/blog/ieee-802-1-tsn-task-group) |
-| IETF | [IETF DetNet](/blog/ietf-detnet) |
+| [IETF](https://www.ietf.org/) | [IETF DetNet](/blog/ietf-detnet) |
 | TSN | [The TSN toolbox](/blog/tsn-toolbox) · [802.1AS time synchronisation](/blog/ieee-802-1as-time-synchronization) · [Credit-Based Shaper](/blog/credit-based-shaper) · [Time-Aware Shaper](/blog/time-aware-shaper) · [Frame preemption](/blog/frame-preemption) · [Cyclic Queuing and Forwarding](/blog/cyclic-queuing-and-forwarding) · [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping) · [Per-Stream Filtering and Policing](/blog/per-stream-filtering-and-policing) · [Frame Replication and Elimination](/blog/frame-replication-and-elimination) · [Stream reservation](/blog/stream-reservation) · [Network calculus for TSN shapers](/blog/network-calculus-for-tsn) |
 | SDN | [SDN and TSN configuration](/blog/sdn-and-tsn-configuration) · [Dynamic reconfiguration of TSN](/blog/dynamic-reconfiguration-of-tsn) |
 

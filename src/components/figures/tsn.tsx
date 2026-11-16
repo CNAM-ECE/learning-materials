@@ -95,23 +95,41 @@ export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): Reac
   );
 }
 
-/** The four groups of the TSN toolbox. */
+/** The four groups of the TSN toolbox and the three guarantees they serve. */
 export function ToolboxFigure(): ReactNode {
+  const goals: [number, string][] = [
+    [10, 'Low delay variation'],
+    [250, 'Bounded latency'],
+    [490, 'Zero congestion loss'],
+  ];
   return (
     <Figure
-      height={300}
-      label="The four groups of TSN tools: time synchronisation, bounded low latency, ultra reliability, and dedicated resources and API"
-      caption="Figure 2. The TSN toolbox. The four groups together deliver guaranteed transport with bounded low latency, low delay variation and extremely low loss."
+      height={330}
+      label="The four groups of TSN tools around the three guarantees they serve: time synchronisation and bounded low latency serve low delay variation and bounded latency; ultra reliability serves zero congestion loss; dedicated resources serve bounded latency and zero congestion loss"
+      caption="Figure 2. The TSN toolbox and the three guarantees it delivers. Time synchronisation and the latency tools bound latency and delay variation. Per-stream policing (reliability group) and reserved resources prevent congestion loss, and reservation also bounds latency through admission control. FRER and path control add protection against equipment failure."
       source={
         <>
-          redrawn after <Concepts slides="slide 5," /> and <Intro slides="slide 22." />
+          groups and guarantees redrawn after <Concepts slides="slide 5," /> and{' '}
+          <Intro slides="slide 22;" /> the arrows are an interpretation of which guarantee each
+          group serves, not part of the slides.
         </>
       }>
-      <Box x={10} y={15} w={340} h={112} lines={['Time synchronisation', 'Timing and Synchronization (802.1AS),', 'which includes a profile of IEEE 1588']} title size={12} tone="service" />
-      <Box x={370} y={15} w={340} h={112} lines={['Ultra reliability', 'Frame Replication and Elimination (802.1CB)', 'Path Control and Reservation (802.1Qca)', 'Per-Stream Filtering and Policing (802.1Qci)', 'reliability for time sync (802.1AS)']} title size={12} />
-      <Box x={10} y={175} w={340} h={112} lines={['Bounded low latency', 'Credit-Based Shaper (802.1Qav)', 'Frame preemption (802.3br, 802.1Qbu)', 'Scheduled Traffic (802.1Qbv)', 'Cyclic Queuing and Forwarding (802.1Qch)', 'Asynchronous Traffic Shaping (802.1Qcr)']} title size={12} />
-      <Box x={370} y={175} w={340} h={112} lines={['Dedicated resources and API', 'Stream Reservation Protocol (802.1Qat)', 'TSN configuration (802.1Qcc)', 'YANG data models (802.1Qcp and others)', 'Link-local Registration Protocol (802.1CS)']} title size={12} tone="arrival" />
-      <Txt x={360} y={151} size={13} bold>zero congestion loss · bounded latency · low delay variation</Txt>
+      <Box x={10} y={10} w={340} h={96} lines={['Time synchronisation', 'gPTP (802.1AS), a profile of IEEE 1588']} title size={12} tone="service" />
+      <Box x={370} y={10} w={340} h={96} lines={['Ultra reliability', 'FRER (CB) · path control (Qca) · PSFP (Qci)']} title size={12} />
+      <Box x={10} y={222} w={340} h={96} lines={['Bounded low latency', 'CBS (Qav) · TAS (Qbv) · preemption (Qbu, 802.3br)', 'CQF (Qch) · ATS (Qcr)']} title size={12} />
+      <Box x={370} y={222} w={340} h={96} lines={['Dedicated resources and API', 'SRP (Qat) · TSN configuration (Qcc)', 'YANG models (Qcp, …) · LRP (CS)']} title size={12} tone="arrival" />
+
+      {goals.map(([x, name]) => (
+        <Box key={name} x={x} y={146} w={220} h={36} lines={[name]} title size={12.5} tone="muted" />
+      ))}
+
+      <Arrow d="M120,106 V146" tone="service" />
+      <Arrow d="M300,106 V146" tone="service" />
+      <Arrow d="M600,106 V146" />
+      <Arrow d="M120,222 V182" />
+      <Arrow d="M300,222 V182" />
+      <Arrow d="M420,222 V182" tone="arrival" />
+      <Arrow d="M600,222 V182" tone="arrival" />
     </Figure>
   );
 }

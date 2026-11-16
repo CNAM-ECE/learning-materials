@@ -1,0 +1,119 @@
+---
+slug: ieee-802-1-tsn-task-group
+title: "IEEE 802.1 and the TSN task group: who writes the standards and how to read them"
+date: 2026-11-17
+authors: [trang]
+tags: [standard, presentation, ieee-802-1, tsn]
+description: Where IEEE 802.1 sits in the protocol stack, how the TSN task group grew out of Audio Video Bridging, how its standards are named, grouped and developed, and which ones are published today.
+---
+
+import {
+  Ieee802PlacementFigure,
+  AvbToTsnFigure,
+  StandardsGroupingFigure,
+  StandardsProcessFigure,
+} from '@site/src/components/figures/ieee8021';
+
+Time-Sensitive Networking is not one standard but the output of one task group inside the IEEE 802.1 working group. Reading the TSN literature is much easier once the organisation, the naming rules and the three tiers of documents are clear.
+
+{/* truncate */}
+
+<Ieee802PlacementFigure />
+
+## 1. Definition
+
+**IEEE 802**, the LAN/MAN Standards Committee, develops standards for local and metropolitan area networks, mainly for the link and physical layers of the stack. It has been in operation since March 1980 [1].
+
+**IEEE 802.1** is the working group responsible for the 802 architecture, for interworking between 802 networks, for security, and for network management and the protocol layers above the MAC [1]. It occupies the top of the link layer [2]: 802.1 bridges forward frames between media defined by other working groups, such as 802.3 (Ethernet), 802.11 (wireless LAN) and 802.15 (wireless personal area networks).
+
+The **TSN task group** is the part of 802.1 chartered to provide deterministic services through IEEE 802 networks, which the group defines as guaranteed packet transport with bounded latency, low packet delay variation and low packet loss [1][3]. Figure 1 shows the consequence: TSN changes nothing below the MAC service and nothing above Layer 2. It amends the bridge.
+
+## 2. From AVB to TSN
+
+<AvbToTsnFigure />
+
+The task group began in 2005 as the Audio Video Bridging (AVB) task group, aimed at professional audio and video, consumer electronics and automotive infotainment. When industrial and automotive control became interested in the same features, the name no longer covered the use cases, and the group was renamed TSN in 2012. It absorbed the former Interworking task group in 2015 [2]. The original AVB work itself came out of the IEEE 802.3 Residential Ethernet study group [3].
+
+Four AVB standards are therefore also TSN standards [1][3]:
+
+| Standard | Content |
+| --- | --- |
+| IEEE Std 802.1AS-2011 | Generalised Precision Time Protocol (gPTP), a Layer 2 profile of IEEE 1588 |
+| IEEE Std 802.1Qav-2009 | Forwarding and queuing for time-sensitive streams: the Credit-Based Shaper (CBS) |
+| IEEE Std 802.1Qat-2010 | Stream Reservation Protocol (SRP) |
+| IEEE Std 802.1BA-2011 | AVB systems: the overall architecture and profiles |
+
+## 3. How to read a designation
+
+The naming rules explain most of what looks arbitrary [1]:
+
+- **Capital letters** mark a stand-alone standard: 802.1Q, 802.1AS, 802.1CB.
+- **Lower-case letters** mark an amendment to a stand-alone standard: 802.1Qbv amends 802.1Q, and 802.1CBcv amends 802.1CB.
+- A leading **P** marks a project that is still in development, not a published standard.
+- Amendments are periodically merged into a **revision** of the base standard. 802.1Qbv and 802.1Qbu, for instance, became part of 802.1Q-2018, so their text now lives in clauses of 802.1Q.
+- A designation **without a year** means the latest revision.
+
+In practice, 802.1Q is many standards integrated into one document. A useful way into it is to read clauses 6 to 9 for the bridge architecture, then the clause titled "Principles of …" for the feature of interest [1].
+
+## 4. Three tiers of documents
+
+<StandardsGroupingFigure />
+
+TSN documents fall into three tiers [1]:
+
+1. **Base technology**: the tools themselves, such as time synchronisation, shapers, preemption, policing and redundancy. Each is described in [the TSN toolbox post](/blog/tsn-toolbox).
+2. **Configuration**: the models and protocols used to set the tools up, including the TSN configuration models of 802.1Qcc and a family of YANG data models.
+3. **Profiles**: documents that narrow the choices for one application domain. A profile selects features, options, defaults, protocols and procedures, describes how to build a network for a particular use, and gives configuration guidance where needed. Its purpose is to make interoperability and deployment easier [1].
+
+The profile standards listed by the task group today are [3]:
+
+| Profile | Domain |
+| --- | --- |
+| IEEE Std 802.1BA-2021 | Audio Video Bridging systems |
+| IEEE Std 802.1CM-2018, amended by 802.1CMde-2020 | Fronthaul in cellular networks |
+| IEC/IEEE 60802 | Industrial automation (a joint IEC and IEEE 802 project) |
+| IEEE Std 802.1DG-2025 | Automotive in-vehicle Ethernet |
+| IEEE 802.1DP-2025 / SAE AS 6675 | Aerospace onboard Ethernet |
+
+## 5. How a standard is made
+
+<StandardsProcessFigure />
+
+A project starts with a Project Authorization Request (PAR), judged against the Criteria for Standards Development (CSD). Once the New Standards Committee approves it, the draft passes through three levels of ballot (task group, working group and sponsor) before the Standards Review Committee approves publication [1][2]. Technical decisions need a 75 % majority. The process rests on five principles: due process, consensus, openness, balance between interested parties, and a right of appeal [1].
+
+Two practical consequences for a reader: drafts are restricted to working-group participants while presentations are public [3], which is why slide decks are often the most accessible description of a mechanism; and a "P802.1…" citation in an older paper may refer to something since published under the same letters.
+
+## 6. The standards today
+
+The task group page lists the following as the base standards for TSN [3]: IEEE Std 802.1Q-2022 (bridges and bridged networks), 802.1AB-2016 (LLDP), 802.1AS-2025 (timing and synchronisation), 802.1AX-2020 (link aggregation), 802.1CB-2017 (frame replication and elimination) and 802.1CS-2020 (link-local registration protocol).
+
+The amendments most often met in the analysis literature are these [3]:
+
+| Standard | Title | Status in 802.1Q |
+| --- | --- | --- |
+| 802.1Qca-2015 | Path Control and Reservation | Rolled into 802.1Q-2018 |
+| 802.1Qbv-2015 | Enhancements for Scheduled Traffic | Rolled into 802.1Q-2018 |
+| 802.1Qbu-2016 | Frame Preemption | Rolled into 802.1Q-2018 |
+| 802.1Qci-2017 | Per-Stream Filtering and Policing | Rolled into 802.1Q-2018 |
+| 802.1Qch-2017 | Cyclic Queuing and Forwarding | Rolled into 802.1Q-2018 |
+| 802.1Qcc-2018 | SRP Enhancements and Performance Improvements | Amends 802.1Q-2018 |
+| 802.1Qcr-2020 | Asynchronous Traffic Shaping | Amends 802.1Q-2018 |
+| 802.1Qcw-2023 | YANG for scheduled traffic, preemption and PSFP | Amends 802.1Q-2022 |
+| 802.1Qdj-2024 | Configuration Enhancements for TSN | Amends 802.1Q-2022 |
+
+Projects under way at the time of writing include P802.1DD (Resource Allocation Protocol), P802.1DU (cut-through forwarding bridges), P802.1Qdq (shaper parameter settings for bursty traffic requiring bounded latency) and P802.1Qee (traffic engineering for bridged networks that include wireless technologies) [3].
+
+:::note[Why this matters for analysis]
+A network calculus model is a model of a specific clause of 802.1Q. Knowing that "Qbv", "scheduled traffic" and "the Time-Aware Shaper" are the same mechanism, now part of the base standard, avoids treating one mechanism as three.
+:::
+
+## Recommended viewing
+
+The IEEE Standards Association hosts a six-part on-demand TSN webinar series [4]. The two most useful as a complement to this post are *The Impact of Time-Sensitive Networks: An Introduction to IEEE 802.1* and *Driving Digital Transformation through IEEE 802.1 TSN: An Overview of Time-Sensitive Networking*; the others cover IEC/IEEE 60802, 802.1CM for fronthaul, Audio Video Bridging and 802.1AS.
+
+## References
+
+1. J. Farkas, "IEEE 802.1 Time-Sensitive Networking (TSN) Task Group Overview," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-overview-1118-v01.pdf)
+2. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+3. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+4. IEEE Standards Association, *TSN Webinar Series*. [Web page](https://engagestandards.ieee.org/TSN-Webinar-Series.html)

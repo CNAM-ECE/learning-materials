@@ -1,0 +1,178 @@
+---
+slug: tsn-toolbox
+title: "The TSN toolbox: how each mechanism extends the Ethernet bridge"
+date: 2026-11-19
+authors: [trang]
+tags: [standard, presentation, tsn, tas, ieee-802-1]
+description: The basic terms of Time-Sensitive Networking and its four groups of tools (time synchronisation, bounded latency, reliability and resource management), each shown at the place where it extends an IEEE 802.1Q bridge.
+---
+
+import {
+  BridgeIntegrationFigure,
+  ToolboxFigure,
+  ScheduledTrafficFigure,
+  PreemptionFigure,
+  PerStreamFigure,
+  CyclicQueuingFigure,
+  ConfigurationFigure,
+} from '@site/src/components/figures/tsn';
+import {ReplicationFigure} from '@site/src/components/figures/shared';
+
+Time-Sensitive Networking (TSN) is a set of IEEE 802.1 standards for time-sensitive transmission over Ethernet. This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet bridge does this tool change?
+
+{/* truncate */}
+
+<BridgeIntegrationFigure />
+
+## 1. Definition
+
+**TSN** is the set of standards produced by the TSN task group of IEEE 802.1 to provide deterministic services over IEEE 802 networks. Most of them are extensions of IEEE 802.1Q, the standard for bridges and virtual LANs, and aim at very low latency and high availability [1][2]. The organisation behind them is described in [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group).
+
+Figure 1 is the picture to keep in mind. A bridge already has a control plane and a data plane made of ingress processing, a relay, queues, transmission selection and a MAC [3]. Every TSN tool extends one of those existing stages. This is why TSN traffic and ordinary traffic can share a bridge: the eight priorities of 802.1Q are kept for backward compatibility, and the tools are added around them [2].
+
+### Why standard Ethernet is not enough
+
+Ordinary network equipment has no notion of time, and nothing at the link layer prevents congestion. Even with eight strict priorities, a frame of the highest priority can wait behind a lower-priority frame whose transmission has already started [2]. TSN addresses both problems.
+
+### Basic terms
+
+From the point of view of 802.1 there are two kinds of device, bridges and end stations [3]:
+
+| Term | Meaning |
+| --- | --- |
+| Talker | The end station that is the source of a stream |
+| Listener | An end station that receives a stream |
+| Stream | A unidirectional flow of data from one talker to one or more listeners |
+| Bridge | The relay between LANs; its data plane has a MAC relay and at least two ports |
+
+Three kinds of traffic then coexist on the network: time-triggered traffic, rate-constrained streams and best-effort traffic [2].
+
+## 2. Four groups of tools
+
+<ToolboxFigure />
+
+The task group presents its standards as a toolbox with four groups: time synchronisation, bounded low latency, ultra reliability, and dedicated resources with their management interfaces [3][4]. A tool can be used on its own, but the full guarantee comes from combining them [2]. The sections below follow this grouping.
+
+## 3. Time synchronisation: 802.1AS
+
+IEEE 802.1AS defines the generalised Precision Time Protocol (gPTP), a tightly constrained profile of IEEE 1588 that distributes time through the network itself with sub-microsecond precision [2]. The 2020 revision improved the accuracy of time measurement and added multiple time domains for redundancy [2]; work on the revision also covered link aggregation, faster change-over between grandmaster clocks, and redundant paths and grandmasters [4].
+
+In Figure 1, time is the bar under the whole data plane. Gates, cyclic queuing and time-gated policing are meaningless without it, whereas the credit-based shaper and asynchronous shaping do not need it.
+
+## 4. Bounded low latency
+
+### Credit-Based Shaper: 802.1Qav
+
+The oldest shaper, inherited from AVB, spreads the frames of a class evenly over time so that bursts do not overflow buffers downstream. Each shaped queue has a credit, counted in bits, and may transmit only while its credit is not negative. The slope at which credit accumulates is the bandwidth reserved for the class [2].
+
+AVB defines two shaped classes. Class A has a 125 µs transmission period and a target worst-case latency of 2 ms over seven hops; class B has a 250 µs period and a 50 ms target. Together they may use at most 75 % of the link bandwidth [2]. Combined with stream reservation, the shaper gives a delay below 250 µs per bridge [4], which is too large for many control applications [2] and motivated the tools that follow.
+
+### Scheduled traffic: 802.1Qbv
+
+<ScheduledTrafficFigure />
+
+A transmission gate is associated with each queue. A queue whose gate is closed is not considered by transmission selection; a queue whose gate is open is served by its usual algorithm. Gates follow a list that repeats periodically, relative to the common time base [3][4]. The result divides time on the link into windows reserved for given priorities, in the manner of time-division multiple access [2].
+
+This mechanism is the Time-Aware Shaper of the analysis literature. The service it offers to a queue is derived in [the service curves post](/blog/service-curves).
+
+### Frame preemption: 802.3br and 802.1Qbu
+
+<PreemptionFigure />
+
+A gate does not help if a long frame is already on the wire when the critical window opens. Preemption lets an *express* frame suspend the transmission of a *preemptable* frame, which resumes afterwards. Each traffic-class queue is assigned one of the two statuses [4]. The MAC is split into an express MAC and a preemptable MAC above a merge sublayer; the minimum fragment is 64 bytes including its check sequence [4].
+
+Preemption reduces delay variation for express traffic and returns to preemptable traffic the bandwidth that a guard band would otherwise waste. It is local to a link, not a form of IP fragmentation [3].
+
+### Cyclic Queuing and Forwarding: 802.1Qch
+
+<CyclicQueuingFigure />
+
+Two buffers per class are filled and drained in alternate cycles, synchronised across the network. Frames received during one cycle are sent during the next, so a frame stays one cycle at each hop [4]. Latency then depends only on the cycle time and the hop count, not on the topology or on the other flows [2].
+
+### Asynchronous Traffic Shaping: 802.1Qcr
+
+Asynchronous Traffic Shaping (ATS) achieves zero congestion loss without time synchronisation. Traffic is re-shaped at every hop, and urgent traffic is prioritised over relaxed traffic. It resembles per-flow shaping, with one important difference: all streams going from one input port to one output port share a queue, and the appropriate shaper state is applied to each frame in front of that queue [3]. The shaper applies a token-bucket rule using local clocks and assigns each frame an *eligibility time*; strict-priority selection then operates on eligible frames [3].
+
+ATS reuses the per-stream stages shown in the next figure. Its network calculus model, the interleaved regulator, is discussed in [the TSN shapers post](/blog/network-calculus-for-tsn).
+
+## 5. Ultra reliability
+
+### Per-Stream Filtering and Policing: 802.1Qci
+
+<PerStreamFigure />
+
+Guarantees computed for well-behaved streams are worthless if one talker exceeds its contract. PSFP protects the network against bandwidth violation, malfunction and attack by taking decisions per stream at the ingress [3]. A frame passes through three elements [3][4]:
+
+1. a **stream filter**, which identifies the stream and selects the gate and meter to apply;
+2. a **stream gate**, open or closed on a time schedule, which can also set the internal priority of the frame;
+3. a **flow meter**, which enforces a bandwidth profile and marks frames red, yellow or green.
+
+In the terms of this series, PSFP is what makes the declared [arrival curve](/blog/arrival-curves) an enforced one.
+
+### Frame Replication and Elimination: 802.1CB
+
+<ReplicationFigure
+  ends={['Talker', 'Listener']}
+  nodes={['Bridge N1', 'Bridge N2']}
+  caption="Figure 7. Frame Replication and Elimination for Reliability (802.1CB): numbered frames are sent on two maximally disjoint paths and the extra copies are deleted."
+  source={
+    <>
+      redrawn after J. Farkas,{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf">
+        TSN Basic Concepts
+      </a>
+      , DetNet–TSN workshop, 11 November 2018, slide 16.
+    </>
+  }
+/>
+
+FRER avoids frame loss caused by equipment failure. It is a per-frame 1+1 (or 1+n) redundancy: frames are numbered, sent on two or more maximally disjoint paths, then recombined with the extra copies deleted. There is no failure detection and no switch-over, hence no interruption when a path fails [3].
+
+### Path control: 802.1Qca
+
+Disjoint paths have to be installed. 802.1Qca extends the IS-IS routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
+
+## 6. Dedicated resources and configuration
+
+### Stream reservation: 802.1Qat
+
+The Stream Reservation Protocol performs distributed admission control. A talker advertises a stream; the advertisement propagates towards the listeners while the worst-case latency is accumulated; a listener that accepts triggers the reservation of bandwidth back along the path. Streams are identified by a 64-bit stream identifier, made of a 48-bit MAC address and a 16-bit unique identifier [2].
+
+### TSN configuration: 802.1Qcc
+
+<ConfigurationFigure />
+
+802.1Qcc enhances the reservation protocol and defines three configuration models [3]:
+
+- **fully distributed**: end stations and bridges exchange requirements hop by hop;
+- **centralised network, distributed user**: end stations still signal to the network edge, but a central entity computes and configures;
+- **fully centralised**: a Centralized User Configuration entity collects the requirements of the end stations and passes them to a Centralized Network Configuration entity.
+
+The CNC has a view of the whole network, performs reservation and scheduling centrally, and configures bridges through NETCONF or RESTCONF with YANG data models [2]. This is the architecture assumed by most work on online reconfiguration, including [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn): the CNC is the place where an admission test must run.
+
+## 7. Summary
+
+| Group | Tool | Standard | Stage of the bridge it extends | Needs time sync |
+| --- | --- | --- | --- | --- |
+| Time | gPTP | 802.1AS | Common time base | – |
+| Latency | Credit-Based Shaper | 802.1Qav | Queuing | No |
+| Latency | Scheduled traffic | 802.1Qbv | Transmission selection | Yes |
+| Latency | Frame preemption | 802.3br, 802.1Qbu | MAC | No |
+| Latency | Cyclic Queuing and Forwarding | 802.1Qch | Transmission selection | Yes |
+| Latency | Asynchronous Traffic Shaping | 802.1Qcr | Ingress and queuing | No |
+| Reliability | Per-Stream Filtering and Policing | 802.1Qci | Ingress port | For time-gated use |
+| Reliability | Frame Replication and Elimination | 802.1CB | Ingress and egress ports | No |
+| Reliability | Path control | 802.1Qca | Control plane | No |
+| Resources | Stream reservation | 802.1Qat | Control plane | No |
+| Resources | TSN configuration | 802.1Qcc | Control plane | No |
+
+## Further reading
+
+- "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article. [Link](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/). Listed for further reading; it was not used as a source for this post.
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking." [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)

@@ -1,0 +1,104 @@
+---
+slug: deterministic-networking
+title: "Deterministic networking in OSI 7-layer Architecture"
+date: 2026-11-16
+authors: [trang]
+tags: [standard, presentation, deterministic-networking, detnet, ieee-802-1, tsn]
+description: What a deterministic service is, what it requires from a network, and how IEEE 802.1 TSN and IETF DetNet divide the work between Layer 2 and Layer 3.
+---
+
+import {StackPlacementFigure, ServiceComparisonFigure} from '@site/src/components/figures/deterministic';
+import {ReplicationFigure} from '@site/src/components/figures/shared';
+
+"Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded latency, with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
+
+{/* truncate */}
+
+<StackPlacementFigure />
+
+## 1. Definition
+
+A **deterministic network** carries, on shared packet infrastructure, flows whose end-to-end latency is bounded, whose delay variation is low, and whose loss is extremely low, while ordinary best-effort traffic continues to use the same links. The IETF Deterministic Networking (DetNet) working group describes its subject as deterministic data paths that run over Layer 2 bridged segments and Layer 3 routed segments and that can bound latency, loss, delay variation and reordering, with high reliability [1].
+
+Nothing above the network layer changes. As Figure 1 shows, the extension happens at two existing layers:
+
+- at **Layer 2**, the IEEE 802.1 Time-Sensitive Networking (TSN) task group extends bridged Ethernet (see [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group) and [the TSN toolbox post](/blog/tsn-toolbox));
+- at **Layer 3**, the IETF DetNet working group extends routed IP and MPLS networks (see [the IETF DetNet post](/blog/ietf-detnet)).
+
+The two groups collaborate on a common architecture, so that a routed deterministic path can cross bridged deterministic segments [1]. Network calculus, the subject of the next group of posts, is not a third technology: it is the analysis that proves the bound once the network is configured.
+
+## 2. Deterministic versus traditional service
+
+<ServiceComparisonFigure />
+
+A traditional packet service is engineered for a good average. Its latency distribution has a long tail, and the only ways to shorten the tail are to drop late packets or to over-provision. A deterministic service is specified differently [2]:
+
+- packet loss is caused at most by equipment failure, never by congestion ("zero congestion loss");
+- latency is bounded, so the distribution has no tail beyond the application's requirement;
+- the aim is the right packet at the right time, not the fastest packet on average.
+
+The reason standard equipment cannot offer this is that queuing in switches and routers is not controlled per flow: a burst from one source delays every other flow sharing the queue. Larger buffers reduce loss but lengthen the delay, which is the wrong trade for a control loop [3].
+
+## 3. What a deterministic flow requires
+
+The DetNet problem statement, as summarised in [3], gives five requirements. They apply equally at Layer 2 and Layer 3.
+
+| Requirement | Meaning |
+| --- | --- |
+| Time synchronisation | Every node shares a time base, with an accuracy between nanoseconds and microseconds |
+| Deterministic flows | Unicast or multicast; guaranteed minimum and maximum end-to-end latency; loss ratio of $10^{-9}$ to $10^{-12}$ on wired Ethernet; no throttling and no congestion feedback |
+| Per-node scheduling | Each node schedules, shapes, limits and controls its transmissions |
+| Protection | A misbehaving node or flow cannot degrade the others, even under high load |
+| Reservation | Resources are reserved in every node that carries the flow |
+
+Two points matter for the rest of this series. First, the source must declare a traffic contract: either a fixed transmission schedule, or a maximum bandwidth and a maximum packet size. That contract is exactly what an [arrival curve](/blog/arrival-curves) formalises. Second, "no congestion feedback" means the guarantee cannot rely on sources slowing down; it has to hold by construction.
+
+## 4. Three techniques
+
+The DetNet architecture groups the mechanisms into three techniques, which can be used separately or together [4].
+
+| Technique | What it does | What it protects against |
+| --- | --- | --- |
+| Resource allocation | Reserves buffer space and link bandwidth for a flow, or an aggregate of flows, at each hop | Loss caused by contention; unbounded latency |
+| Service protection | Sends copies of each packet over several paths and removes duplicates, or adds redundancy by packet encoding | Loss caused by equipment or media failure |
+| Explicit routes | Fixes the path in advance, so that it does not change at once when the topology changes | Interruptions while routing or bridging protocols reconverge |
+
+Resource allocation only works for a flow that is limited at the source in packet size and rate [4]. Explicit routes can be installed with RSVP-TE, Segment Routing, IS-IS or a centralised controller [3][4].
+
+<ReplicationFigure
+  ends={['End system', 'End system']}
+  nodes={['Relay node', 'Relay node']}
+  caption="Figure 3. Service protection by packet replication and elimination: packets carry a sequence number, travel over disjoint paths, and duplicates are discarded before delivery."
+  source={
+    <>
+      simplified from N. Finn, P. Thubert, B. Varga, J. Farkas,{' '}
+      <a href="https://www.rfc-editor.org/rfc/rfc8655">RFC 8655</a>,{' '}
+      <em>Deterministic Networking Architecture</em>, October 2019, Figure 1.
+    </>
+  }
+/>
+
+When the paths have different lengths, the merging node needs extra buffering to remove duplicates and restore the order [3]. This matters for analysis: a merged flow is burstier than either copy, a point taken up again in [the TSN shapers post](/blog/network-calculus-for-tsn).
+
+## 5. Who does what
+
+| | IEEE 802.1 TSN | IETF DetNet |
+| --- | --- | --- |
+| Layer | 2, bridged networks | 3, routed networks |
+| Data plane | IEEE 802.1Q bridges over IEEE 802 media | IP and MPLS, and Layer 2 encapsulations carried over them |
+| Scope | IEEE 802 networks | Networks under a single administrative control, such as campus networks and private WANs |
+| Flow terminology | Talker, Listener, Stream | Source, destination, flow |
+| Queuing mechanisms | Defined here: shapers, gates, preemption | Reused from the sub-network; DetNet focuses on the data path |
+
+The terminology row follows the mapping given in the DetNet architecture [4]; the scope row follows the DetNet charter, which explicitly excludes solutions for large groups of domains such as the Internet [1].
+
+## 6. Where it is used
+
+The application areas named by the two groups overlap widely [1][3]: professional and home audio and video, industrial automation and machine-to-machine control, in-vehicle networks, electrical generation and distribution, building automation, and cellular fronthaul and backhaul. A common motivation is to move time-critical applications from dedicated fieldbus networks onto packet networks that also carry ordinary IT traffic [3].
+
+## References
+
+1. IETF, *Deterministic Networking (detnet) working group: charter*. [Datatracker](https://datatracker.ietf.org/wg/detnet/about/)
+2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+3. Wikipedia, "Deterministic Networking." [Article](https://en.wikipedia.org/wiki/Deterministic_Networking)
+4. N. Finn, P. Thubert, B. Varga, J. Farkas, *Deterministic Networking Architecture*, RFC 8655, October 2019. [RFC Editor](https://www.rfc-editor.org/rfc/rfc8655)

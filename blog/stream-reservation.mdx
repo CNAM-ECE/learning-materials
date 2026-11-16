@@ -1,0 +1,100 @@
+---
+slug: stream-reservation
+title: "Stream reservation (IEEE 802.1Qat, 802.1Qcc, P802.1DD): admission control inside the network"
+date: 2026-11-28
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, reservation, network-calculus, article]
+description: How TSN streams reserve resources hop by hop. The Stream Reservation Protocol of AVB, the Resource Allocation Protocol in progress, the information each bridge needs to compute a local latency bound, and the bound itself.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import {ReservationFlowFigure} from '@site/src/components/figures/standards';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+
+A shaper bounds latency only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the bridges themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control']}
+  caption="Figure 1. Where stream reservation acts: in the control plane of every bridge. It changes no forwarding stage. It decides which streams the shapers and queues below will have to carry."
+/>
+
+## 1. Definition
+
+**Stream reservation** is distributed admission control. A talker declares a stream and its traffic, listeners declare interest, and every bridge on the path checks and commits its resources before the stream may send [2]. Three generations of standards do this [2][3]:
+
+| Standard | Protocol | Status |
+| --- | --- | --- |
+| IEEE 802.1Qat (now in 802.1Q) | **Stream Reservation Protocol (SRP)**, built on the Multiple Registration Protocol | Published; the basis of AVB |
+| IEEE 802.1Qcc (now in 802.1Q) | SRP enhancements, plus the user/network interface and the centralised models | Published |
+| IEEE P802.1DD | **Resource Allocation Protocol (RAP)**, a publish–subscribe protocol over the Link-local Registration Protocol (802.1CS), for centralised and decentralised networks | In development [4] |
+
+## 2. SRP: advertise, then subscribe
+
+<CommonsFigure
+  id="srp-talker-advertise"
+  caption="Figure 2. A talker advertise spreading through the bridges. In each bridge the advertise is registered (R) on the port where it arrived and declared (D) on the other ports, so it reaches the intended listener and other end stations."
+/>
+
+In SRP a talker sends a **talker advertise** carrying the stream identifier, its traffic class and frame rate, and an **accumulated latency** that each bridge increases. A listener that wants the stream answers with a **listener ready**, which travels back towards the talker. Each bridge it passes commits bandwidth for the stream. If a bridge lacks resources, the advertise becomes a **talker failed** and carries the reason [2]. Streams are identified by 64 bits: the talker's 48-bit MAC address and a 16-bit number [2].
+
+The weakness of SRP was its analysis, not its signalling. The standards gave example latency formulas for the accumulated latency, but these lacked formal proof and were later shown to be inaccurate [4].
+
+## 3. What a bridge must know to compute a local bound
+
+<ReservationFlowFigure caption="Figure 3. The information a talker announcement carries in a decentralised reservation. The traffic specification stays the same from hop to hop; the accumulated maximum latency grows by the threshold of each delay segment." />
+
+The 2026 tutorial on decentralised latency models works out exactly what a bridge needs to bound the latency of its segment without global knowledge. It contributes this analysis to the RAP work [4]. Its list, paraphrased:
+
+| Information | When | Purpose |
+| --- | --- | --- |
+| Latency threshold $\Delta^P_{\text{seg}}$ per segment and priority | Configured beforehand | Upper limit on the latency a segment may consume; added to every stream's accumulated maximum latency |
+| Shaper of each upstream traffic class, and its parameters (CBS idle slope, CQF cycle) | Exchanged with neighbours beforehand | Estimate the burstiness of incoming traffic |
+| Stream identifier and header fields | Per stream, at reservation | Match frames to the stream and its priority |
+| Traffic specification: burst $b$, rate $r$, minimum and maximum frame length | Per stream | Bound the traffic volume: $w(t) \le b + r t$ |
+| Accumulated maximum and minimum latency $L^{+}$, $L^{-}$ | Per stream, updated at each hop | Bound the extra burstiness caused by delay variation |
+| Upstream traffic class | Per stream | Compute the upstream queuing delay with the upstream bridge's own class mapping |
+| Speed of the previous link | Per stream | Tighter bound using serialisation (optional) |
+
+At each hop the accumulated latencies are updated as
+
+$$
+L^{+} \leftarrow L^{+} + \Delta^P_{\text{seg}}, \qquad L^{-} \leftarrow L^{-} + \frac{\ell^{\min}}{R_{\text{seg}}}.
+$$
+
+The pre-configured threshold is used rather than the actual current bound. The actual bound changes with every new reservation, whereas the threshold stays valid as other streams come and go [4]. The traffic specification follows the token-bucket model of [the arrival curves post](/blog/arrival-curves), which replaces SRP's frames-per-interval description [4].
+
+## 4. The bound a bridge computes
+
+Two steps give the simplest bound of the tutorial, for strict priority without shaping [4].
+
+**Effective burst.** A stream that has accumulated delay variation $L^{+} - L^{-}$ can arrive at a queue with a burst of at most
+
+$$
+b^{\text{eff}} = b + r\,(L^{+} - L^{-}).
+$$
+
+This is the output-burstiness result of [the fundamental bounds post](/blog/three-fundamental-bounds), applied with the jitter accumulated so far.
+
+**Per-class bound.** Let $C$ be the streams in the observed upstream class, $H$ the streams of higher classes, $\ell^{\max}$ the largest lower-priority frame and $R_{\text{seg}}$ the link rate. Then the worst-case delay of the segment is bounded by
+
+$$
+d^P_{\text{seg}} \le \frac{\sum_{i \in H} \left(b_i^{\text{eff}} + r_i\,\Delta^P_{\text{seg}}\right) + \sum_{i \in C} b_i^{\text{eff}} + \ell^{\max}}{R_{\text{seg}}}.
+$$
+
+Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter network calculus versions and versions for CQF, ATS and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
+
+## 5. Distributed or centralised?
+
+A distributed protocol has no single point of failure and copes with bridges whose internals a central controller would not know [4]. A review of industrial IoT technologies points out the other side. A reservation can fail at any bridge, and some failures only appear at run time. A small change in the network can reroute traffic and invalidate earlier reservations. This is the argument for a central controller that sees the whole network [5].
+
+RAP is designed for both cases. Decentralised models can also join two centrally configured domains, as shown in the tutorial's motivating scenarios [4].
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," sections on AVB and stream reservation. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 18. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I, V, VI-A and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
+5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)

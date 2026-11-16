@@ -76,3 +76,43 @@ reconfiguration:
   label: Reconfiguration
   permalink: /reconfiguration
   description: "Technology: online and incremental reconfiguration of deterministic networks"
+
+time-sync:
+  label: Time sync
+  permalink: /time-sync
+  description: "Technology: IEEE 802.1AS generalised Precision Time Protocol"
+
+cbs:
+  label: CBS
+  permalink: /cbs
+  description: "Technology: IEEE 802.1Qav Credit-Based Shaper"
+
+preemption:
+  label: Preemption
+  permalink: /preemption
+  description: "Technology: IEEE 802.3br and 802.1Qbu frame preemption"
+
+cqf:
+  label: CQF
+  permalink: /cqf
+  description: "Technology: IEEE 802.1Qch Cyclic Queuing and Forwarding"
+
+ats:
+  label: ATS
+  permalink: /ats
+  description: "Technology: IEEE 802.1Qcr Asynchronous Traffic Shaping"
+
+psfp:
+  label: PSFP
+  permalink: /psfp
+  description: "Technology: IEEE 802.1Qci Per-Stream Filtering and Policing"
+
+frer:
+  label: FRER
+  permalink: /frer
+  description: "Technology: IEEE 802.1CB Frame Replication and Elimination for Reliability"
+
+reservation:
+  label: Reservation
+  permalink: /reservation
+  description: "Technology: stream reservation and admission control (802.1Qat, 802.1Qcc, P802.1DD)"

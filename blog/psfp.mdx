@@ -1,0 +1,81 @@
+---
+slug: per-stream-filtering-and-policing
+title: "Per-Stream Filtering and Policing (IEEE 802.1Qci): enforcing the contract at ingress"
+date: 2026-11-26
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, psfp]
+description: How a TSN bridge identifies a stream from the fields of an Ethernet frame, and how stream filters, stream gates and flow meters turn a declared traffic contract into an enforced one.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import {PsfpTablesFigure} from '@site/src/components/figures/standards';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+
+Every bound in this series assumes that each talker respects its arrival curve. Per-Stream Filtering and Policing (PSFP) is the TSN mechanism that makes that assumption hold. It checks each stream where it enters a bridge and stops a faulty or malicious talker before it can harm the streams that behave.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['ingress']}
+  caption="Figure 1. Where PSFP acts: at the ingress port, before the relay and the queues. A frame that violates its stream's contract is dropped before it consumes any shared resource."
+/>
+
+## 1. Definition
+
+**Per-Stream Filtering and Policing**, IEEE 802.1Qci (now part of IEEE 802.1Q), applies decisions **per stream** at the ingress. Its purpose is protection against bandwidth violation, malfunction and attack [3]. A frame passes three elements in order, after the stream it belongs to has been identified [3][4]:
+
+1. a **stream filter**;
+2. a **stream gate**;
+3. a **flow meter**.
+
+## 2. Identifying the stream
+
+<CommonsFigure
+  id="vlan-tag"
+  caption="Figure 2. An Ethernet frame before and after insertion of the 802.1Q header. The header carries the priority code point (PCP), the drop eligible indicator (DEI) and the VLAN ID (VID). Together with the MAC addresses, these are the fields from which a bridge recognises a stream."
+/>
+
+Ethernet has no stream-ID field. A bridge recognises a stream by matching header fields that were agreed when the stream was set up. The **stream identification** functions defined with 802.1CB include [2]:
+
+- destination MAC address and VLAN ID;
+- source MAC address and VLAN ID;
+- IP addresses, protocol and ports, for streams carried over IP.
+
+The match yields a **stream handle**, an internal number that the following tables use. The reservation protocols identify a stream by a talker MAC address plus a 16-bit number. In the data plane, the frames are matched on destination MAC, VLAN ID and priority [5].
+
+## 3. Filter, gate and meter
+
+<PsfpTablesFigure caption="Figure 3. The PSFP pipeline. Stream identification gives a handle. The filter checks it, the gate checks the time, and the meter checks the rate. Each element can discard the frame, and each keeps counters." />
+
+| Element | Selected by | Decides |
+| --- | --- | --- |
+| **Stream filter** | Stream handle and priority (either may be a wildcard) | Which gate and meter apply. Also enforces a **maximum frame size**: an oversized frame is dropped and can block the stream. |
+| **Stream gate** | The filter | Whether the frame may pass **now**. The gate opens and closes on a gate control list, like the transmission gates of 802.1Qbv, and can set the frame's **internal priority value (IPV)**. |
+| **Flow meter** | The filter | Whether the stream is within its **bandwidth profile**. The meter uses the two-rate, two-bucket profile of MEF 10.3: committed rate and burst (CIR, CBS) and excess rate and burst (EIR, EBS). Frames are marked green, yellow or red; red frames are dropped, and yellow frames can be dropped or demoted. |
+
+## 4. What PSFP does for the analysis
+
+**It enforces the arrival curve.** The committed rate and burst of the meter form a token bucket, so traffic leaving the meter conforms to the arrival curve $\gamma_{r,b}(t) = b + r t$ of [the arrival curves post](/blog/arrival-curves). Without policing, that curve is a promise. With policing, it is a property of the network.
+
+**It contains faults.** A "babbling idiot" talker that floods the network loses its excess frames at the first bridge. Streams that share later queues with it keep their bounds.
+
+**It is a building block.** The stream gate's ability to set the internal priority on a timetable is exactly what [Cyclic Queuing and Forwarding](/blog/cyclic-queuing-and-forwarding) uses to alternate between two queues. The stream filter and gate are also reused in front of the [ATS shaper](/blog/asynchronous-traffic-shaping), which delays frames instead of metering them.
+
+## 5. Summary
+
+| Property | Per-Stream Filtering and Policing |
+| --- | --- |
+| Standard | IEEE 802.1Qci, now in IEEE 802.1Q |
+| Acts on | The ingress port, per stream |
+| Elements | Stream filter, stream gate, flow meter |
+| Needs time synchronisation | Only for time-based stream gates |
+| Metering model | MEF 10.3 bandwidth profile (CIR, CBS, EIR, EBS) |
+| Role in the analysis | Makes the declared arrival curve an enforced one |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," sections on stream identification and per-stream filtering and policing; "IEEE 802.1Q." [TSN](https://en.wikipedia.org/wiki/Time-Sensitive_Networking), [802.1Q](https://en.wikipedia.org/wiki/IEEE_802.1Q)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 13. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+5. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections V-B and VI-C. [arXiv](https://arxiv.org/abs/2610.11999)

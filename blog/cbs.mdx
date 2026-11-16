@@ -1,0 +1,96 @@
+---
+slug: credit-based-shaper
+title: "Credit-Based Shaper (IEEE 802.1Qav): spreading reserved traffic over time"
+date: 2026-11-21
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, cbs, article]
+description: The credit-based shaper of IEEE 802.1Qav, now part of IEEE 802.1Q. Its credit rules, its parameters, the AVB stream classes it was designed for, and what recent analyses say about its worst-case latency.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+
+The credit-based shaper (CBS) is the oldest TSN shaper. It comes from Audio Video Bridging (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['queuing']}
+  caption="Figure 1. Where the credit-based shaper acts: it is a transmission selection algorithm attached to a traffic-class queue of an 802.1Q egress port. The queues, the relay and the MAC are unchanged."
+/>
+
+## 1. Definition
+
+The **credit-based shaper** is a transmission selection algorithm for one traffic-class queue of an egress port. It was introduced by IEEE 802.1Qav and is now part of IEEE 802.1Q. Each shaped queue keeps a **credit**, counted in bits. A frame of that queue may start transmission only while the credit is zero or positive [2][3].
+
+The credit changes according to two slopes:
+
+| Parameter | Meaning |
+| --- | --- |
+| `idleSlope` | Rate at which credit grows while frames are waiting. It equals the bandwidth reserved for the class. |
+| `sendSlope` | Rate at which credit falls during a transmission: `idleSlope − portTransmitRate`, which is negative. |
+| `hiCredit`, `loCredit` | The largest and smallest values the credit can reach. They follow from the interfering frame sizes and the slopes. |
+
+## 2. The credit rules
+
+<CommonsFigure
+  id="cbs-credit"
+  caption="Figure 2. Credit of the credit-based shaper. While interfering traffic is sent, the credit of the waiting AVB queue rises with idleSlope. Each AVB frame then lowers it with sendSlope. A frame is held while the credit is negative (red background) and released when it returns to zero."
+/>
+
+Figure 2 follows these rules:
+
+1. **Frames waiting, not transmitting:** the credit increases at `idleSlope`. This happens when the queue is blocked by another frame or by a higher-priority queue.
+2. **Transmitting:** the credit decreases at `sendSlope`.
+3. **Queue empty with positive credit:** the credit is reset to zero. A queue cannot save credit while it has nothing to send.
+4. **Queue empty with negative credit:** the credit rises at `idleSlope` back to zero.
+
+Over a long interval the class therefore never uses more than `idleSlope`. Within a short interval it can send a burst only to the extent that it was held back before. That burst is bounded by `hiCredit`.
+
+## 3. The AVB setting
+
+<CommonsFigure
+  id="avb-domains"
+  caption="Figure 3. AVB domains. Reserved streams can only be carried along paths in which every bridge supports AVB. Boundary ports filter or re-tag the priority of reserved traffic so that it cannot leak into or out of the domain."
+/>
+
+AVB defines two shaped stream reservation classes [2]:
+
+| Class | Observation interval | Target worst-case latency |
+| --- | --- | --- |
+| A | 125 µs | 2 ms over 7 hops |
+| B | 250 µs | 50 ms over 7 hops |
+
+Together, the reserved classes may use at most 75 % of the link bandwidth [2]. The `idleSlope` of each class is the sum of the bandwidths reserved by the stream reservation protocol, described in [the stream reservation post](/blog/stream-reservation). Figure 3 shows why a reservation needs every bridge on the path: a single non-AVB bridge breaks the guarantee [2].
+
+## 4. Worst-case latency
+
+In network calculus terms, a CBS queue offers a rate-latency service with rate `idleSlope`. Its latency term grows with the largest frame of lower priority, which may already be on the wire, and with the bursts of higher classes. [The TSN shapers post](/blog/network-calculus-for-tsn) gives the service curve and its residual for lower classes.
+
+A 2026 tutorial on decentralised latency models adds several points that matter in practice [4]:
+
+- **The 802.1BA formula is not a bound.** The example latency formula of the AVB profile was shown to be inaccurate. The tutorial derives a network calculus model with formal proofs instead.
+- **CBS shapes classes, not streams.** One shaper instance serves the aggregate of all streams in the class. Aggregation adds latency jitter, so the effective burstiness of each stream grows from hop to hop despite the shaping.
+- **CBS does not fit a clean shaper-to-shaper split.** Its credit reset depends on whether other frames of the class are still waiting. The shaping step therefore includes queuing and transmission, and each CBS bridge must compute its own queuing delay. With the other shapers studied, the downstream bridge computes the queuing delay of the upstream one. The [ATS post](/blog/asynchronous-traffic-shaping) shows that split.
+- **It works best when the egress slope covers the ingress slopes.** CBS performs very well when the `idleSlope` of an egress port is at least the sum of the `idleSlope`s feeding it. When that ratio falls below 1, which happened in almost all of the industrial topologies tested, performance degrades quickly. There, plain strict priority with a network calculus bound was the better choice [4].
+
+A review of industrial IoT networking places CBS between the other shapers. CBS fits traffic that is regular but occasionally bursty. Scheduled traffic fits regular, critical traffic. Asynchronous shaping fits sporadic critical events [5].
+
+## 5. Summary
+
+| Property | Credit-Based Shaper |
+| --- | --- |
+| Standard | IEEE 802.1Qav, now in IEEE 802.1Q |
+| Acts on | One traffic-class queue at an egress port |
+| State | One credit per shaped queue |
+| Needs time synchronisation | No |
+| Granularity | Per class; all streams of the class share the shaper |
+| Main parameter | `idleSlope`, the reserved rate |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," sections on AVB, stream reservation and the credit-based shaper; "Audio Video Bridging." [TSN](https://en.wikipedia.org/wiki/Time-Sensitive_Networking), [AVB](https://en.wikipedia.org/wiki/Audio_Video_Bridging)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections VI-E, VII-F and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
+5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)

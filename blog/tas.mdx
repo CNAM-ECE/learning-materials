@@ -1,0 +1,106 @@
+---
+slug: time-aware-shaper
+title: "Time-Aware Shaper (IEEE 802.1Qbv): gates on a timetable"
+date: 2026-11-22
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, tas, article]
+description: Scheduled traffic in IEEE 802.1Qbv. Transmission gates, the gate control list, guard bands, and the scheduling problem that a CNC must solve to fill the list, with lessons from an experimental study of 17 scheduling methods.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import {TasModelsFigure} from '@site/src/components/figures/standards';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+
+The Time-Aware Shaper (TAS) is the TSN tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the bridge is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['selection', 'time']}
+  caption="Figure 1. Where the Time-Aware Shaper acts: a gate in front of each queue at transmission selection, driven by the common time base of 802.1AS. Strict priority or the credit-based shaper still choose among the queues whose gates are open."
+/>
+
+## 1. Definition
+
+**Scheduled traffic**, IEEE 802.1Qbv (now part of IEEE 802.1Q), adds a **transmission gate** to each queue of an egress port [1][3]:
+
+- a queue whose gate is **closed** is ignored by transmission selection;
+- a queue whose gate is **open** competes as usual, under strict priority or a shaper.
+
+The gate states follow a **gate control list (GCL)**. Each entry holds the open/closed state of every gate and a duration. The list repeats with a fixed **cycle time**, from a **base time** expressed in the synchronised time of [802.1AS](/blog/ieee-802-1as-time-synchronization). The result is a time-division schedule on each link, with windows reserved for given priorities [2].
+
+The GCL is built centrally. In the configuration model of 802.1Qcc, the CNC computes a schedule for the whole network and installs a list on every bridge [4]. The [SDN post](/blog/sdn-and-tsn-configuration) describes that controller.
+
+## 2. Slices, infringement and the guard band
+
+<CommonsFigure
+  id="qbv-schedule"
+  caption="Figure 2. An 802.1Qbv schedule. Each cycle starts with time slice 1, reserved for VLAN priority 3, followed by time slice 2 for all other priorities."
+/>
+
+In Figure 2, frames of priority 3 never wait behind other traffic. During slice 1 their queue is the only one with an open gate. But the gate only decides when a frame may **start**. A frame that has already started is not stopped when its gate closes.
+
+<CommonsFigure
+  id="qbv-infringement"
+  caption="Figure 3. Time slice infringement. A best-effort frame that starts late in slice 2 is still being sent when slice 1 of the next cycle begins, and delays the time-critical traffic."
+/>
+
+The remedy is a **guard band**: before each protected slice, no new frame of the other queues may start. To be safe the guard band must be as long as the largest interfering frame. For a full-size Ethernet frame with preamble and inter-frame gap, that is about 12 µs at 1 Gbit/s and about 123 µs at 100 Mbit/s.
+
+<CommonsFigure
+  id="qbv-guard-band"
+  caption="Figure 4. The same schedule with a guard band (G) at the end of each slice 2. The link stays idle during G unless a frame short enough to finish before slice 1 can be sent."
+/>
+
+The guard band is bandwidth lost on every cycle. [Frame preemption](/blog/frame-preemption) reduces it from a whole frame to a small fragment.
+
+## 3. What a schedule has to know
+
+<TasModelsFigure caption="Figure 5. The inputs of a TAS scheduling problem. A study of 17 methods sorts them into network, traffic and scheduling models. Each method picks one option per dimension, so two methods often solve different problems." />
+
+A 2023 systematic review and experimental study of TAS scheduling [4] starts from a precise statement of what a scheduler is given. Some of the inputs are practical constraints that are easy to forget:
+
+- **GCL length is bounded.** Bridges support only a limited number of entries, typically between 8 and 1024.
+- **Priority-to-queue mapping may differ from bridge to bridge**, so the same stream can sit in different queues along its path.
+- **Traffic models differ.** A *fully schedulable* model lets the scheduler choose the release time of each stream at the talker. A *partially schedulable* model takes release times as given.
+- **Delay models differ.** In a *no-wait* schedule, frames are forwarded without queuing at any hop. *Wait-allowed* schedules let frames wait in egress queues and have a larger solution space. *Window-based* models reserve windows for groups of streams and allow some jitter.
+- **Queue isolation.** If two streams share a queue, the FIFO order must match the schedule. Otherwise a lost or delayed frame shifts the others. Methods enforce FIFO, frame-based or stream-based isolation, with stream-based the strictest.
+
+The 17 methods then split along three lines: fixed routing or joint routing and scheduling, no-wait or wait-allowed, and exact solutions (SMT or ILP solvers) or heuristics [4].
+
+## 4. Lessons from the experimental study
+
+The study ran all 17 methods on the same stream sets, in simulation and on an eight-bridge testbed [4]. Its main conclusions:
+
+1. **No method dominates.** Each method wins only under some settings. Comparisons in earlier papers were often valid only for the setting they used.
+2. **Simple models scale better.** No-wait models and simple heuristics, such as list scheduling, handled large workloads better than exact formulations.
+3. **Joint routing and scheduling can backfire.** On large networks it can do worse than fixed routing, because the problem becomes too large to solve.
+4. **Flexibility at the talker pays more than flexibility in the bridges.** Letting the scheduler choose release times helped more than letting frames wait in bridges.
+5. **With few queues, prefer no-wait.**
+6. **Real hardware adds constraints the models omit.** These include collisions between scheduled frames and PTP messages, a minimum gap between frames at end stations (about 50 µs on the testbed, far more than in bridges), and the time granularity of GCL entries.
+
+## 5. Where TAS fits
+
+TAS can isolate a critical stream completely from all other traffic. A review of industrial technologies notes that a well-configured TAS gives extremely low delay variation and a transmission delay bound of the order of 100 µs. It also notes that a small time error can desynchronise the windows and delay scheduled traffic by a whole cycle, and that TAS requires central management [5]. A 2026 tutorial on decentralised reservation leaves TAS out of its models for that reason. It adds that a lowest-latency schedule is not the same as a schedule that admits the most streams, because TAS reserves the link for a stream even when that stream sends nothing [6].
+
+For worst-case analysis, a queue behind a gate sees a service that is zero while the gate is closed and the full link rate while it is open. [The service curves post](/blog/service-curves) derives that service curve, and [the TSN shapers post](/blog/network-calculus-for-tsn) uses it.
+
+## 6. Summary
+
+| Property | Time-Aware Shaper |
+| --- | --- |
+| Standard | IEEE 802.1Qbv, now in IEEE 802.1Q |
+| Acts on | Transmission selection at an egress port, one gate per queue |
+| State | Gate control list, cycle time, base time |
+| Needs time synchronisation | Yes |
+| Configured by | Usually a CNC that computes a network-wide schedule |
+| Main cost | Guard bands, central computation, sensitivity to time errors |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," section on scheduling and traffic shaping. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023 (v4, 2024), Sections I–III and VII. [arXiv](https://arxiv.org/abs/2305.16772)
+5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
+6. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Section VIII. [arXiv](https://arxiv.org/abs/2610.11999)

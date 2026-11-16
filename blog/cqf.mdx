@@ -1,0 +1,84 @@
+---
+slug: cyclic-queuing-and-forwarding
+title: "Cyclic Queuing and Forwarding (IEEE 802.1Qch): one hop per cycle"
+date: 2026-11-24
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, cqf, article]
+description: Cyclic Queuing and Forwarding as a joint configuration of stream gates and transmission gates, the cycle-time condition that makes it work, and how it compares with other shapers in a decentralised setting.
+---
+
+import {BridgeIntegrationFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
+import {CqfGatesFigure} from '@site/src/components/figures/standards';
+
+Cyclic Queuing and Forwarding (CQF) makes latency independent of the other traffic. A frame advances exactly one hop per cycle, so its delay depends only on the path length. No new hardware is needed: CQF is a particular way of configuring two TSN tools that already exist.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['ingress', 'selection', 'time']}
+  caption="Figure 1. Where CQF acts: at the ingress, where a stream gate (802.1Qci) chooses the queue, and at transmission selection, where a transmission gate (802.1Qbv) chooses which queue may send, both driven by the common time base."
+/>
+
+## 1. Definition
+
+**Cyclic Queuing and Forwarding**, IEEE 802.1Qch (Annex T of IEEE 802.1Q), divides time into cycles of equal length $T$, synchronised across the network. Two queues serve one traffic class and swap roles every cycle:
+
+- during a cycle, frames **received** by a bridge are stored in one queue;
+- the frames received in the **previous** cycle are sent from the other queue.
+
+A frame received in one cycle is therefore sent in the next [2][3].
+
+<CyclicQueuingFigure caption="Figure 2. CQF on a path of three bridges. A frame sent by bridge A in one cycle is sent by bridge B in the next and by bridge C in the one after. It moves one hop per cycle whatever the other streams do." />
+
+## 2. How it is built from gates
+
+<CqfGatesFigure caption="Figure 3. CQF as a configuration of PSFP and TAS. In each slot, the stream gate of PSFP gives arriving frames internal priority 7, while the transmission gates of TAS close queue 7 and open queue 6. In the next slot both swap. Every bridge has the same configuration." />
+
+Standardisation-wise, CQF is not a separate shaper. It is a joint configuration of [Per-Stream Filtering and Policing](/blog/per-stream-filtering-and-policing) and the [Time-Aware Shaper](/blog/time-aware-shaper) [4]:
+
+1. The **stream gate** of PSFP sets the internal priority value (IPV) of arriving frames, alternating between two values each slot, for example 7 and 6.
+2. The **transmission gates** of TAS run out of phase: while arriving frames go to queue 7, gate 7 is closed and gate 6 is open, and vice versa.
+
+When bridge A opens a gate and sends, bridge B classifies those frames into its own closed queue. That queue opens exactly $T$ later. Both gating mechanisms need synchronised time, and every device carries the same configuration [4].
+
+## 3. The cycle-time condition
+
+CQF works only if every frame sent in a cycle reaches the next bridge and is queued before that cycle ends. The cycle must therefore cover:
+
+- the transmission time of all frames the bridge may send in one cycle, which is what admission control limits;
+- the propagation delay of the link;
+- the processing delay of the receiving bridge;
+- the synchronisation error between the two bridges.
+
+The tutorial on decentralised latency models expresses this as a latency threshold per hop, $\Delta \le T - d_{\text{misc}}$. Here $d_{\text{misc}}$ accounts for synchronisation inaccuracy. If admission control keeps the worst-case delay of the hop below $\Delta$, the queue is guaranteed to be empty at the end of its cycle. The downstream shaper then sees every frame as eligible exactly $T$ after the upstream one [4].
+
+End to end, the latency is about $T$ per hop. It varies by at most about one cycle, depending on where in a cycle the frame first arrives. This is why CQF gives very low jitter and why its bound needs no knowledge of the other flows [2].
+
+## 4. Costs and comparison
+
+The same tutorial evaluates CQF against strict priority, ATS and CBS, using latency models that every bridge can compute locally [4]:
+
+- **Half the traffic classes.** Each class needs two queues, so with eight queues only four classes remain for reserved traffic. Priorities are merged, for example 7 and 6 into 7, which increases interference within a class.
+- **Best jitter under a global configuration.** When one setting is applied network-wide, CQF minimised jitter.
+- **Beaten by per-hop tuning.** When latency thresholds could be optimised hop by hop, strict priority with a network calculus bound gave better latency and jitter than CQF.
+- **A cycle is a hard minimum.** Even a lightly loaded path pays $T$ per hop, so $T$ trades bandwidth per cycle against latency.
+
+For network calculus, CQF is the simplest case of all. Each hop is a delay element of $T$ with no burst growth. The burstiness cascade that complicates [aggregate multiplexing](/blog/aggregate-multiplexing-residual-service) does not occur.
+
+## 5. Summary
+
+| Property | Cyclic Queuing and Forwarding |
+| --- | --- |
+| Standard | IEEE 802.1Qch, Annex T of IEEE 802.1Q |
+| Built from | Stream gates (802.1Qci) and transmission gates (802.1Qbv) |
+| Queues per class | Two, alternating every cycle |
+| Needs time synchronisation | Yes |
+| Latency | About one cycle $T$ per hop |
+| Main cost | Half the traffic classes; a full cycle per hop even at low load |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," section on cyclic queuing and forwarding. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 35–36. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections VI-C and VII-F. [arXiv](https://arxiv.org/abs/2610.11999)

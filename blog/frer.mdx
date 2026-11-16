@@ -1,0 +1,90 @@
+---
+slug: frame-replication-and-elimination
+title: "Frame Replication and Elimination (IEEE 802.1CB): seamless redundancy"
+date: 2026-11-27
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, frer, article]
+description: How IEEE 802.1CB numbers, replicates and later eliminates the frames of a stream sent over disjoint paths, the functions on each side, and the burst and ordering effects that an analysis must account for.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import {FrerFunctionsFigure} from '@site/src/components/figures/standards';
+import {ReplicationFigure} from '@site/src/components/figures/shared';
+
+Bounded latency is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability (FRER) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['ingress', 'relay']}
+  caption="Figure 1. Where FRER acts: per stream, around the relay. A replicating bridge numbers and copies the frames of a stream towards several egress ports; an eliminating bridge removes the duplicates. Disjoint paths come from the control plane."
+/>
+
+## 1. Definition
+
+**Frame Replication and Elimination for Reliability**, IEEE 802.1CB, is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing switches over, so a path failure causes no interruption [3].
+
+<ReplicationFigure
+  ends={['Talker', 'Listener']}
+  nodes={['Bridge N1', 'Bridge N2']}
+  caption="Figure 2. FRER on two paths. N1 sends a copy of every numbered frame on each path; N2 forwards the first copy of each number and discards the second."
+  source={
+    <>
+      redrawn after J. Farkas,{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf">
+        TSN Basic Concepts
+      </a>
+      , DetNet–TSN workshop, 11 November 2018, slide 16.
+    </>
+  }
+/>
+
+Replication and elimination can happen in the end stations themselves or in bridges. A non-redundant talker can then use a redundant network.
+
+## 2. The functions on each side
+
+<FrerFunctionsFigure caption="Figure 3. The FRER functions. The replicating side identifies the stream, numbers it, splits it and adds a tag. The eliminating side reads the number, removes duplicates and watches for a silent path." />
+
+| Function | Side | What it does |
+| --- | --- | --- |
+| Stream identification | Both | Recognises the stream from frame fields, as in [PSFP](/blog/per-stream-filtering-and-policing) |
+| Sequence generation | Replicating | Gives each frame the next sequence number |
+| Stream splitting | Replicating | Makes one copy per *member stream*, one member per path |
+| Sequence encode / decode | Both | Carries the number in a tag: the 802.1CB redundancy tag (R-TAG), or the tags of the HSR and PRP industrial protocols |
+| Individual recovery | Eliminating, optional | Removes duplicates within one member stream |
+| Sequence recovery | Eliminating | Removes duplicates across members. The **vector** algorithm keeps a window of recently seen numbers and accepts frames out of order; the **match** algorithm only compares with the last number. |
+| Latent error detection | Eliminating | Raises an alarm when a path delivers nothing, so that a hidden failure is repaired before a second one causes loss |
+
+## 3. Where the paths come from
+
+FRER assumes disjoint paths but does not compute them. In a bridged network, the paths come either from **path control**, 802.1Qca, where IS-IS computes defaults and a controller adds explicit trees, or from a CNC that computes paths and configures them directly [3]. The [SDN post](/blog/sdn-and-tsn-configuration) covers the controller side. At Layer 3, IETF DetNet provides the same service as *packet replication, elimination and ordering* (see [the DetNet post](/blog/ietf-detnet)).
+
+## 4. What FRER does to the traffic
+
+FRER removes loss, but it changes the traffic that the latency analysis sees. The 2026 tutorial on decentralised latency models lists three effects [4]:
+
+1. **Longer frames.** The tag adds bytes to every frame, which increases the stream's frame size and burst.
+2. **A bigger burst after merging.** Even after elimination, the merged stream must often be given twice the original burst to cover the worst case.
+3. **Reordering after a repair.** Suppose the two paths have different delays and the faster path fails. When it comes back, the merge point receives old frames from the slower path and recent frames from the faster one. Both are valid and neither is eliminated, so the output is temporarily burstier, until the old frames are used up. Annex C.9 of 802.1CB discusses this case.
+
+The tutorial suggests placing [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping) at the merge point to restore the original burst at once. The combination of FRER and ATS is still being standardised [4].
+
+In network calculus terms, the arrival curve after elimination is not the talker's curve. It must allow for the extra burst of points 2 and 3. Any bound computed downstream of an elimination point is wrong if it uses the original curve.
+
+## 5. Summary
+
+| Property | Frame Replication and Elimination |
+| --- | --- |
+| Standard | IEEE 802.1CB |
+| Acts on | Individual streams, around the relay of replicating and eliminating systems |
+| Redundancy | 1+1 or 1+n, per frame, no switchover |
+| Needs time synchronisation | No |
+| Needs | Maximally disjoint paths, from 802.1Qca or a CNC |
+| Analysis caveat | Larger frames and, after merging, a larger burst |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," section on frame replication and elimination. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 16–17. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I and VIII. [arXiv](https://arxiv.org/abs/2610.11999)

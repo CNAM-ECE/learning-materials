@@ -1,0 +1,93 @@
+---
+slug: asynchronous-traffic-shaping
+title: "Asynchronous Traffic Shaping (IEEE 802.1Qcr): per-stream shaping without a clock"
+date: 2026-11-25
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, ats, network-calculus, article]
+description: Asynchronous Traffic Shaping reshapes every stream at every hop with a token bucket and an eligibility time, using only local clocks. Its queue allocation rules, its delay segments, why its bound does not grow with burstiness, and where it beats the other shapers.
+---
+
+import {BridgeIntegrationFigure, PerStreamFigure} from '@site/src/components/figures/tsn';
+import {DelaySegmentsFigure} from '@site/src/components/figures/standards';
+
+Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping (ATS) avoids both problems: it restores each stream's original traffic contract at every hop, using only the bridge's local clock.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['ingress', 'queuing']}
+  caption="Figure 1. Where ATS acts: per-stream state is selected at the ingress, by the same stream filter as PSFP, and applied in front of shared shaped queues at the egress. It does not touch the time base."
+/>
+
+## 1. Definition
+
+**Asynchronous Traffic Shaping**, IEEE 802.1Qcr, is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **token bucket** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
+
+Two features distinguish it from plain per-flow shaping:
+
+- **Shared queues.** Streams share a small number of shaped queues. The shaper state of each frame's stream is applied to the frame at the head of the queue [3].
+- **No synchronisation.** Eligibility times are computed from the local clock. A frame whose eligibility time lies too far in the future, beyond a configured maximum residence time, is discarded [2].
+
+<PerStreamFigure caption="Figure 2. Per-stream processing ahead of the queues. ATS reuses the stream filter and stream gate of PSFP, but instead of a meter that drops it applies a token bucket that delays each frame to its eligibility time." />
+
+## 2. Queue allocation rules
+
+Sharing a queue between streams can cause head-of-line blocking: a frame that is not yet eligible holds up an eligible frame behind it. ATS limits this with **queue allocation rules**. Frames go to separate shaped queues if they differ in [4]:
+
+- the ingress port they arrived on (the upstream transmitter);
+- the egress port;
+- the traffic class in the upstream bridge or in the current bridge.
+
+Inside one queue, all frames then come from the same upstream queue, so they arrive in an order compatible with their eligibility times.
+
+## 3. Delay segments: from shaper to shaper
+
+<DelaySegmentsFigure caption="Figure 3. Shaper-to-shaper delay segments. A segment starts when a frame becomes eligible at the upstream shaper and ends when it becomes eligible at the downstream shaper. The downstream bridge bounds the whole segment." />
+
+The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS latency analysis of Specht and Samii. It was proposed for the P802.1DD Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
+
+The choice matters because traffic leaving a token-bucket shaper is known to conform to $(b, r)$. Each segment therefore starts from a clean, well-defined arrival curve, whatever happened upstream. The downstream bridge computes the bound for the segment that ends in it, using what its neighbour tells it [4]. The [stream reservation post](/blog/stream-reservation) lists the information it receives.
+
+## 4. Why the bound does not cascade
+
+With class-based shapers or plain strict priority, a stream's burst grows by its rate times the delay variation it has accumulated:
+
+$$
+b^{\text{eff}} = b + r\,(L^{+} - L^{-}),
+$$
+
+where $L^{+}$ and $L^{-}$ are its accumulated maximum and minimum latencies (the [fundamental bounds post](/blog/three-fundamental-bounds) gives the general result). ATS removes the extra term at every hop. Its per-segment bound uses the **original** burst $b$ declared by the talker. It also needs no pre-configured latency threshold, although its queue allocation rules require more queues [4].
+
+In network calculus, the ATS shaper is an **interleaved regulator**. Its key property, shown by Le Boudec, is that an interleaved regulator placed after a FIFO system does not increase that system's worst-case delay. Re-shaping is therefore "for free" in the worst case [5]. A review of industrial IoT networking cites the same property: ATS does not increase the worst-case delay through the network [6].
+
+## 5. How ATS compares
+
+The 2026 tutorial compares five decentralised latency models on industrial and linear topologies [4]:
+
+- **ATS performed well everywhere.** It gave the best burstiness at the receiver and worst-case latency similar to the best strict-priority model.
+- **Strict priority with a network calculus bound can still win** at the highest priority, especially in bridges with very few ports, because frames from one ingress link cannot arrive faster than that link (serialisation). At lower priorities ATS consistently did better.
+- **The main disadvantage is hardware.** Per-stream state and extra queues make ATS costly and still rarely available.
+
+ATS is also a remedy for a redundancy side effect. After [FRER](/blog/frame-replication-and-elimination) eliminates duplicates, the merged stream can be burstier than the original. Placing ATS at the merge point reshapes it, although combining FRER and ATS is still being standardised [4].
+
+The industrial review summarises the division of labour. ATS suits sporadic or aperiodic critical traffic, such as alarms and events. The credit-based shaper suits regular but bursty traffic, and the time-aware shaper suits regular critical traffic [6].
+
+## 6. Summary
+
+| Property | Asynchronous Traffic Shaping |
+| --- | --- |
+| Standard | IEEE 802.1Qcr |
+| Acts on | Per-stream state at the ingress, shared shaped queues at the egress |
+| State | One token bucket $(b, r)$ per stream per bridge |
+| Needs time synchronisation | No; local clocks only |
+| Bound | Uses the talker's original burst; no burstiness cascade |
+| Main cost | Per-stream state, more queues, limited hardware support |
+
+## References
+
+1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
+2. Wikipedia, "Time-Sensitive Networking," section on asynchronous traffic shaping. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 13–15. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I, IV, VI-A, VI-D, VII-F and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
+5. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, vol. 26, no. 6, 2018.
+6. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)

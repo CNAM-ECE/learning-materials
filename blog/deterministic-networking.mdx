@@ -67,7 +67,7 @@ The DetNet architecture groups the mechanisms into three techniques, which can b
 | Service protection | Sends copies of each packet over several paths (sequence number & timestamp to transport protocol) and removes duplicates with reordering packets, or adds redundancy & error correction by packet encoding (multi-trans packet unit) | Loss caused by equipment or media failure, bandwidth constraint assurance & delay equalization in failure recovery |
 | Explicit routes | Fixes the path in advance, so that it does not change at once when the topology changes | Interruptions while routing or bridging protocols reconverge |
 
-Resource allocation only works for a flow that is limited at the source in a specified packet size and rate [4]. Explicit routes can be installed with [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209), [Segment Routing](https://www.rfc-editor.org/rfc/rfc8402), [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) or a centralised [SDN controller](https://www.rfc-editor.org/rfc/rfc7426) [3][4]. In this context, mesh network topology changes can disrupt traffic and cause out-of-order packet delivery. Meanwhile, real-time networks often use redundant ring topologies, increasing hop count and latency. DetNet instead uses predefined, stable routes to avoid immediate reconfiguration and interruptions caused by routing or bridging convergence.
+Resource allocation only works for a flow that is limited at the source in a specified packet size and rate [4]. Explicit routes can be installed with [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209), [Segment Routing](https://www.rfc-editor.org/rfc/rfc8402), [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) or a centralised [SDN controller](https://www.rfc-editor.org/rfc/rfc7426) [3][4]. In this context, mesh network topology changes can disrupt traffic and cause out-of-order packet delivery (side effect). Meanwhile, real-time networks often use redundant ring topologies, increasing hop count and latency. DetNet instead uses predefined, stable routes to avoid immediate reconfiguration and interruptions caused by routing or bridging convergence.
 
 <ReplicationFigure
   ends={['End system', 'End system']}
@@ -96,6 +96,31 @@ When the paths have different lengths, the merging node needs extra buffering to
 
 The terminology row follows the mapping given in the DetNet architecture [4]; the scope row follows the DetNet charter, which explicitly excludes solutions for large groups of domains such as the Internet [1].
 
+### Traffic engineering: from a DetNet flow to TSN settings
+
+The two efforts meet where a routed DetNet path crosses a bridged TSN segment. What connects them is [traffic engineering](https://en.wikipedia.org/wiki/Traffic_engineering_(telecommunications)), and its protocols come from the IETF. The [Traffic Engineering Architecture and Signaling (TEAS)](https://datatracker.ietf.org/wg/teas/about/) working group maintains [MPLS-TE](https://www.rfc-editor.org/rfc/rfc2702) [label-switched paths](https://en.wikipedia.org/wiki/Label-switched_path) and [RSVP-TE](https://www.rfc-editor.org/rfc/rfc3209) signalling [3]. These protocols take the specification of a DetNet flow and turn it into settings of the TSN mechanisms along the bridged segment [3]:
+
+| TSN mechanism configured | What it does for the DetNet flow | Standard |
+| --- | --- | --- |
+| Credit-based shaper | Limits the flow's class to its reserved rate and spreads its frames evenly | [IEEE 802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/), see [the CBS post](/blog/credit-based-shaper) |
+| Scheduled traffic | Opens and closes transmission gates on a timetable that repeats every cycle | [IEEE 802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/), see [the TAS post](/blog/time-aware-shaper) |
+| Cyclic queuing and forwarding | Alternates two or three buffers in synchronised cycles, so each hop takes a fixed time | [IEEE 802.1Qch](https://1.ieee802.org/tsn/802-1qch/), see [the CQF post](/blog/cyclic-queuing-and-forwarding) |
+| Frame preemption | Lets urgent frames interrupt a long frame already on the wire | [IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) and [IEEE 802.3br](https://www.ieee802.org/3/br/), see [the preemption post](/blog/frame-preemption) |
+| Frame replication and elimination | Sends copies over disjoint paths and removes the duplicates | [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), see [the FRER post](/blog/frame-replication-and-elimination) |
+
+### Matching a DetNet flow to a TSN stream
+
+The interworking itself is defined in [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/). Its stream identification functions, in particular *active destination MAC and VLAN stream identification*, are how a TSN sub-network makes its capabilities known to DetNet flows [3]. When a DetNet flow enters the bridged segment, the edge bridge recognises it from three header fields: the destination [MAC address](https://en.wikipedia.org/wiki/MAC_address), the [VLAN](https://en.wikipedia.org/wiki/VLAN) ID and the priority. It then maps the flow to a TSN stream identifier and to the [quality-of-service](https://en.wikipedia.org/wiki/Quality_of_service) requirements of the talkers and listeners in the [AVB](https://www.ieee802.org/1/pages/avbridges.html)/[TSN](https://1.ieee802.org/tsn/) sub-network [3].
+
+| [DetNet](https://www.rfc-editor.org/rfc/rfc8655) side (Layer 3) | TSN side (Layer 2) |
+| --- | --- |
+| DetNet flow | Stream, with a stream identifier |
+| Source and destination | Talker and listeners |
+| Flow specification | QoS requirements of the talker and listeners |
+| Flow recognised by its IP or MPLS header | Stream recognised by destination MAC address, VLAN ID and priority ([802.1CB](https://1.ieee802.org/tsn/802-1cb/) stream identification) |
+
+Once matched, the flow is handled by the TSN mechanisms of the table above for the whole bridged segment. It leaves the segment as the same DetNet flow it was when it entered.
+
 ## 6. What each layer provides
 
 <LayerRolesFigure />
@@ -114,7 +139,7 @@ Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and
 | Physical (L1) | The physical link. The only change is the MAC Merge sublayer of [802.3br](https://www.ieee802.org/3/br/), which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
 | Under every layer | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
 
-In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. Traffic-engineering protocols maintained by the IETF [TEAS](https://datatracker.ietf.org/wg/teas/about/) working group, such as RSVP-TE and [MPLS-TE](https://www.rfc-editor.org/rfc/rfc2702), translate a DetNet flow specification into the corresponding TSN settings for the credit-based shaper, scheduled traffic, cyclic queuing, preemption and FRER [3].
+In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. How traffic-engineering protocols turn a DetNet flow specification into those TSN settings is explained under "Traffic engineering" in section 5.
 
 ### IntServ and DiffServ in OSI layer 3
 

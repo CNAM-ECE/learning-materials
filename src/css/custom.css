@@ -18,6 +18,11 @@
   --nc-arrival: #c2410c;
   --nc-service: #1f5f8b;
   --nc-bound: #6b7280;
+  --nc-fig-stroke: #475569;
+  --nc-fig-fill: #f8fafc;
+  --nc-fig-service-fill: #e3eff7;
+  --nc-fig-arrival-fill: #fdebdf;
+  --nc-fig-muted-fill: #eef0f3;
 }
 
 [data-theme='dark'] {
@@ -32,6 +37,11 @@
   --nc-arrival: #fb923c;
   --nc-service: #6cb4e4;
   --nc-bound: #9ca3af;
+  --nc-fig-stroke: #94a3b8;
+  --nc-fig-fill: #242a33;
+  --nc-fig-service-fill: #1d3a4f;
+  --nc-fig-arrival-fill: #4a2c17;
+  --nc-fig-muted-fill: #2f343c;
 }
 
 /* Long display formulas scroll horizontally instead of overflowing on phones. */
@@ -80,4 +90,12 @@
   font-size: 0.9rem;
   color: var(--ifm-color-emphasis-700);
   margin-top: 0.5rem;
+}
+
+/* Source line under a figure caption. */
+.nc-figure-source {
+  display: block;
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-top: 0.2rem;
 }

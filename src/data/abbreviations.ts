@@ -154,6 +154,18 @@ export const abbreviations: Record<string, Abbreviation> = {
   PW: {expansion: 'Pseudowire', definition: 'An emulated point-to-point link carried over a packet network; one encapsulation of the DetNet service sub-layer.'},
   GRE: {expansion: 'Generic Routing Encapsulation', definition: 'A tunnelling protocol that carries one packet inside another (RFC 2784).', link: R + 'rfc2784'},
   OAM: {expansion: 'Operations, Administration and Maintenance', definition: 'The tools for monitoring and troubleshooting a network, such as continuity checks and loss measurement.'},
+
+  // The IEEE standards process
+  PAR: {expansion: 'Project Authorization Request', definition: 'The document that authorises work on a new standard, amendment or revision, stating its scope and purpose; approved by the IEEE SA Standards Board on the recommendation of NesCom.', link: 'https://standards.ieee.org/develop/'},
+  CSD: {expansion: 'Criteria for Standards Development', definition: 'The IEEE 802 criteria (such as broad market potential and technical feasibility) used to judge whether a PAR should go forward.'},
+  NesCom: {expansion: 'New Standards Committee', definition: 'The IEEE SA Standards Board committee that reviews PARs before work may start.'},
+  RevCom: {expansion: 'Standards Review Committee', definition: 'The IEEE SA Standards Board committee that checks a balloted draft followed due process before it is approved as a standard.'},
+  SASB: {expansion: 'IEEE SA Standards Board', definition: 'The board that approves PARs and standards and oversees the standards process.'},
+  LMSC: {expansion: 'LAN/MAN Standards Committee', definition: 'The IEEE Computer Society standards committee better known as IEEE 802; its working groups include 802.1, 802.3 and 802.11.', link: 'https://www.ieee802.org/'},
+  WG: {expansion: 'Working Group', definition: 'The group responsible for the standards of one area, such as IEEE 802.1 (higher layer LAN protocols); only its voting members vote in working-group ballots.'},
+  TG: {expansion: 'Task Group', definition: 'A part of a working group that focuses on one subject, such as the TSN task group of IEEE 802.1.'},
+  TAG: {expansion: 'Technical Advisory Group', definition: 'A group of experts on a topic that crosses working groups; it may write a recommended practice.'},
+  Cor: {expansion: 'Corrigendum', definition: 'A document that only corrects errors or ambiguities in a standard, without adding new material, for example 802.1Q-2014/Cor 1-2015.', link: 'https://standards.ieee.org/faqs/maintenance/'},
 };
 
 export type AbbreviationKey = keyof typeof abbreviations;

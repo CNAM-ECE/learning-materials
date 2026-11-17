@@ -56,6 +56,10 @@ const docs = {
     cite: 'Cisco Systems, “Precision Time Protocol Software Configuration Guide for IE 2000U and Connected Grid Switches,” PTP overview (Cisco art 310450)',
     url: 'https://www.cisco.com/c/en/us/td/docs/switches/connectedgrid/cg-switch-sw-master/software/configuration/guide/ptp/b_ptp_ie2ku.html',
   },
+  pannell2020: {
+    cite: 'D. Pannell, “Status & Content of the IEEE TSN Auto Profile,” IEEE Ethernet & IP @ Automotive Technology Day, September 2020',
+    url: 'https://standards.ieee.org/wp-content/uploads/import/documents/other/eipatd-presentations/2020/D1-05-Pannell-Status-and-Content-of-the-IEEE-TSN-Automotive-Profile.pdf',
+  },
   grigorjew: {
     cite: 'A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, “Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial,” arXiv:2610.11999, 2026',
     url: 'https://arxiv.org/abs/2610.11999',
@@ -130,6 +134,8 @@ export const sourceFigures = {
   'ieee8021q-tutorial-srp-example': {doc: 'tutorial', where: 'slide 53', alt: 'A talker advertise propagating through bridges to listeners, with the accumulated latency increased at each bridge, and listener ready messages returning'},
   'rfc7813-fig2': {doc: 'rfc7813', where: 'Figure 2', edit: 'ASCII figure rendered from the RFC text, otherwise unchanged', alt: 'ASCII figure of a strict explicit tree over nine bridges A to I, and its description as a list of hops starting at root A', width: 360},
   'cisco-ptp-delay-request': {doc: 'cisco', where: 'figure “PTP message exchange”', edit: 'cropped from a screenshot, otherwise unchanged', alt: 'Master and slave timelines: Sync sent at t1 and received at t2, Follow_Up carrying t1, Delay_Req sent at t3 and received at t4, Delay_Resp carrying t4; path delay and offset formulas below', width: 620},
+  'overview2018-process': {doc: 'overview', where: 'slide 7', edit: 'cropped, with the slide footer blanked', alt: 'The standard development process: PAR, NesCom approval, task group ballot, working group ballot and recirculation, sponsor ballot and recirculation, RevCom approval, publication', width: 560},
+  'pannell2020-stages': {doc: 'pannell2020', where: 'slide 6', alt: 'Stages of an IEEE 802.1 standard: new idea, PAR, task group, work group, SA ballots, standard'},
   'grigorjew2026-fig1': {doc: 'grigorjew', where: 'Fig. 1', alt: 'Use cases for decentralised latency models: fully decentralised reservation, reservation between CNC domains, reshaping after FRER merging'},
   'grigorjew2026-fig4': {doc: 'grigorjew', where: 'Fig. 4', alt: 'Switch delay model: propagation, store and forward, processing, shaper queuing and priority queuing', width: 520},
   'grigorjew2026-fig5': {doc: 'grigorjew', where: 'Fig. 5', alt: 'Delay segments between shapers of consecutive switches'},

@@ -1,0 +1,150 @@
+---
+slug: iec-ieee-60802-industrial-profile
+title: "IEC/IEEE 60802: the TSN profile for industrial automation"
+date: 2026-12-02
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, profile, tas, time-sync, presentation]
+description: The joint IEC and IEEE profile that brings TSN to the factory. Why industrial networks need it, the requirements on topology, scheduling and time, the IA-station, and the common resource management that lets operational and information technology share one network.
+---
+
+import {ProfileFigure} from '@site/src/components/figures/profiles';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Factories have long run their control loops on fieldbuses and proprietary variants of Ethernet. They work, but they cannot share their wires with anything else. IEC/IEEE 60802 is the profile that defines how standard TSN equipment should be selected and configured to replace them.
+
+{/* truncate */}
+
+<ProfileFigure
+  application={['Industrial automation: motion control, line topologies, OT and IT on one network', 'control loops of tens of µs · 64+ hops · global time and working clock']}
+  profile={['IEC/IEEE 60802: TSN Profile for Industrial Automation', 'joint IEC SC65C/WG18 and IEEE 802 · conformance classes A and B']}
+  picks={['priority', 'as', 'tas', 'frer', 'qcc']}
+  caption="Figure 1. The industrial profile between its application and the TSN toolbox. Highlighted: the tools that the requirements and the overview cited here emphasise (time synchronisation, scheduled traffic, stream redundancy, central configuration). The standard itself gives the complete normative selection."
+  source={
+    <>
+      own drawing, after J. Woods,{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf">IEC/IEEE 60802</a>,
+      IEEE SA TSN webinar, April 2023, and the{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2018/60802-industrial-requirements-0918-v10.pdf">60802 requirements</a>, 2018.
+    </>
+  }
+/>
+
+## 1. Definition
+
+**IEC/IEEE 60802**, *Time-Sensitive Networking Profile for Industrial Automation*, is a joint project of IEC SC65C/WG18 and IEEE 802. It produces a single dual-logo standard that is both an IEC and an IEEE standard [1]. It defines TSN profiles that select the features, options, configurations, defaults, protocols and procedures of bridges, end stations and LANs to build industrial automation networks [1][2].
+
+Users and vendors need such guidance because IEEE 802 standards cover a very wide range of scenarios. Interoperable, converged industrial networks require a selection, so that operational technology (OT) traffic and other traffic can share one network [1]. The project page lists the standard as published on 29 June 2026, as IEC/IEEE 60802-2026 [1].
+
+## 2. The challenge
+
+<SourceFigure
+  id="iec60802-2023-challenge"
+  caption="Figure 2. The starting point: traditional industrial networks replace layer 2 with special hardware (left), while standard Ethernet keeps every layer standard but bounds neither latency nor bandwidth (right)."
+/>
+
+The 2023 overview frames the problem as a choice between two imperfect options [2]:
+
+| Traditional industrial networks | Best-effort Ethernet |
+| --- | --- |
+| Tuned for latency and control | Open and interoperable |
+| Cannot share the wire | Does not bound latency |
+| Cannot scale (limited to 100 Mb/s) | Does not guarantee bandwidth |
+| Proprietary hardware and software increase cost | |
+
+TSN is meant to keep the right-hand column and add the guarantees of the left.
+
+## 3. Requirements
+
+### Environment and topology
+
+Industrial equipment works from −40 to +85 °C, runs 24/7 for ten years or more, and suffers frequency deviations from ageing, temperature, supply voltage, shock and vibration. Physical constraints make star cabling impractical, so machines are naturally wired point to point [2].
+
+<SourceFigure
+  id="iec60802-2023-line-topology"
+  caption="Figure 3. A motion-control line: a controller and servodrives chained through embedded switches, with control cycles of 125 µs and 200 µs on the same line."
+/>
+
+Motion applications use **line topologies** with embedded switches. A line can have 64 hops or more, control loops can run in tens of microseconds, and the synchronised time must stay within 1 µs of the grandmaster across 64 hops, with 100 hops as the goal [2].
+
+### Scheduled traffic
+
+<SourceFigure
+  id="iec60802-2023-scheduled-traffic"
+  caption="Figure 4. Requirements for scheduled traffic: applications with many cycle times, end stations with or without their own gating cycle, and bridges with or without a gating cycle."
+/>
+
+For [scheduled traffic (802.1Qbv)](/blog/time-aware-shaper), the requirements are [2]:
+
+| Parameter | Requirement |
+| --- | --- |
+| Tick granularity of the gates | 10 ns or less |
+| Gating cycle at 100 Mb/s | 250 µs to 10 ms |
+| Gating cycle at 1 Gb/s and above | 31.25 µs to 1 ms |
+| Timing points | 10 ns or less |
+
+### Two kinds of time
+
+<SourceFigure
+  id="iec60802-2023-sync"
+  caption="Figure 5. Two time domains: global time, traceable to a known source, and a working clock used by the application; each has a PTP clock and an application clock."
+/>
+
+Industrial applications need two times [2][3]:
+
+- a **global time**, traceable to a known source, for time stamping across the plant;
+- a **working clock**, the time base of the control application itself.
+
+A secondary domain for each may be supported as an option [2]. The 2018 requirements are precise. All synchronisation requirements must hold for line topologies of up to 100 hops. Other requirements include [3]:
+
+- a valid link delay within 1 s, with an error below 10 ns per link;
+- a bridge delay error below 50 ns per node, and a residence time below 1 ms;
+- detection of a lost working-clock grandmaster within 100 ms;
+- reaching "in sync within 1 µs" in under 1 s per device.
+
+These numbers feed directly into the synchronisation error that [802.1AS](/blog/ieee-802-1as-time-synchronization) analyses must assume.
+
+### Reliability, migration and configuration
+
+The 2018 requirements also ask for the following [3]:
+
+- **Availability.** Redundancy for streams and high-availability networks, in which a single failure creates no process disturbance.
+- **Migration.** Support for extending existing (brownfield) installations and connecting non-TSN devices.
+- **Protection.** Protection of a TSN domain against traffic from outside it.
+- **Configuration.** A vendor-independent network configuration, with preconfigured streams, a defined bootstrap configuration and a selected management protocol.
+
+## 4. The IA-station
+
+<SourceFigure
+  id="iec60802-2023-ia-station"
+  caption="Figure 6. An IA-station: several end station components and bridge components inside one chassis, sharing one management entity."
+/>
+
+In industrial devices, several end stations and bridge components often live in one chassis, connected internally by interfaces that are not IEEE 802 standards. The profile introduces the **IA-station** to cover such devices. All components of an IA-station share a common [LLDP](https://standards.ieee.org/ieee/802.1AB/6047/) chassis-ID subtype and a common management entity. Functions such as time synchronisation, management and discovery are specified for the IA-station as a whole [2].
+
+Bridge and end-station components come in two **conformance classes** [2]:
+
+- **class A (ccA)** is feature rich, for use cases that need many profile features;
+- **class B (ccB)** is for more resource-constrained implementations.
+
+## 5. One network for OT and IT
+
+<SourceFigure
+  id="iec60802-2023-resource-management"
+  caption="Figure 7. Common resource management: one entity, here the fully centralised model of 802.1Qcc, is aware of all OT and IT traffic requirements within its configuration domain."
+/>
+
+The overview argues that the real value of TSN lies in a **common layer 2** with a common approach to resource management. The ambitions it lists [2]:
+
+- **Convergence.** IT, OT and other devices share one network with guaranteed quality of service.
+- **Self-protection.** The network protects itself, for example against wrong connections, unexpected devices or excessive load.
+- **Adaptability.** It supports plug and produce, topology changes and extensions.
+- **Scalability.** It scales for both the network and the devices.
+
+One entity aware of all traffic requirements in its configuration domain can automate the on-boarding of new devices [2]. That is the central configuration model of [802.1Qcc](/blog/sdn-and-tsn-configuration).
+
+## References
+
+1. IEEE 802.1, *IEC/IEEE 60802 TSN Profile for Industrial Automation*, project page. [Web page](https://1.ieee802.org/tsn/iec-ieee-60802/)
+2. J. Woods, "IEC/IEEE 60802: The Case for the Converged Network in the Factory of the Future," IEEE SA TSN webinar series, 6 April 2023, slides 7–19. [Slides](https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf)
+3. IEC/IEEE 60802 joint project, "Requirements IEC/IEEE 60802," V1.0, 13 September 2018. [Document](https://www.ieee802.org/1/files/public/docs2018/60802-industrial-requirements-0918-v10.pdf)
+4. IEEE SA, "Time-Sensitive Networking for Industrial Automation: Unlocking the Future of Industrial Automation," *Beyond Standards*. [Article](https://standards.ieee.org/beyond-standards/time-sensitive-networking-for-industrial-automation-unlocking-the-future-of-industrial-automation/)

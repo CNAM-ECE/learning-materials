@@ -1,0 +1,84 @@
+---
+slug: ieee-802-1dg-automotive-profile
+title: "IEEE 802.1DG: the TSN profile for in-vehicle Ethernet"
+date: 2026-12-03
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, profile, presentation]
+description: The TSN profile for the Ethernet network inside a vehicle. Its scope, the automotive PHYs it runs on, what TSN brings to a car, and how the profile was written, including its tutorial annex on redundancy and time synchronisation.
+---
+
+import {ProfileFigure} from '@site/src/components/figures/profiles';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Cars were among the first users of AVB, for infotainment. Driver assistance and automated driving now put cameras, radars and control traffic on the same in-vehicle Ethernet, with much stricter requirements. IEEE 802.1DG is the profile that defines how TSN should be used there.
+
+{/* truncate */}
+
+<ProfileFigure
+  application={['In-vehicle Ethernet: infotainment, ADAS sensors, control', 'PHYs from 10 Mb/s to 10 Gb/s · security · high availability · bounded latency']}
+  profile={['IEEE 802.1DG: TSN Profile for Automotive In-Vehicle Ethernet Communications', 'based on IEEE 802.1 TSN and IEEE 802.1 security standards']}
+  picks={['priority', 'as', 'tas', 'pre', 'psfp', 'frer', 'sec']}
+  caption="Figure 1. The automotive profile between its application and the TSN toolbox. Highlighted: the tools named for vehicles in the IEEE SA material cited here (time synchronisation, scheduling, preemption, filtering and policing, redundancy, security). The standard itself gives the complete normative selection."
+  source={
+    <>
+      own drawing, after the IEEE SA flyer{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2024/admin-tsn-automotive-flyer-1124.pdf">TSN for Automotive</a>,
+      2024, and the{' '}
+      <a href="https://1.ieee802.org/tsn/802-1dg/">802.1DG project page</a>.
+    </>
+  }
+/>
+
+## 1. Definition
+
+[IEEE 802.1DG](https://1.ieee802.org/tsn/802-1dg/), *Time-Sensitive Networking Profile for Automotive In-Vehicle Ethernet Communications*, specifies profiles for secure, highly reliable, deterministic-latency automotive in-vehicle bridged [IEEE 802.3](https://standards.ieee.org/ieee/802.3/10422/) Ethernet networks. It is based on IEEE 802.1 TSN standards and IEEE 802.1 security standards [1].
+
+Its purpose is to give designers and implementers profiles that cover the entire range of in-vehicle applications, including those that require security, high availability and reliability, maintainability and bounded latency [1]. The project was authorised in February 2019. The standard was approved on 28 May 2025 and published on 6 June 2025 as IEEE Std 802.1DG-2025 [1].
+
+## 2. From infotainment to driver assistance
+
+<SourceFigure
+  id="avb2022-automotive"
+  caption="Figure 2. The first automotive use of AVB: an infotainment network linking a central unit to displays, cameras and media players around the car."
+/>
+
+The TSN toolset grew out of AVB, which is already used in automotive infotainment. It evolved to cover a wider scope, in part autonomous driving [3]. The wiring of a vehicle is a major constraint: weight and space must be minimised while sensors need more throughput. Several automotive Ethernet PHYs exist for this [3]:
+
+| PHY | Rate |
+| --- | --- |
+| IEEE 802.3cg | 10 Mb/s over a single twisted pair |
+| IEEE 802.3bw | 100 Mb/s |
+| IEEE 802.3bp | 1 Gb/s |
+| IEEE 802.3ch | 2.5, 5 and 10 Gb/s |
+
+## 3. What TSN brings to a vehicle
+
+The IEEE SA flyer on TSN for automotive lists the following [3]:
+
+- **Time synchronisation.** IEEE 1588-based protocols such as [802.1AS](/blog/ieee-802-1as-time-synchronization) give sub-microsecond accuracy. Different synchronisation solutions are allowed where needed, so that scheduled traffic and asynchronous traffic can both be supported.
+- **Very low jitter.** Audio and video, command, sensor and control packets reach the upper layers with little jitter.
+- **Bounded low latency.** [Scheduling](/blog/time-aware-shaper), [frame preemption](/blog/ieee-802-1qbu-frame-preemption) and links up to 10 Gb/s allow several channels of uncompressed video and other driver-assistance traffic. This avoids the latency and processing cost of compression.
+- **Ultra reliability.** [Filtering and policing](/blog/per-stream-filtering-and-policing), and options for redundant time synchronisation, limit the impact of faulty devices.
+- **Fast start-up.** Preconfigured values for timing and bandwidth reservation give a quick start, optionally followed by negotiated values for dynamic adjustment.
+- **Information sharing.** One homogeneous Ethernet network replaces gateways between different bus types, with their delays and security risks.
+
+The flyer names IEEE 1588-2019, 802.1CB-2017 and 802.1CBdb-2021 ([redundancy](/blog/frame-replication-and-elimination)), 802.1Q-2022, 802.1AE-2018 (MAC security) and 802.1AR-2018 (secure device identity) among the related standards [3].
+
+## 4. How the profile was written
+
+A status report from the profile's development shows how an 802.1 profile is built [2]:
+
+- **No new features.** A profile may not create new features or protocols. When it finds a gap, the group starts an amendment to the base standard. The project therefore asked for all use cases, even those that go beyond 802.3 networks, so that gaps would surface early. Hot standby for redundant gPTP clocks (802.1ASdm) is an example of such an amendment: started for the [industrial profile](/blog/iec-ieee-60802-industrial-profile), it also applies to cars.
+- **A tutorial annex.** 802.1DG was the first IEEE 802.1 standard to go beyond defining *what* is required. An informative annex, "TSN-based Network Design Considerations", explains subtle effects of the base standards, for example:
+  - for FRER, in-order versus out-of-order delivery, intermittent versus bulk streams, and the individual and sequence recovery functions;
+  - for 802.1AS-2020, when peer-delay messages are needed and how multiple clock domains and timescales work.
+- **Planned structure.** The 2020 draft planned sections on traffic separation, synchronised time, latency and congestion loss, topology and redundancy, and the profiles themselves.
+- **Open questions in 2020.** These included the 10 Mb/s multidrop PHY (10BASE-T1S). At the time, 802.1AS did not support multidrop media, and priorities were not supported on that medium.
+
+## References
+
+1. IEEE 802.1, *IEEE 802.1DG: TSN Profile for Automotive In-Vehicle Ethernet Communications*, project page. [Web page](https://1.ieee802.org/tsn/802-1dg/)
+2. D. Pannell, "Status & Content of the IEEE TSN Auto Profile," IEEE Ethernet & IP @ Automotive Technology Day, September 2020, slides 5–15. [Slides](https://standards.ieee.org/wp-content/uploads/import/documents/other/eipatd-presentations/2020/D1-05-Pannell-Status-and-Content-of-the-IEEE-TSN-Automotive-Profile.pdf)
+3. IEEE SA, "TSN for Automotive: IEEE 802 Standards for Time-Sensitive Networking," flyer, 2024. [PDF](https://www.ieee802.org/1/files/public/docs2024/admin-tsn-automotive-flyer-1124.pdf)
+4. IEEE SA, "Time-Sensitive Networking for Automotive In-Vehicle Communications," *Beyond Standards*. [Article](https://standards.ieee.org/beyond-standards/time-sensitive-networking-for-automotive-in-vehicle-communications/)
+5. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slide 12. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)

@@ -1,0 +1,102 @@
+---
+slug: ieee-802-1cm-fronthaul-profile
+title: "IEEE 802.1CM: TSN for mobile fronthaul"
+date: 2026-12-01
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, profile, preemption, presentation]
+description: The TSN profile that carries the link between a radio unit and its baseband controller over bridged Ethernet. Fronthaul and its functional splits, the requirements from the CPRI Cooperation, and the two profiles, one based on strict priority and one adding frame preemption.
+---
+
+import {ProfileFigure} from '@site/src/components/figures/profiles';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+In a mobile network, the link between a radio unit at the antenna and the equipment that controls it, the fronthaul, used to be a dedicated fibre with a dedicated protocol. IEEE 802.1CM shows how to carry it over ordinary bridged Ethernet, and which TSN features that takes.
+
+{/* truncate */}
+
+<ProfileFigure
+  application={['Mobile fronthaul: radio equipment (RE/eRE) to its controller (REC/eREC)', 'Class 1: CPRI split · Class 2: eCPRI split · synchronisation via ITU-T telecom profiles']}
+  profile={['IEEE 802.1CM: TSN for Fronthaul', 'Profile A: strict priority · Profile B: strict priority + frame preemption']}
+  picks={['priority', 'pre']}
+  caption="Figure 1. The fronthaul profile between its application and the TSN toolbox. Highlighted: the two features its profiles are built on. Synchronisation comes from ITU-T solutions rather than from a TSN tool."
+  source={
+    <>
+      own drawing, after J. Farkas,{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2018/cm-farkas-overview-0718-v01.pdf">IEEE Std 802.1CM: An Overview</a>,
+      IEEE 802.1, July 2018, slides 7–8.
+    </>
+  }
+/>
+
+## 1. Definition
+
+[IEEE 802.1CM](https://1.ieee802.org/tsn/802-1cm-2018/), *Time-Sensitive Networking for Fronthaul*, defines profiles that select the features, options, configurations, defaults, protocols and procedures of bridges, stations and LANs needed to carry fronthaul streams [1]. Its main points [1]:
+
+- **Interfaces.** It supports fronthaul interfaces such as the eCPRI specification.
+- **Partners.** It was developed with the CPRI Cooperation, which contributed the requirements. The synchronisation solutions come from ITU-T Question 13 of Study Group 15.
+- **Dates.** It was approved on 7 May 2018 and published on 8 June 2018. Amendment 802.1CMde-2020 adds support for new fronthaul interface, synchronisation and syntonisation standards.
+- **Recognition.** It is the first IEEE standard to connect a cellular network's radio equipment to its remote controller through a packet network, in particular a bridged [IEEE 802.3](https://standards.ieee.org/ieee/802.3/10422/) Ethernet network. It earned the IEEE 802.1 working group the 2020 IEEE SA Emerging Technology Award.
+
+It is available free of charge through the IEEE GET Program [1].
+
+## 2. What fronthaul is
+
+<SourceFigure
+  id="cm2018-fronthaul"
+  caption="Figure 2. 5G fronthaul in its simplest form: the radio base station is split into radio equipment (RE/eRE) at the antenna and radio equipment control (REC/eREC); the link between them is fronthaul, and everything beyond is backhaul."
+/>
+
+A radio base station is split into **radio equipment** (RE, or eRE for eCPRI) near the antenna and **radio equipment control** (REC or eREC) further away. Fronthaul is the link between the two. In the overview's words, 5G fronthaul is "everything that is not backhaul" [2].
+
+<SourceFigure
+  id="cm2018-splits"
+  caption="Figure 3. Functional splits of the base station: no split, the CPRI split below the PHY, and the eCPRI split inside the PHY (PHY-U and PHY-L). Both splits are in the scope of 802.1CM."
+/>
+
+Where the split is made decides what crosses the fronthaul. In the **CPRI** split, everything above the radio stays at the controller, and the link carries radio samples. In the **eCPRI** split, part of the physical layer (PHY-L) moves to the radio side, which reduces the bandwidth needed. Both are in the scope of 802.1CM; further splits can be added by amendment [2].
+
+## 3. Ethernet-based fronthaul
+
+<SourceFigure
+  id="cm2018-ethernet-fronthaul"
+  caption="Figure 4. The Ethernet-based approach: the radio domain on top, and a packet domain made of IEEE 802.1/802.3 bridges in between. The packet network can be offered as a service (MEF UNI and MEF services)."
+/>
+
+<SourceFigure
+  id="cm2018-fronthaul-details"
+  caption="Figure 5. The details: fronthaul flows (user IQ data, control and management) are separated by priority and VLAN; synchronisation is separated from the data flows and can be provided by the packet network as a service."
+/>
+
+The design keeps the radio and packet domains apart [2]:
+
+- fronthaul flows are separated, for example by priority and VLAN ID;
+- synchronisation is separated from the fronthaul data flows and can be provided by the packet network itself ("sync as a service");
+- standard IEEE 802.1/802.3 Ethernet frames enter and leave through edge ports.
+
+## 4. The top-down approach
+
+802.1CM was built from the requirements down [2]:
+
+1. **Requirements**, from the CPRI Cooperation. *Class 1* uses the CPRI split and *Class 2* the eCPRI split, with the same synchronisation requirements for both.
+2. **Features** that can meet them: bridging features, TSN features, and synchronisation solutions from ITU-T Q13/15, for example how to use the telecom profile of IEEE 1588.
+3. **Profiles** that state exactly how an Ethernet network meets the fronthaul requirements.
+
+## 5. The two profiles
+
+Both profiles are engineered for the worst case and apply to both classes [2]:
+
+| | Profile A | Profile B |
+| --- | --- | --- |
+| Principle | Keep it as simple as possible | Add one simple TSN feature |
+| Scheduling | Strict priority | Strict priority + [frame preemption](/blog/ieee-802-1qbu-frame-preemption) ([802.3br](/blog/ieee-802-3br-interspersing-express-traffic) and 802.1Qbu) |
+| Fronthaul user data (IQ) | High-priority traffic class | High-priority class, **express** |
+| Control and management / other traffic | Lower-priority traffic class | Lower-priority class, **preemptable** |
+| Frame size | At most 2000 octets for all traffic | 2000 octets for fronthaul; flexible for other traffic |
+
+The difference is the blocking term of a worst-case analysis. Under Profile A, a fronthaul frame can wait behind one lower-priority frame of up to 2000 octets at every hop, so all traffic must keep its frames short. Under Profile B, preemption reduces that wait to a short fragment. Other traffic can then use large frames without hurting the fronthaul bound. The [802.1Qbu post](/blog/ieee-802-1qbu-frame-preemption) quantifies this blocking.
+
+## References
+
+1. IEEE 802.1, *802.1CM-2018: Time-Sensitive Networking for Fronthaul*, project page; *802.1CMde*. [802.1CM](https://1.ieee802.org/tsn/802-1cm-2018/), [802.1CMde](https://1.ieee802.org/tsn/802-1cmde/)
+2. J. Farkas, "IEEE Std 802.1CM Time-Sensitive Networking for Fronthaul: An Overview," IEEE 802.1, July 2018, slides 3–9. [Slides](https://www.ieee802.org/1/files/public/docs2018/cm-farkas-overview-0718-v01.pdf)
+3. CPRI Cooperation, *eCPRI Specification V1.1* and *Requirements for the eCPRI Transport Network V1.1*, January 2018. [Specification](http://www.cpri.info/downloads/eCPRI_v_1_1_2018_01_10.pdf), [Requirements](http://www.cpri.info/downloads/Requirements_for_the_eCPRI_Transport_Network_V1_1_2018_01_10.pdf)

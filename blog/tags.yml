@@ -116,3 +116,8 @@ reservation:
   label: Reservation
   permalink: /reservation
   description: "Technology: stream reservation and admission control (802.1Qat, 802.1Qcc, P802.1DD)"
+
+profile:
+  label: Profile
+  permalink: /profile
+  description: "Technology: TSN profiles that select tools for one application (802.1BA, 802.1CM, IEC/IEEE 60802, 802.1DG)"

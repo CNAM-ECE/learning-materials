@@ -1,0 +1,129 @@
+---
+slug: ieee-802-1ba-avb-profile
+title: "IEEE 802.1BA: the AVB profile, the first TSN profile"
+date: 2026-11-30
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, profile, presentation]
+description: What a TSN profile is, and the first one. How Audio Video Bridging combined gPTP, the credit-based shaper, stream reservation and the IEEE 1722 transport into a plug-and-play network for audio and video.
+---
+
+import {ProfileFigure} from '@site/src/components/figures/profiles';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+The TSN posts so far describe tools. A real network does not use every tool: it uses the subset that its application needs, configured in a particular way. IEEE 802.1 writes such subsets down as **profiles**. Audio Video Bridging (AVB), specified in IEEE 802.1BA, was the first.
+
+{/* truncate */}
+
+<ProfileFigure
+  application={['Audio and video: residential, professional A/V, automotive infotainment', 'synchronous playback · no drops beside best effort · plug and play']}
+  profile={['IEEE 802.1BA: Audio Video Bridging (AVB) Systems', 'plus IEEE 1722 (transport) and IEEE 1722.1 (discovery and control)']}
+  picks={['priority', 'as', 'cbs', 'srp']}
+  caption="Figure 1. The AVB profile between its application and the TSN toolbox. Highlighted: the base standards AVB is built on. AVB also needs two transport and control standards from outside IEEE 802.1."
+  source={
+    <>
+      own drawing, after D. Pannell,{' '}
+      <a href="https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf">An Introduction to AVB</a>,
+      IEEE SA TSN webinar, June 2022, slides 24 and 30.
+    </>
+  }
+/>
+
+## 1. What a profile is
+
+IEEE 802.1 writes two kinds of standards [1][2]:
+
+- **base standards** and their amendments define features and protocols for many use cases, so they contain required functions ("shall") and optional ones ("may");
+- **profiles** serve one use case. A profile selects features, options, configurations, defaults, protocols and procedures from the base standards.
+
+A profile **can make an optional function mandatory**, but it **cannot make a required function optional**, and it **cannot define new features or protocols**. When a profile finds a gap, the group starts an amendment to the base standard instead [1][2]. The TSN profiles are 802.1BA (AVB), [802.1CM](/blog/ieee-802-1cm-fronthaul-profile) (fronthaul), [IEC/IEEE 60802](/blog/iec-ieee-60802-industrial-profile) (industrial automation) and [802.1DG](/blog/ieee-802-1dg-automotive-profile) (automotive), with a profile for service provider networks (802.1DF) also in progress [2].
+
+## 2. Where AVB came from
+
+AVB started as an IEEE 802.3 study group called "Residential Ethernet", aiming at low-cost, plug-and-play, low-latency audio and video transport. The work moved to IEEE 802.1, where the AVB task group was formed [1]. That group later became the TSN task group, when it was clear that more use cases needed the same tools [1][3].
+
+<SourceFigure
+  id="avb2022-home-network"
+  caption="Figure 2. The residential vision of AVB: an Ethernet AVB backbone connecting the audio, video and computing devices of every room."
+/>
+
+Three markets were targeted: residential, professional audio and video, and automotive [1]. For a network of 7 hops (6 bridge spans) on Fast Ethernet, the goals were [1]:
+
+| Goal | Target |
+| --- | --- |
+| Synchronous playback | Within 1 µs between any two nodes |
+| Class A ("real-time") | 2 ms from source to destination, so that a musician hears the playback of their own performance in real time; all links Ethernet |
+| Class B ("playback") | 50 ms, for example for wireless speakers; up to two Wi-Fi hops allowed |
+| Coexistence | No drops for AVB flows while they share the wires with best-effort traffic |
+
+Larger networks degrade these targets gracefully, and faster links reduce latency or allow more hops [1].
+
+<SourceFigure
+  id="avb2022-automotive"
+  caption="Figure 3. The automotive infotainment target: a central unit connected to displays, cameras and media players around the car."
+/>
+
+## 3. How AVB meets its goals
+
+### Synchronised playback
+
+Every node shares a common time, distributed by [gPTP (802.1AS)](/blog/ieee-802-1as-time-synchronization). gPTP is a "ruler", not the media clock. [IEEE 1722](https://standards.ieee.org/ieee/1722/5979/) carries audio samples or video pixels together with presentation timestamps in gPTP time. Each listener rebuilds its media clock from those timestamps, so all listeners play at the same instant, whatever their distance from the source [1].
+
+<SourceFigure
+  id="avb2022-gptp-hops"
+  caption="Figure 4. gPTP over five hops: the grandmaster's time travels through four bridges, and each hop corrects for its cable delay and its residence time."
+/>
+
+gPTP finds the best clock source automatically, builds the clock tree, and corrects for frequency errors in software, so cheap crystals suffice. It was modelled at 40 ns timestamp resolution over 7 hops of Fast Ethernet; Gigabit links usually reach 8 ns [1].
+
+### No drops while sharing the wire
+
+Three base standards combine [1]:
+
+1. **Strict priorities.** AVB class A and class B traffic use priority code points 3 and 2, mapped to the two highest traffic classes; gPTP travels as network management traffic just below them.
+2. **Stream reservation** ([SRP, 802.1Qat](/blog/stream-reservation)). Congestion causes almost all frame drops on Ethernet. SRP admits AVB streams only up to 75 % of each link and reserves bridge memory for them. A request that does not fit is refused, like a busy signal.
+3. **Credit-based shaper** ([802.1Qav](/blog/credit-based-shaper)). A 20 Mb/s stream is still sent as back-to-back bursts at link speed. When bursts from several ports overlap on one output, buffers overflow even though the average fits. The shaper spreads each class over time.
+
+<SourceFigure
+  id="avb2022-pcp-classes"
+  caption="Figure 5. AVB priorities: PCP 3 (class A) and PCP 2 (class B) are mapped to the two highest traffic classes, each with a credit-based shaper, ahead of a strict priority selector."
+/>
+
+### Plug and play
+
+gPTP and SRP configure themselves, but SRP must still be told which talker to connect to which listener. [IEEE 1722.1](https://standards.ieee.org/ieee/1722.1/6670/), ATDECC, completes the system with discovery, enumeration, connection management and control of AVB devices [1].
+
+## 4. The base standards of AVB
+
+<SourceFigure
+  id="avb2022-profile"
+  caption="Figure 6. The TSN toolbox as it stood when AVB was completed: synchronisation, latency and resource management were covered; high availability and ultra reliability were not yet."
+/>
+
+| Standard | Role in AVB |
+| --- | --- |
+| [IEEE 802.1AS](/blog/ieee-802-1as-time-synchronization) | Timing and synchronisation (gPTP) |
+| [IEEE 802.1Qav](/blog/credit-based-shaper) | Credit-based shaper |
+| [IEEE 802.1Qat](/blog/stream-reservation) | Stream Reservation Protocol |
+| IEEE 1722 | Audio Video Transport Protocol (not an 802.1 standard, but necessary) |
+| IEEE 1722.1 | Discovery, enumeration, connection management and control (needed for plug and play) |
+
+The profile itself, [IEEE 802.1BA](https://standards.ieee.org/ieee/802.1BA/4396/), was first published in 2011 and revised as 802.1BA-2021 [1][4].
+
+## 5. What came after
+
+The webinar on AVB lists how the tools grew after the profile [1]:
+
+- **Redundancy:** for time in 802.1AS-2020, and for streams in [802.1CB](/blog/frame-replication-and-elimination).
+- **Engineered networks:** 802.1AS-2020 was extended for networks that are designed rather than plug-and-play.
+- **Configured reservations:** [802.1Qcc](/blog/sdn-and-tsn-configuration) allows reservations stored in configuration, without running the reservation protocol.
+- **Policing and security:** [802.1Qci](/blog/per-stream-filtering-and-policing) adds policing, and 802.1 security standards have been enhanced.
+- **Transport and control:** IEEE 1722-2016 adds control formats, and IEEE 1722.1-2021 updates discovery and control.
+
+For analysis, the AVB targets are early examples of the kind of guarantee this series formalises. The 2 ms class A bound is a worst case over a fixed hop count. [Network calculus for TSN shapers](/blog/network-calculus-for-tsn) shows how such a bound is derived for the credit-based shaper.
+
+## References
+
+1. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slides 9–30. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)
+2. D. Pannell, "Status & Content of the IEEE TSN Auto Profile," IEEE Ethernet & IP @ Automotive Technology Day, September 2020, slide 5. [Slides](https://standards.ieee.org/wp-content/uploads/import/documents/other/eipatd-presentations/2020/D1-05-Pannell-Status-and-Content-of-the-IEEE-TSN-Automotive-Profile.pdf)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 23–24. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. IEEE, *IEEE 802.1BA, Audio Video Bridging (AVB) Systems*. [IEEE SA](https://standards.ieee.org/ieee/802.1BA/4396/), [IEEE 802.1 page](https://www.ieee802.org/1/pages/802.1ba.html)

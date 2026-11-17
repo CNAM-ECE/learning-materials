@@ -7,7 +7,7 @@ tags: [standard, presentation, tsn, tas, ieee-802-1]
 description: The basic terms of Time-Sensitive Networking and its four groups of tools (time synchronisation, bounded latency, reliability and resource management), each shown at the place where it extends an IEEE 802.1Q bridge.
 ---
 
-import {BridgeIntegrationFigure, ToolboxFigure, ScheduledTrafficFigure, PreemptionFigure, PerStreamFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
+import {BridgeIntegrationFigure, ScheduledTrafficFigure, PreemptionFigure, PerStreamFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
@@ -52,14 +52,12 @@ Three kinds of traffic then coexist on the network: time-triggered traffic, rate
 
 ## 2. Four groups of tools
 
-<ToolboxFigure />
-
-The task group presents its standards as a toolbox with four groups: time synchronisation, bounded low latency, ultra reliability, and dedicated resources with their management interfaces [3][4]. A tool can be used on its own, but the full guarantee comes from combining them [2]. Figure 2 places the groups around the three guarantees they deliver together: zero congestion loss, bounded latency and low delay variation. The arrows show which guarantee each group mainly serves. The sections below follow this grouping.
-
 <SourceFigure
   id="farkas2018-components"
-  caption="Figure 2b. The same four groups on the original slide, with the full list of standards and projects of each group. Projects whose name starts with “P” were still in progress in 2018."
+  caption="Figure 2. The TSN toolbox: four groups of standards and projects, which together give zero congestion loss and bounded latency. Projects whose name starts with “P” were still in progress in 2018."
 />
+
+The task group presents its standards as a toolbox with four groups: time synchronisation, bounded low latency, ultra reliability, and dedicated resources with their management interfaces [3][4]. A tool can be used on its own, but the full guarantee comes from combining them [2]. The sections below follow this grouping.
 
 ## 3. Time synchronisation: 802.1AS
 

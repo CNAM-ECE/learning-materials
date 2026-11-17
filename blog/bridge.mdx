@@ -114,14 +114,16 @@ The control plane maintains four layered views of the network [1][3]:
 | Layer | Content | Maintained by, for example |
 | --- | --- | --- |
 | Physical network topology | All links and bridges | Management (enabling and disabling ports) |
-| Active topology | The links actually used: a spanning tree, shortest paths, or traffic-engineered paths | RSTP, MSTP, SPB, path control (PCR) |
-| VLAN topology | Which bridges and ports belong to each VLAN | MVRP, SPB, PCR, SRP |
-| Station location | Where each MAC address is | Source address learning, MMRP, SPB, PCR, SRP |
+| Active topology | The links actually used: a spanning tree, shortest paths, or traffic-engineered paths | [RSTP](/blog/rstp-rapid-spanning-tree), [MSTP](/blog/mstp-multiple-spanning-tree), [SPB](/blog/ieee-802-1aq-shortest-path-bridging), [path control (PCR)](/blog/ieee-802-1qca-path-control) |
+| VLAN topology | Which bridges and ports belong to each VLAN | [MVRP](/blog/mrp-and-mvrp), SPB, PCR, [SRP](/blog/ieee-802-1qat-srp) |
+| Station location | Where each MAC address is | Source address learning, [MMRP](/blog/mrp-and-mvrp), SPB, PCR, SRP |
 
 <SourceFigure
   id="intro2017-control-plane"
   caption="Figure 7. Control options. Each VLAN is assigned a control mode: spanning tree, shortest path bridging (IS-IS), or an external agent for software-defined VLANs. Several modes can coexist in one network, and an external agent can use non-802.1 protocols."
 />
+
+Each of these protocols has its own post: [RSTP](/blog/rstp-rapid-spanning-tree), [MSTP](/blog/mstp-multiple-spanning-tree), [SPB](/blog/ieee-802-1aq-shortest-path-bridging), [path control](/blog/ieee-802-1qca-path-control), [MRP and MVRP](/blog/mrp-and-mvrp), and [SRP](/blog/ieee-802-1qat-srp).
 
 Control modes are assigned per VLAN. Distributed protocols and an external agent can therefore coexist in the same network, each controlling its own VLANs. The external control can even be a non-802.1 protocol, such as PCE or GMPLS [3]. This hybrid model is what lets a TSN network keep spanning tree for ordinary traffic while a CNC installs explicit paths for streams.
 

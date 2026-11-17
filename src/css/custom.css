@@ -111,3 +111,24 @@
   font-style: italic;
   margin-top: 0.2rem;
 }
+
+/* Abbreviations box at the top of the standards posts. */
+.abbr-box {
+  margin: 1rem 0 1.5rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.88rem;
+}
+.abbr-box summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.abbr-box table {
+  margin-top: 0.6rem;
+  display: table;
+  width: 100%;
+}
+.abbr-box td:first-child {
+  white-space: nowrap;
+}

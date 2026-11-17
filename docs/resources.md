@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Annotated resources
 description: The lectures, articles and technical documents from which the learning path was prepared, with a short note on each.
 ---

@@ -1,0 +1,14 @@
+---
+sidebar_position: 4
+title: Abbreviations
+description: Every abbreviation used in the learning path, what it stands for, and a short definition with a link to the defining standard.
+---
+
+import Abbreviations from '@site/src/components/Abbreviations';
+import {abbreviations} from '@site/src/data/abbreviations';
+
+# Abbreviations
+
+Every abbreviation used in the learning path, with what it stands for and a short definition. Where an abbreviation is defined by a standard, its name links to that standard. Each post on a standard also has its own box, at the top, listing only the abbreviations it uses.
+
+<Abbreviations terms={Object.keys(abbreviations)} title="All abbreviations" open />

@@ -8,8 +8,8 @@
  * is not listed falls into "Other".
  */
 export type LearningPathSection = {
-  /** Sub-category heading; omit for a topic with a single, unnamed list. */
-  label?: string;
+  /** Sub-category heading. */
+  label: string;
   posts: string[];
 };
 
@@ -21,7 +21,10 @@ export type LearningPathTopic = {
 export const learningPath: LearningPathTopic[] = [
   {
     label: 'Deterministic networks',
-    sections: [{posts: ['why-deterministic-guarantees', 'deterministic-networking']}],
+    sections: [
+      {label: 'Motivation', posts: ['why-deterministic-guarantees']},
+      {label: 'Architecture', posts: ['deterministic-networking']},
+    ],
   },
   {
     label: 'Network calculus',
@@ -60,7 +63,7 @@ export const learningPath: LearningPathTopic[] = [
   },
   {
     label: 'IETF',
-    sections: [{posts: ['ietf-detnet']}],
+    sections: [{label: 'Deterministic networking', posts: ['ietf-detnet']}],
   },
   {
     label: 'TSN',
@@ -91,19 +94,18 @@ export const learningPath: LearningPathTopic[] = [
   {
     label: 'TSN profiles',
     sections: [
-      {
-        posts: [
-          'ieee-802-1ba-avb-profile',
-          'ieee-802-1cm-fronthaul-profile',
-          'iec-ieee-60802-industrial-profile',
-          'ieee-802-1dg-automotive-profile',
-        ],
-      },
+      {label: 'Audio and video', posts: ['ieee-802-1ba-avb-profile']},
+      {label: 'Mobile fronthaul', posts: ['ieee-802-1cm-fronthaul-profile']},
+      {label: 'Industrial automation', posts: ['iec-ieee-60802-industrial-profile']},
+      {label: 'Automotive', posts: ['ieee-802-1dg-automotive-profile']},
     ],
   },
   {
     label: 'SDN',
-    sections: [{posts: ['sdn-and-tsn-configuration', 'dynamic-reconfiguration-of-tsn']}],
+    sections: [
+      {label: 'Centralised configuration', posts: ['sdn-and-tsn-configuration']},
+      {label: 'Reconfiguration', posts: ['dynamic-reconfiguration-of-tsn']},
+    ],
   },
 ];
 

@@ -65,8 +65,6 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | SDN | SDN and TSN configuration | SDN planes, 802.1Qcc models, what the CNC computes, central versus decentralised |
 | SDN | Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
 
-The sidebar of the learning path is grouped by these topics; the grouping and the order of posts are defined in `src/data/learningPath.ts`. The posts on standards open with an architecture diagram, and every figure names its source. Images reproduced from Wikimedia Commons are stored in `static/img/commons` and credited with author and licence through the `CommonsFigure` component.
-
 The **Reference** section collects the notation sheet, a TSN glossary and an annotated list of the lectures and articles from which the posts were prepared [3–7].
 
 ## Article
@@ -103,8 +101,6 @@ pnpm build           # static site in build/
 pnpm serve           # serve the production build
 pnpm typecheck       # TypeScript check of config and components
 ```
-
-The build fails on broken internal links (`onBrokenLinks: 'throw'`), so a successful build also checks cross-references between posts. A GitHub Actions workflow (`.github/workflows/deploy.yml`) publishes `build/` to GitHub Pages on every push to `main`; it requires *Settings → Pages → Source: GitHub Actions*.
 
 ## References
 

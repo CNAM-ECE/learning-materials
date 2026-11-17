@@ -132,3 +132,18 @@
 .abbr-box td:first-child {
   white-space: nowrap;
 }
+
+/* Sub-categories inside a topic of the learning-path sidebar. */
+.blog-sidebar-section {
+  margin: 0.15rem 0 0.4rem 0.5rem;
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--ifm-color-emphasis-300);
+}
+.blog-sidebar-section__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0.35rem 0 0.15rem;
+}

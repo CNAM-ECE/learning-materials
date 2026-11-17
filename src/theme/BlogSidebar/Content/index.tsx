@@ -4,6 +4,8 @@ import type {Props} from '@theme/BlogSidebar/Content';
 import {learningPath, otherTopicLabel} from '@site/src/data/learningPath';
 
 type Items = Props['items'];
+type Section = {label?: string; items: Items};
+type Group = {label: string; sections: Section[]};
 
 /** Last path segment of a post permalink, i.e. its slug. */
 function slugOf(permalink: string): string {
@@ -12,31 +14,37 @@ function slugOf(permalink: string): string {
 }
 
 /**
- * Groups the sidebar items by topic instead of by year. Order of topics and
- * of posts inside a topic comes from src/data/learningPath.ts.
+ * Groups the sidebar items by topic, and inside a topic by section, instead
+ * of by year. Order comes from src/data/learningPath.ts.
  */
-function groupByTopic(items: Items): [string, Items][] {
+function groupByTopic(items: Items): Group[] {
   const bySlug = new Map(items.map((item) => [slugOf(item.permalink), item]));
   const used = new Set<string>();
-  const groups: [string, Items][] = [];
+  const groups: Group[] = [];
 
   for (const topic of learningPath) {
-    const topicItems = topic.posts.flatMap((slug) => {
-      const item = bySlug.get(slug);
-      if (!item) {
-        return [];
+    const sections: Section[] = [];
+    for (const section of topic.sections) {
+      const sectionItems = section.posts.flatMap((slug) => {
+        const item = bySlug.get(slug);
+        if (!item) {
+          return [];
+        }
+        used.add(slug);
+        return [item];
+      });
+      if (sectionItems.length > 0) {
+        sections.push({label: section.label, items: sectionItems});
       }
-      used.add(slug);
-      return [item];
-    });
-    if (topicItems.length > 0) {
-      groups.push([topic.label, topicItems]);
+    }
+    if (sections.length > 0) {
+      groups.push({label: topic.label, sections});
     }
   }
 
   const rest = items.filter((item) => !used.has(slugOf(item.permalink)));
   if (rest.length > 0) {
-    groups.push([otherTopicLabel, rest]);
+    groups.push({label: otherTopicLabel, sections: [{items: rest}]});
   }
   return groups;
 }
@@ -48,12 +56,21 @@ function BlogSidebarContent({
 }: Props): ReactNode {
   return (
     <>
-      {groupByTopic(items).map(([label, topicItems]) => (
-        <div role="group" key={label}>
+      {groupByTopic(items).map((group) => (
+        <div role="group" key={group.label}>
           <Heading as="h3" className={yearGroupHeadingClassName}>
-            {label}
+            {group.label}
           </Heading>
-          <ListComponent items={topicItems} />
+          {group.sections.map((section, i) => (
+            <div
+              key={section.label ?? i}
+              className={section.label ? 'blog-sidebar-section' : undefined}>
+              {section.label && (
+                <div className="blog-sidebar-section__label">{section.label}</div>
+              )}
+              <ListComponent items={section.items} />
+            </div>
+          ))}
         </div>
       ))}
     </>

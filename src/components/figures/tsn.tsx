@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import {Arrow, Box, Figure, Txt, type Tone} from '@site/src/components/Diagram';
 
 const concepts =
@@ -48,6 +49,7 @@ const dataStages: BridgeStage[] = ['ingress', 'relay', 'queuing', 'selection', '
 
 /** Where each TSN tool plugs into the existing IEEE 802.1Q bridge. */
 export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): ReactNode {
+  const bridgeHref = useBaseUrl('/blog/ieee-802-1q-bridge');
   const tone = (stage: BridgeStage, base: Tone): Tone =>
     !highlight ? base : highlight.includes(stage) ? 'service' : 'muted';
   const stages: string[][] = [
@@ -75,7 +77,12 @@ export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): Reac
         </>
       }>
       <Box x={15} y={24} w={690} h={278} lines={[]} dashed tone="muted" />
-      <Txt x={28} y={12} size={12} bold anchor="start">IEEE 802.1Q bridge</Txt>
+      <a href={bridgeHref}>
+        <title>The IEEE 802.1Q bridge: architecture and data-plane actions</title>
+        <Txt x={28} y={12} size={12} bold anchor="start" tone="service">
+          IEEE 802.1Q bridge ↗
+        </Txt>
+      </a>
 
       <Box x={x0} y={40} w={648} h={44} lines={['Control plane', 'SRP (Qat) · TSN configuration (Qcc) · path control (Qca)']} title size={12} tone={tone('control', 'arrival')} />
 

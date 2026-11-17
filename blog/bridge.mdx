@@ -1,0 +1,139 @@
+---
+slug: ieee-802-1q-bridge
+title: "The IEEE 802.1Q bridge: architecture, data-plane actions and forwarding process"
+date: 2026-11-17
+authors: [trang]
+tags: [standard, ieee-802-1, tsn, presentation]
+description: How an IEEE 802.1Q bridge is organised. The control and data planes, the actions taken at the ingress port, the relay and the egress port, the steps of the forwarding process, and the topology layers the control plane manages. These are the parts that every TSN tool extends.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Every TSN mechanism in this series is described as an addition to "the bridge". This post opens that box. It uses the figures with which the IEEE 802.1 working group itself explains the bridge: in its 2013 tutorial to the IETF, and in its 2017 and 2018 introductions to TSN.
+
+{/* truncate */}
+
+<SourceFigure
+  id="farkas2018-bridge-architecture"
+  caption="Figure 1. The simplified “baggy pants” model of a MAC bridge. The control plane (higher layer entities, or an external agent such as an SDN controller) sits above a data plane made of a relay and at least two ports. Below the ports, media-specific functions connect each port to its LAN, for example IEEE 802.3 Ethernet."
+/>
+
+## 1. Definition
+
+A **bridge** relays [Ethernet](https://standards.ieee.org/ieee/802.3/10422/) frames between two or more LANs at Layer 2. The bridges of TSN are specified in [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), *Bridges and Bridged Networks*, which also defines [virtual LANs](https://en.wikipedia.org/wiki/VLAN) [1][4].
+
+Four principles from the IEEE 802.1 tutorial frame everything else [1]:
+
+- **MAC addresses identify, they do not locate.** A [MAC address](https://en.wikipedia.org/wiki/MAC_address) names a station, not where it is. The tutorial calls this a major Layer 2 value, not a defect.
+- **Forwarding uses the destination MAC address and the VLAN ID.**
+- **Unknown destinations are flooded, known ones are filtered.** A frame whose destination location is not known is sent to every port of its VLAN except the one it arrived on. Once the location is known, the other ports are filtered out.
+- **Quality of service comes after the forwarding decision.** It is based on the frame's priority, its drop eligibility, and time.
+
+The last principle is where TSN enters: almost every TSN tool acts after the bridge has decided where a frame goes, and decides *when* and *whether* it goes there.
+
+## 2. Architecture: control plane and data plane
+
+Figure 1 separates the two planes [2][3]:
+
+- the **control plane** runs the control protocols as *higher layer entities* inside the bridge. Alternatively, an **external agent**, such as an [SDN controller](https://www.rfc-editor.org/rfc/rfc7426), provides the control instead of the distributed protocols;
+- the **data plane** is made of a **MAC relay** and **at least two ports**.
+
+The external agent is what the [SDN post](/blog/sdn-and-tsn-configuration) calls the CNC. The standard's own, more detailed picture is Figure 8-2, "VLAN-aware Bridge architecture", of 802.1Q [2].
+
+<SourceFigure
+  id="ieee8021q-tutorial-bridge-components"
+  caption="Figure 2. Specification versus implementation. 802.1Q describes a bridge as components (here A and B) whose ports have distinct types according to their role. A real bridge often implements all of them on a single relay, with one port combining several functions."
+/>
+
+The standard describes a bridge as a set of **components**, one per type of Layer 2 virtual network, each with typed ports. This is a description language: it specifies the operation in distinct steps. It does not prescribe an implementation. Implementations often use a single MAC relay, and one physical port may implement several port functions. When the outermost EtherType of a frame does not match the component type, the reception port assigns the frame to a VLAN [1].
+
+## 3. Data-plane actions
+
+<SourceFigure
+  id="farkas2018-data-plane-actions"
+  caption="Figure 3. The data plane redrawn as a pipeline. Each stage applies an action set, using its own table. “Baggy pants” is just the simple drawing of the same pipeline."
+/>
+
+The baggy-pants drawing can be unfolded into a pipeline of three stages. Each applies an **action set** driven by a table [2][3]:
+
+| Stage | Action set | Actions | TSN additions at this stage |
+| --- | --- | --- | --- |
+| Ingress port | Action set 1 | Filtering (drop), tagging and untagging, VID translation, de- and encapsulation | Stream identification, [PSFP](/blog/per-stream-filtering-and-policing), the ingress side of [FRER](/blog/frame-replication-and-elimination) |
+| Relay | Action set 2 | Forwarding, filtering | Explicit trees ([802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/)), replication and elimination |
+| Egress port | Action set 3 | Filtering, tagging and untagging, VID translation, de- and encapsulation, metering, queuing, transmission selection | [CBS](/blog/credit-based-shaper), [ATS](/blog/asynchronous-traffic-shaping), [TAS](/blog/time-aware-shaper), [CQF](/blog/cyclic-queuing-and-forwarding), [preemption](/blog/frame-preemption) |
+
+Most TSN tools therefore act on the egress port, where queuing and transmission selection happen.
+
+## 4. The forwarding process
+
+<SourceFigure
+  id="farkas2018-forwarding-process"
+  caption="Figure 4. The forwarding process of IEEE 802.1Q, from the reception port to the transmission port. Each box is a sub-clause of clause 8.6 of the standard. Frame filtering consults the filtering database, and queue management acts on the queues."
+/>
+
+Inside the data plane, 802.1Q specifies the forwarding process as a fixed sequence of steps, each in its own sub-clause of clause 8.6 [2][3]:
+
+| Step | Sub-clause | What it does |
+| --- | --- | --- |
+| Active topology enforcement | 8.6.1 | Discards frames that would use a port not in the active topology for that frame, for example a port blocked by the spanning tree |
+| Ingress | 8.6.2 | Assigns a VLAN to frames that arrive without one, and drops frames from ports that are not members of the frame's VLAN |
+| Frame filtering | 8.6.3 | Looks up the destination MAC address and VLAN ID in the **filtering database** to choose the output ports |
+| Egress | 8.6.4 | Applies the output port's VLAN membership and tagging rules |
+| Flow metering | 8.6.5 | Meters frames against a bandwidth profile; per-stream filtering and policing extends this step |
+| Queuing frames | 8.6.6 | Places each frame in the queue of its traffic class at the output port |
+| Queue management | 8.6.7 | Removes frames from the queues, for example frames held too long |
+| Transmission selection | 8.6.8 | Chooses the next frame to send, among the queues allowed to transmit |
+
+Reading the TSN standards becomes much easier with this list in mind. Each amendment says which of these sub-clauses it changes. For example, [scheduled traffic](/blog/time-aware-shaper) adds gates to transmission selection (8.6.8), and [asynchronous traffic shaping](/blog/asynchronous-traffic-shaping) adds a shaper in front of it.
+
+## 5. Quality-of-service functions
+
+<SourceFigure
+  id="farkas2018-qos-functions"
+  caption="Figure 5. The QoS functions of a port, in order from frame reception to frame transmission. Filtering, policing and shaping can work per stream or per class; queuing and transmission selection work per class. Together they form a hierarchy."
+/>
+
+Figure 5 isolates the quality-of-service functions of a port [2]:
+
+1. **Filtering and policing**, which can be per stream or per class;
+2. **Shaping**, also per stream or per class;
+3. **Queuing** and **transmission selection**, which are per class.
+
+The order matters for analysis. Policing makes a stream respect its [arrival curve](/blog/arrival-curves) before it meets other traffic. Shaping changes the curve. Queuing and transmission selection then define the [service curve](/blog/service-curves) that each class receives.
+
+## 6. What the control plane controls
+
+<SourceFigure
+  id="ieee8021q-tutorial-topology-layers"
+  caption="Figure 6. The topology layers of a bridged network. Each layer is a subset, real or not, of the one below it: the physical network topology, the active topology, the VLAN topology, and the station locations (the MAC address topology)."
+/>
+
+The control plane maintains four layered views of the network [1][3]:
+
+| Layer | Content | Maintained by, for example |
+| --- | --- | --- |
+| Physical network topology | All links and bridges | Management (enabling and disabling ports) |
+| Active topology | The links actually used: a spanning tree, shortest paths, or traffic-engineered paths | RSTP, MSTP, SPB, path control (PCR) |
+| VLAN topology | Which bridges and ports belong to each VLAN | MVRP, SPB, PCR, SRP |
+| Station location | Where each MAC address is | Source address learning, MMRP, SPB, PCR, SRP |
+
+<SourceFigure
+  id="intro2017-control-plane"
+  caption="Figure 7. Control options. Each VLAN is assigned a control mode: spanning tree, shortest path bridging (IS-IS), or an external agent for software-defined VLANs. Several modes can coexist in one network, and an external agent can use non-802.1 protocols."
+/>
+
+Control modes are assigned per VLAN. Distributed protocols and an external agent can therefore coexist in the same network, each controlling its own VLANs. The external control can even be a non-802.1 protocol, such as PCE or GMPLS [3]. This hybrid model is what lets a TSN network keep spanning tree for ordinary traffic while a CNC installs explicit paths for streams.
+
+## 7. Where TSN plugs in
+
+<BridgeIntegrationFigure caption="Figure 8. The same bridge as Figures 1 and 3, with the TSN tools added to each stage (own summary drawing; the 802.1 standard of each tool in brackets)." />
+
+[The TSN toolbox post](/blog/tsn-toolbox) goes through the tools of Figure 8 one by one. Each has its own post in the TSN topic.
+
+## References
+
+1. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 12, 14 and 25. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)
+2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 7–10. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 28 and 47–49. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. IEEE, *IEEE 802.1Q-2022, Bridges and Bridged Networks*. [IEEE SA](https://standards.ieee.org/ieee/802.1Q/10323/). IEEE 802 standards are available free of charge through the [IEEE GET Program](https://standards.ieee.org/products-programs/ieee-get-program/).

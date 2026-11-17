@@ -30,7 +30,7 @@ export const learningPath: LearningPathTopic[] = [
   },
   {
     label: 'IEEE 802.1',
-    posts: ['ieee-802-1-tsn-task-group'],
+    posts: ['ieee-802-1-tsn-task-group', 'ieee-802-1q-bridge'],
   },
   {
     label: 'IETF',

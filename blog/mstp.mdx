@@ -1,0 +1,77 @@
+---
+slug: mstp-multiple-spanning-tree
+title: "MSTP: one spanning tree per group of VLANs"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, presentation]
+description: The Multiple Spanning Tree Protocol extends RSTP so that different groups of VLANs use different spanning trees. MST regions, instances, the single BPDU that carries them all, and how a region looks to the RSTP world outside it.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+[RSTP](/blog/rstp-rapid-spanning-tree) builds one tree for the whole network, so every redundant link stays idle. Once a network carries several VLANs, there is an obvious improvement: give different VLANs different trees, so that each link carries some traffic. That is what the Multiple Spanning Tree Protocol (MSTP) does.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control']}
+  caption="Figure 1. Where MSTP acts: in the control plane, like RSTP. It computes several active topologies; the data plane uses the one assigned to each frame's VLAN."
+/>
+
+## 1. Definition
+
+The **Multiple Spanning Tree Protocol** was defined in IEEE 802.1s-2002 and merged into IEEE 802.1Q-2005. It is an extension of RSTP that makes VLANs more useful [1]. Under MSTP, a spanning tree can be defined for individual VLANs or for groups of VLANs [1]. In the words of the IEEE 802.1 tutorial, different VLANs may share different spanning trees [3].
+
+<SourceFigure
+  id="ieee8021q-tutorial-active-topology"
+  caption="Figure 2. RSTP, MSTP and SPB compared: under MSTP (centre) different VLANs may share different spanning trees, so the redundant links of the RSTP tree (left) can carry traffic."
+/>
+
+## 2. Regions and instances
+
+MSTP organises bridges and VLANs in two steps [1]:
+
+1. bridges are assigned to an **MST region**;
+2. VLANs are mapped to **MST instances (MSTIs)**, each of which is a spanning tree.
+
+Inside a region, frames of a VLAN follow the tree of the instance their VLAN is mapped to. The terms in the standard are as follows [1]:
+
+| Term | Meaning |
+| --- | --- |
+| Multiple spanning tree (MST) | A spanning tree to which one or more VLANs are mapped |
+| MST instance (MSTI) | A group of VLANs and the spanning tree they use inside a region |
+| Common spanning tree (CST) | The tree that connects regions and single bridges; backward compatible with STP and RSTP |
+| Internal spanning tree (IST) | The instance of the common tree inside a region |
+| Boundary port | A port at the edge of a region, towards an RSTP or STP bridge or an end station |
+
+## 3. One BPDU for all instances
+
+Proprietary per-VLAN spanning trees send one set of BPDUs per VLAN. MSTP instead puts all of its information into **one BPDU format** [1]:
+
+- the BPDU starts with a standard RSTP BPDU;
+- an additional region section follows, with one message per MSTI (from 0 to 64 instances, although many bridges support fewer);
+- instead of the full table of VLAN-to-instance mappings, the BPDU carries an **MD5 digest** of it. Two neighbours with the same digest and the same configured region values belong to the same region.
+
+This keeps the number of BPDUs low. Because an RSTP bridge can read an MSTP BPDU as an RSTP BPDU, it also keeps compatibility with RSTP and with STP [1].
+
+## 4. A region seen from outside
+
+To RSTP bridges outside, a whole MST region looks like **one RSTP bridge**, however many bridges it contains. MSTP uses a remaining-hops counter inside the region instead of the message age timer of RSTP. The message age is incremented only once when spanning-tree information enters a region, so RSTP bridges see the region as a single hop [1]. As in RSTP, boundary ports facing end stations can be edge ports and start forwarding at once [1].
+
+## 5. MSTP among the control options
+
+<SourceFigure
+  id="intro2017-control-plane"
+  caption="Figure 3. Control options per VLAN: spanning-tree VLANs controlled by MSTP, shortest-path VLANs by IS-IS (SPB), and software-defined VLANs by an external agent, all in one network."
+/>
+
+802.1Q assigns a **control mode per VLAN**. Spanning-tree VLANs are controlled by MSTP, shortest-path VLANs by IS-IS, and software-defined VLANs by an external agent, and the modes can coexist in one network [2]. A TSN network can therefore keep MSTP for its ordinary VLANs while a controller installs explicit paths for streams, with [path control](/blog/ieee-802-1qca-path-control) or a CNC.
+
+For determinism, MSTP shares the properties of RSTP. Each VLAN has one active path between two bridges, and that path changes when the tree of its instance reconverges.
+
+## References
+
+1. Wikipedia, "Spanning Tree Protocol," section on the Multiple Spanning Tree Protocol. [Article](https://en.wikipedia.org/wiki/Spanning_Tree_Protocol)
+2. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slide 49. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+3. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 25–26. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)

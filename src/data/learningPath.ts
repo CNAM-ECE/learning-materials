@@ -30,7 +30,16 @@ export const learningPath: LearningPathTopic[] = [
   },
   {
     label: 'IEEE 802.1',
-    posts: ['ieee-802-1-tsn-task-group', 'ieee-802-1q-bridge'],
+    posts: [
+      'ieee-802-1-tsn-task-group',
+      'ieee-802-1q-bridge',
+      'rstp-rapid-spanning-tree',
+      'mstp-multiple-spanning-tree',
+      'ieee-802-1aq-shortest-path-bridging',
+      'ieee-802-1qca-path-control',
+      'mrp-and-mvrp',
+      'ieee-802-1qat-srp',
+    ],
   },
   {
     label: 'IETF',

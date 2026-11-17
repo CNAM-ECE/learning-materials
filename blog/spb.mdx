@@ -1,0 +1,118 @@
+---
+slug: ieee-802-1aq-shortest-path-bridging
+title: "SPB (IEEE 802.1aq): shortest path bridging with IS-IS"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, presentation]
+description: Shortest Path Bridging replaces the shared spanning tree with one shortest path tree per bridge, computed by IS-IS from a common link-state database. SPBV and SPBM, equal-cost trees, failure recovery, and why symmetric, computed paths suit deterministic networks.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Spanning trees avoid loops by switching links off. Shortest Path Bridging (SPB) avoids loops differently: every bridge computes its own shortest path tree from a shared view of the network, so all links can be used. It brings to Ethernet the link-state routing that IP networks have long used.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control']}
+  caption="Figure 1. Where SPB acts: in the control plane, where IS-IS replaces the spanning tree protocols. The data plane still forwards on destination MAC address and VLAN ID, using the filtering entries SPB computes."
+/>
+
+## 1. Definition
+
+**IEEE 802.1aq**, *Shortest Path Bridging*, is an amendment to [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/), approved in March 2012 and later incorporated into 802.1Q-2014 [1]. Its aims are as follows [1]:
+
+- replace STP, [RSTP](/blog/rstp-rapid-spanning-tree) and [MSTP](/blog/mstp-multiple-spanning-tree), which block redundant paths, with a control plane that keeps all paths active;
+- support much larger Layer 2 topologies, with faster convergence;
+- spread load over all paths of a mesh;
+- preserve the plug-and-play nature of Ethernet.
+
+Its control plane is **IS-IS**, the link-state routing protocol, extended with a few TLVs specified in [RFC 6329](https://www.rfc-editor.org/rfc/rfc6329). SPB needs no change to the IS-IS state machine, only a new protocol identifier and these TLVs [1].
+
+<SourceFigure
+  id="ieee8021q-tutorial-active-topology"
+  caption="Figure 2. SPB compared with the spanning tree protocols (right): each bridge has its own shortest path tree, instead of all traffic sharing one or a few spanning trees."
+/>
+
+## 2. How it works
+
+The IEEE 802.1 tutorial summarises the principle as "computation instead of signaling" [2]:
+
+1. IS-IS runs between SPB bridges and floods **link-state** information. Every bridge holds an identical replica of a database with the topology, the properties of the bridges, and service information [2].
+2. From that database, every bridge independently computes **symmetric shortest path trees** from each participating bridge to all others [1].
+3. Each bridge fills its filtering database from the result. A frame is forwarded only along the shortest path tree of the bridge where it entered [1][2].
+
+The MAC service model of Ethernet, such as in-order delivery, is preserved [2].
+
+<SourceFigure
+  id="ieee8021q-tutorial-spb-spt"
+  caption="Figure 3. Each bridge uses only its own shortest path tree: the trees of bridges A and C over four bridges running ISIS-SPB."
+/>
+
+## 3. Two flavours: SPBV and SPBM
+
+SPB has two operation modes that apply the same principle to different data planes [1][2]:
+
+| | SPBV (SPB VID) | SPBM (SPB MAC) |
+| --- | --- | --- |
+| Data plane | IEEE 802.1Q VLANs (or 802.1ad) | Provider Backbone Bridges, IEEE 802.1ah "MAC-in-MAC" |
+| Trees identified by | VLAN ID | Backbone MAC address |
+| Learning | Flooding and learning, as in ordinary bridges | No backbone MAC flooding or learning; addresses known from IS-IS |
+| Typical use | All types of VLANs, plug and play | Large managed networks, full isolation of customer MAC addresses |
+
+## 4. An example: equal-cost trees
+
+<CommonsFigure
+  id="spb-example"
+  caption="Figure 4. An example SPB network: a fully meshed core of four nodes (0 to 3) and four outer nodes (4 to 7), each dual-homed to two core nodes. Small numbers are interface indexes."
+/>
+
+With all links at the same cost, there are several equal shortest paths from node 7 to node 5. SPB specifies how to choose among them deterministically. Its first tie-breaking algorithm prefers the path with fewer hops, then the path with the lowest bridge identifier. Other algorithms use permutations of the identifiers [1].
+
+<CommonsFigure
+  id="spb-ecmp-paths"
+  caption="Figure 5. Two equal-cost paths from node 7 to node 5: the low path ID path, carried on VID 101, and the high path ID path, carried on VID 102."
+/>
+
+<CommonsFigure
+  id="spb-ecmt"
+  caption="Figure 6. Three equal-cost trees from three tie-breaking (ECT) algorithms, each on its own VID. The operator chooses which service uses which tree."
+/>
+
+Sixteen **equal-cost tree (ECT)** algorithms are initially defined [1]. Unlike hashing in IP or MPLS, the choice is made by the operator at the edge: a service is assigned to one ECT VID, and all its traffic follows that tree in both directions [1]. The IEEE 802.1 tutorial calls this provisioned load spreading: a VLAN is assigned to an SPT set [2].
+
+<SourceFigure
+  id="ieee8021q-tutorial-spb-load"
+  caption="Figure 7. Load spreading on the IEEE 802.1 slide: two shortest path tree options for bridge A, from two tie-breaking variations."
+/>
+
+<CommonsFigure
+  id="spb-ecmp-anim"
+  caption="Figure 8. Eight equal-cost tree algorithms between one source (purple) and one destination (yellow) in a larger network (animation)."
+/>
+
+## 5. Failure recovery
+
+When a link fails, IS-IS advertises the failure and every bridge recomputes its trees and filtering entries [1]:
+
+- **No relearning in the SPBM core.** Ethernet addresses are not advertised by IS-IS, so nothing has to be relearned there.
+- **Fast failure detection.** Failures can be detected faster with the Continuity Check Protocol of IEEE 802.1ag than with IS-IS hellos.
+- **Fast multicast rebuild.** Multicast trees are rebuilt about as fast as unicast routes, because they are computed locally rather than signalled.
+
+The tutorial gives convergence "within the range of 100 msec" [2].
+
+## 6. What SPB means for determinism
+
+Three properties make SPB attractive under the analyses of this series:
+
+- **Paths are symmetric and predictable.** The forward and reverse paths coincide, and the choice among equal-cost paths is an operator decision rather than a hash. Offline tools can model where every flow goes, and one-way delay can be taken as half the round-trip delay [1].
+- **Paths are computed, not negotiated.** Every bridge derives the same trees from the same database. A configuration tool can compute the same paths and the [delay bounds](/blog/three-fundamental-bounds) along them.
+- **Shortest is not always enough.** Streams that need disjoint paths, or paths that avoid a busy link, need more than shortest-path trees. [Path control (802.1Qca)](/blog/ieee-802-1qca-path-control) extends SPB's IS-IS with explicit trees for exactly that.
+
+## References
+
+1. Wikipedia, "IEEE 802.1aq," sections on history, associated protocols, high level, equal cost multi tree, failure recovery and the example. [Article](https://en.wikipedia.org/wiki/IEEE_802.1aq)
+2. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 26 and 30–34. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)
+3. D. Fedyk, P. Ashwood-Smith et al., RFC 6329, "IS-IS Extensions Supporting IEEE 802.1aq Shortest Path Bridging," IETF, April 2012. [RFC Editor](https://www.rfc-editor.org/rfc/rfc6329)

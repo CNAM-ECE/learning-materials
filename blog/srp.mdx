@@ -1,0 +1,101 @@
+---
+slug: ieee-802-1qat-srp
+title: "SRP (IEEE 802.1Qat): the Stream Reservation Protocol"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, tsn, reservation, presentation]
+description: How the Stream Reservation Protocol registers a stream, reserves resources along its path and accumulates its worst-case latency. What a talker advertise carries, how listeners subscribe, and how MSRP builds on MRP and MVRP.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+The Stream Reservation Protocol (SRP) was AVB's answer to congestion loss: a stream is admitted only if every bridge on its path can carry it. This post covers the protocol itself. [The stream reservation post](/blog/stream-reservation) places SRP among later reservation approaches and derives the latency bound that each bridge has to compute.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control', 'queuing']}
+  caption="Figure 1. Where SRP acts: in the control plane, where it registers streams, and on the queues and shapers it configures for each admitted stream."
+/>
+
+## 1. Definition
+
+The **Stream Reservation Protocol** implements **admission control** for Ethernet. It was standardised as IEEE 802.1Qat in September 2010 and incorporated into IEEE 802.1Q-2011. Work started in 2006 [1][2]. SRP defines the concept of a **stream** at Layer 2. It provides end-to-end management of a stream's resources, so that its quality of service is guaranteed [1]. It is part of the AVB and TSN standards [1].
+
+SRP is built from three MRP applications [1]:
+
+- **MSRP**, the Multiple Stream Registration Protocol, registers and advertises streams and reserves bridge resources for them;
+- **MVRP** makes the bridges on the path members of the stream's VLAN (see [the MRP post](/blog/mrp-and-mvrp));
+- **MMRP** controls the propagation of group registrations.
+
+## 2. Talkers, listeners and the reservation sequence
+
+<SourceFigure
+  id="ieee8021q-tutorial-srp-example"
+  caption="Figure 2. A stream reservation on the IEEE 802.1 slide: the talker advertise travels from bridge to bridge with its accumulated latency increased at each one, and listener ready messages travel back to the talker."
+/>
+
+Two roles take part [1]:
+
+- **talkers** announce the streams they can supply;
+- **listeners** state which streams they want to receive.
+
+SRP then works in five steps [1]:
+
+1. A talker **advertises** a stream.
+2. The bridges **register** the paths along the data flow.
+3. Each bridge **calculates the worst-case latency**.
+4. The bridges establish an **AVB domain**.
+5. The bridges **reserve the bandwidth** for the stream.
+
+If a bridge can reserve the required resources, it propagates the advertisement further. Otherwise a **talker failed** message is raised, carrying the identity of the bridge and a failure code. When the advertise reaches a listener, the listener answers with **listener ready**, which propagates back to the talker [1].
+
+<CommonsFigure
+  id="srp-talker-advertise"
+  caption="Figure 3. The talker advertise spreads like any MRP declaration: registered (R) on the port where it arrives and declared (D) on the other ports, until it reaches the intended listener and other end stations."
+/>
+
+Either message can be deregistered, which ends the stream. Periodic re-declarations detect devices that stop responding [1].
+
+## 3. What a talker advertise carries
+
+| Field | Changes along the path? |
+| --- | --- |
+| Stream ID: the talker's 48-bit MAC address plus a 16-bit unique ID | No |
+| Stream destination address (or a multicast group MAC address) | No |
+| VLAN ID (used by MVRP) and priority (PCP) | No |
+| Rank (emergency or not) | No |
+| Traffic specification: maximum frame size, maximum frames per measurement interval | No |
+| **Accumulated latency** | Increased at every bridge |
+| Failure information: bridge ID and failure code | Set where the reservation fails |
+
+The required bandwidth is the maximum frame size multiplied by the maximum number of frames per interval [1]. For the [credit-based shaper](/blog/credit-based-shaper), SR class A has a 2 ms worst-case latency target and a 125 µs measurement interval, and class B 50 ms and 250 µs, over at most 7 hops [1]. Each bridge adds its residence delay and the peer delay measured by [gPTP](/blog/ieee-802-1as-time-synchronization) to the accumulated latency. Higher layers can use the result for media synchronisation [1].
+
+## 4. AVB domains
+
+Reservations are made only inside an SRP domain, in which every bridge supports SRP and the stream's SR class; the domain is part of the reservation sequence above [1].
+
+<CommonsFigure
+  id="avb-domains"
+  caption="Figure 4. SRP reserves only within an AVB domain. Ports at the domain boundary filter or re-tag the priority of reserved traffic, so that a path through a non-AVB bridge never carries a reserved stream."
+/>
+
+## 5. From SRP to newer reservation
+
+SRP set the pattern of distributed admission control that later standards keep. Its limitations shaped them [3][4]:
+
+- **Configuration without the protocol.** [802.1Qcc](/blog/sdn-and-tsn-configuration) enhances SRP and also allows reservations configured at boot time, without running the protocol.
+- **Proofs for the latency fields.** The example latency formulas behind the accumulated latency lacked formal proof and were later shown to be inaccurate.
+- **Token buckets instead of frame counts.** The Resource Allocation Protocol (P802.1DD) replaces the frames-per-interval traffic specification with a token bucket, which suits [network calculus](/blog/arrival-curves) better.
+
+[The stream reservation post](/blog/stream-reservation) develops these points and the per-bridge latency bound.
+
+## References
+
+1. Wikipedia, "Stream Reservation Protocol." [Article](https://en.wikipedia.org/wiki/Stream_Reservation_Protocol)
+2. IEEE, *IEEE 802.1Qat-2010, Stream Reservation Protocol*. [IEEE SA](https://standards.ieee.org/ieee/802.1Qat/4050/)
+3. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slides 18 and 28. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)
+4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Section V. [arXiv](https://arxiv.org/abs/2610.11999)
+5. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slide 53. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)

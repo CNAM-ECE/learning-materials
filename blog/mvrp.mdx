@@ -1,0 +1,68 @@
+---
+slug: mrp-and-mvrp
+title: "MRP and MVRP: registering VLANs across a bridged network"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, presentation]
+description: The Multiple Registration Protocol is the registration framework of IEEE 802.1Q, and MVRP is its application for VLAN membership. How declarations and registrations propagate, what MVRP writes into the filtering database, and how the same framework carries multicast and stream reservations.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import {MrpFigure} from '@site/src/components/figures/bridging';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Once [RSTP, MSTP](/blog/rstp-rapid-spanning-tree) or [SPB](/blog/ieee-802-1aq-shortest-path-bridging) has fixed the active topology, a bridge still needs to know where the members of each VLAN are, so that it does not flood VLAN traffic everywhere. The Multiple VLAN Registration Protocol (MVRP) learns this automatically. It is one application of a general framework, the Multiple Registration Protocol (MRP), which also carries [stream reservations](/blog/ieee-802-1qat-srp).
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control']}
+  caption="Figure 1. Where MRP and MVRP act: in the control plane of each bridge. What they register becomes dynamic entries of the filtering database used by the relay."
+/>
+
+## 1. Definition
+
+The **Multiple Registration Protocol** is a generic registration framework, defined by the IEEE 802.1ak amendment (2007) to IEEE 802.1Q. It lets bridges and end stations register and deregister attribute values, such as VLAN identifiers or multicast group membership, across a large LAN [1]. It replaced the older Generic Attribute Registration Protocol (GARP) of 802.1D. GARP-based VLAN registration could take an extremely long time to converge on a large network, consuming considerable bandwidth [1].
+
+The IEEE 802.1 tutorial describes MRP as a flooding protocol, not unlike IS-IS or OSPF. On every bridge port, it registers the neighbours' ability to transmit, or need to receive, various kinds of data [2]. Three applications use it [1][2]:
+
+| Application | Registers | Replaces |
+| --- | --- | --- |
+| **MVRP**, Multiple VLAN Registration Protocol | VLAN membership: where frames flooded to a VLAN, such as broadcasts or unknown unicasts, must go | GVRP |
+| **MMRP**, Multiple MAC Registration Protocol | Multicast MAC addresses, or VLAN and MAC pairs (not necessarily IP multicast) | GMRP |
+| **MSRP**, Multiple Stream Registration Protocol ([SRP](/blog/ieee-802-1qat-srp)) | Talkers that want to send and listeners that want to receive streams with bandwidth, latency and loss requirements | (new with AVB) |
+
+In some networks, MRP is being supplanted by IS-IS [2]. For example, [SPB](/blog/ieee-802-1aq-shortest-path-bridging) distributes service membership through its link-state database.
+
+## 2. Declarations and registrations
+
+<MrpFigure caption="Figure 2. MRP in one picture. An end station declares an attribute, here membership of VLAN 10. Each bridge registers it on the port where it arrives (R) and declares it on its other ports (D), so every bridge learns through which ports the members can be reached." />
+
+MRP separates two functions [1]:
+
+- **MRP Attribute Declaration (MAD)** is the per-port state machine that declares attributes to a neighbour and registers the attributes declared by it;
+- **MRP Attribute Propagation (MAP)** passes a registration on one port to declarations on the bridge's other ports, along the active topology.
+
+Withdrawing a declaration deregisters the attribute along the same path. A registration therefore always reflects where the members currently are.
+
+## 3. MVRP
+
+MVRP is the MRP application for the VLAN registration service. It dynamically maintains the **dynamic VLAN registration entries** of the filtering database and propagates them to other bridges [1]. Each bridge thus learns which VLANs currently have active members, and through which ports they can be reached [1].
+
+The practical effect is configuration at the edge only. To add a port to a VLAN, only the end port or the device connected to it needs to be configured. MVRP creates the necessary VLAN trunks on the other bridges [1]. 802.1Q allows VLAN membership to be configured statically, dynamically through MVRP, or as a mix of both [1].
+
+## 4. Where it sits among the control protocols
+
+<SourceFigure
+  id="ieee8021q-tutorial-topology-layers"
+  caption="Figure 3. The topology layers of a bridged network. MVRP maintains the VLAN topology, a subset of the active topology fixed by the spanning tree or SPB; MMRP and source learning maintain station locations above it."
+/>
+
+In the layered view of [the bridge post](/blog/ieee-802-1q-bridge), MVRP maintains the **VLAN topology**. That is the layer between the active topology (spanning tree, SPB or path control) and the station locations (source address learning, MMRP) [2][3]. For TSN, MRP matters mostly through its third application. The [Stream Reservation Protocol](/blog/ieee-802-1qat-srp) uses the same declarations and registrations to reserve resources along a stream's path, and MVRP to make the bridges on that path members of the stream's VLAN [4].
+
+## References
+
+1. Wikipedia, "Multiple Registration Protocol," sections on history, MMRP and MVRP. [Article](https://en.wikipedia.org/wiki/Multiple_Registration_Protocol)
+2. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 25 and 27. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slide 49. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. Wikipedia, "Stream Reservation Protocol." [Article](https://en.wikipedia.org/wiki/Stream_Reservation_Protocol)

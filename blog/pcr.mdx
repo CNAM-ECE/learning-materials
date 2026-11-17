@@ -1,0 +1,81 @@
+---
+slug: ieee-802-1qca-path-control
+title: "Path control and reservation (IEEE 802.1Qca): explicit trees in IS-IS"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, tsn, sdn, presentation]
+description: How IEEE 802.1Qca lets a controller install explicit, non-shortest paths in a bridged network through IS-IS. Explicit trees, the path computation element, the five control modes, and why TSN needs paths that shortest-path bridging cannot give.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+[SPB](/blog/ieee-802-1aq-shortest-path-bridging) computes shortest paths. Deterministic networks often need other paths: two disjoint routes for [FRER](/blog/frame-replication-and-elimination), or a route that avoids a link already carrying critical streams. IEEE 802.1Qca, Path Control and Reservation (PCR), lets a controller impose such paths, while IS-IS keeps doing everything else.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control', 'relay']}
+  caption="Figure 1. Where path control acts: in the control plane, where IS-IS installs explicit trees, and in the relay, whose filtering entries IS-IS sets so that frames of a VLAN follow the tree."
+/>
+
+## 1. Definition
+
+**IEEE 802.1Qca**, *Path Control and Reservation*, specifies explicit path control via IS-IS in Layer 2 networks, to go beyond the shortest paths of SPB. It provides the means to establish and control **explicit forwarding trees** in a Layer 2 domain [1]. The IETF documents the corresponding IS-IS sub-TLVs in [RFC 7813](https://www.rfc-editor.org/rfc/rfc7813) [1].
+
+PCR relies on the SPB architecture and terminology and reuses several SPB sub-TLVs. A bridge does not have to implement full IS-IS SPB to support PCR; it can run both in the same IS-IS instance [1]. PCR covers point-to-point links only [1].
+
+<SourceFigure
+  id="farkas2018-explicit-trees"
+  caption="Figure 2. A hybrid approach: IS-IS provides topology discovery and the shortest path trees, and a controller (Ctrl) adds an explicit tree, here from edge bridge EB1 through core bridge CB2 instead of the shortest path through CB1."
+/>
+
+The task group describes it as a **hybrid SDN approach**: IS-IS provides the basic functions (topology discovery and default paths), and one or more controllers control the explicit trees. No protocol changes are needed, only a few new sub-TLVs and the reuse of existing ones [2][3].
+
+## 2. Explicit trees and the PCE
+
+An **explicit tree (ET)** is an undirected, loop-free topology. Its use is controlled by the **path computation element (PCE)** that owns it, which associates VLAN IDs and MAC addresses with the tree [1]:
+
+- **Ownership.** One or more PCEs can compute trees for a domain, but each tree has exactly one owner PCE.
+- **Joining IS-IS.** The PCE takes part in IS-IS itself, or through a **path control agent (PCA)** that does. Either way it receives the whole link-state database.
+- **Installing a tree.** The PCE injects the tree description into IS-IS, which floods it like any other link-state information. The bridges store it in their explicit tree database and install the matching filtering entries.
+
+How the PCE computes trees is deliberately left unspecified [1].
+
+<SourceFigure
+  id="rfc7813-fig2"
+  caption="Figure 3. A strict explicit tree and its description, rooted at node A: the tree is described as a list of hops, branch by branch, starting from the root."
+/>
+
+A tree is either **strict**, listing every bridge and link, or **loose**, listing only bridges with a special role (edge bridge, root, leaf, a bridge to avoid). Each bridge computes the loose segments itself: by default the shortest path, or a constrained shortest path when the tree carries constraints such as an administrative group of links [1].
+
+## 3. Five control modes
+
+A VLAN is put under explicit control by associating it with one of five **explicit ECT algorithms** [1]:
+
+| Algorithm | Use |
+| --- | --- |
+| Strict Tree (ST) | A strict, static tree: only its owner PCE can change it, also after a topology change (required) |
+| Loose Tree (LT) | A single loose tree, whose loose hops IS-IS restores after a topology change |
+| Loose Tree Set (LTS) | A set of loose trees |
+| MRT | Maximally redundant trees for fast reroute ([RFC 7812](https://www.rfc-editor.org/rfc/rfc7812)) |
+| MRT GADAG (MRTG) | The same, with part of the computation done centrally and distributed through IS-IS |
+
+IS-IS can also record **bandwidth assignments** along an explicit tree. This must not be combined with a reservation protocol: in one domain, either MSRP ([SRP](/blog/ieee-802-1qat-srp)) or IS-IS makes bandwidth assignments, never both [1].
+
+## 4. Why TSN needs it
+
+Path control fills a gap that the other topology protocols leave open:
+
+- **Disjoint paths for redundancy.** FRER is only as reliable as its paths are disjoint. A strict tree pair, computed by a controller, guarantees that two member streams share no bridge or link.
+- **Paths chosen for latency.** A controller can route a stream away from links whose [delay bound](/blog/three-fundamental-bounds) is already tight. Shortest-path forwarding cannot.
+- **Paths that stay put.** A strict tree does not move when the topology changes elsewhere, unless its owner moves it. For analysis, that is exactly the property needed: the path behind a bound changes only when the controller decides, and can recheck the bound first.
+
+In 802.1Qcc terms, the CNC of the [SDN post](/blog/sdn-and-tsn-configuration) plays the role of the PCE, and path control is one of the ways it installs the paths it computes.
+
+## References
+
+1. J. Farkas (Ed.), N. Bragg, P. Unbehagen, G. Parsons, P. Ashwood-Smith, C. Bowers, RFC 7813, "IS-IS Path Control and Reservation," IETF, June 2016, Sections 1, 4 and 5. [RFC Editor](https://www.rfc-editor.org/rfc/rfc7813)
+2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 17. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slide 37. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. IEEE, *IEEE 802.1Qca-2015, Path Control and Reservation*. [IEEE SA](https://standards.ieee.org/ieee/802.1Qca/5557/)

@@ -1,0 +1,95 @@
+---
+slug: rstp-rapid-spanning-tree
+title: "RSTP: the Rapid Spanning Tree Protocol"
+date: 2026-11-18
+authors: [trang]
+tags: [standard, ieee-802-1, presentation]
+description: How a bridged network with redundant links avoids loops. The spanning tree, root and port roles, the proposal and agreement handshake that makes RSTP rapid, and what a spanning tree means for deterministic paths.
+---
+
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Ethernet frames carry no hop count, so a loop in a bridged network would circulate broadcasts forever. Bridges therefore agree on a loop-free subset of the links: a spanning tree. The Rapid Spanning Tree Protocol (RSTP) is the standard way to compute it, and the first control protocol listed for the active topology in [the bridge post](/blog/ieee-802-1q-bridge).
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['control']}
+  caption="Figure 1. Where RSTP acts: in the control plane of every bridge. It decides which ports forward; the data plane enforces that decision in its first step, active topology enforcement."
+/>
+
+## 1. Definition
+
+The **Rapid Spanning Tree Protocol** was introduced by IEEE in 2001 as IEEE 802.1w and incorporated into IEEE 802.1D-2004, which made the original Spanning Tree Protocol (STP) obsolete [1]. It is backward compatible with STP [1]. The bridge functions of 802.1D, including RSTP, have since been brought into [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) [2]. The IEEE 802.1 tutorial notes that STP is now historical, replaced by RSTP [3].
+
+<SourceFigure
+  id="ieee8021q-tutorial-active-topology"
+  caption="Figure 2. The three distributed protocols for the active topology, as the IEEE 802.1 tutorial draws them: RSTP builds one spanning tree shared by all traffic, MSTP lets groups of VLANs use different spanning trees, and SPB gives each bridge its own shortest path tree."
+/>
+
+RSTP sits on the first layer of the bridge's control. It decides the **active topology**: which of the physical links are actually used. VLAN membership and station locations are then learned on top of it [3].
+
+## 2. How a spanning tree is built
+
+<CommonsFigure
+  id="stp-2"
+  caption="Figure 3. A bridged network with redundant links: seven bridges (numbered boxes) joined through six LAN segments (clouds). Bridge 3, with the lowest bridge ID, is the root."
+/>
+
+Bridges exchange **bridge protocol data units (BPDUs)** with their neighbours. From them [1]:
+
+1. the bridges elect a **root bridge**;
+2. every other bridge adds up the path cost towards the root and selects its best port towards it, the **root port**;
+3. on each LAN segment, the bridge with the best path to the root forwards for that segment through its **designated port**;
+4. every other port that would close a loop stops forwarding user data.
+
+The default path cost is inversely proportional to link speed: RSTP uses 20 Tbit/s divided by the bandwidth [1].
+
+<CommonsFigure
+  id="stp-4"
+  caption="Figure 4. The resulting tree. Designated ports (DP) and root ports (RP) forward; the ports marked BP are blocked, so exactly one path remains between any two bridges."
+/>
+
+## 3. What makes it rapid
+
+RSTP keeps the idea of the spanning tree but changes how fast it reacts [1]:
+
+| | STP | RSTP |
+| --- | --- | --- |
+| Reaction to a topology change | 30 to 50 s | Within 3 hello times (6 s by default), or a few milliseconds after a physical link failure |
+| Port states | Five | Three: discarding, learning, forwarding |
+| Port roles | Root, designated, blocked | Root, designated, **alternate** (another path to the root), **backup** (another path to a segment), disabled |
+| Edge ports | — | Ports with no bridge behind them forward at once, but still watch for BPDUs |
+
+Two mechanisms do most of the work [1]:
+
+- **Prepared alternatives.** An alternate or backup port already knows it is the next best choice, so it can take over without waiting for timers when the active port fails.
+- **Proposal and agreement.** On point-to-point links, a bridge proposes its spanning-tree information on its designated ports. A neighbour that accepts it as superior puts its other ports into discarding and returns an agreement, and the first bridge then moves the port straight to forwarding. The handshake cascades away from the root, instead of each port waiting through listening and learning.
+
+<CommonsFigure
+  id="stp-5"
+  caption="Figure 5. A failure: the link between bridge 24 and segment c goes down."
+/>
+
+<CommonsFigure
+  id="stp-6"
+  caption="Figure 6. The tree after reconvergence: the port of bridge 5 on segment f, blocked before, now forwards, and bridge 4 reaches the root through it."
+/>
+
+An RSTP bridge falls back to legacy STP on a port where it detects an old-style BPDU [1].
+
+## 4. What a spanning tree means for determinism
+
+For the analyses in this series, three properties of a spanning tree matter:
+
+- **One path.** Between two bridges there is exactly one active path, and all traffic shares it. Redundant links stay idle until a failure. That is why [MSTP](/blog/mstp-multiple-spanning-tree) and [SPB](/blog/ieee-802-1aq-shortest-path-bridging) were developed.
+- **Paths change after a failure.** When the tree reconverges, streams move to new paths through new queues. A [network calculus](/blog/three-fundamental-bounds) bound computed for the old path no longer applies, which is the problem studied in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
+- **Reconvergence is not seamless.** Even milliseconds of reconvergence lose frames. Applications that cannot afford this rely on [FRER](/blog/frame-replication-and-elimination), which sends every frame on two disjoint paths at once and needs no reconvergence at all.
+
+## References
+
+1. Wikipedia, "Spanning Tree Protocol," sections on protocol operation and on the Rapid Spanning Tree Protocol. [Article](https://en.wikipedia.org/wiki/Spanning_Tree_Protocol)
+2. Wikipedia, "IEEE 802.1aq," section on associated protocols (802.1Q-2014 incorporates functionality previously specified in 802.1D). [Article](https://en.wikipedia.org/wiki/IEEE_802.1aq)
+3. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 25–26. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)

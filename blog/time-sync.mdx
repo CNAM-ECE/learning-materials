@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {PeerDelayFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post explains how it works and what an analysis has to assume about it.
 
@@ -20,6 +21,8 @@ Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Tra
   highlight={['time']}
   caption="Figure 1. Where 802.1AS acts: it adds a common time base under the whole data plane. It changes no forwarding stage itself, but scheduled traffic, cyclic queuing and time-gated policing read their timetables from it."
 />
+
+<Abbreviations terms={["IEEE", "LAN", "PTP", "gPTP", "BMCA", "TSN"]} />
 
 ## 1. Definition
 
@@ -47,24 +50,25 @@ The figure uses the master/slave port names of the original standards. Recent re
 
 ### The PTP exchange
 
-<CommonsFigure
-  id="ptp-timing"
-  caption="Figure 3. The basic PTP exchange between a time server (master) and a network element (slave). The four timestamps let the slave separate the path delay from its own clock offset."
+<SourceFigure
+  id="cisco-ptp-delay-request"
+  caption="Figure 3. The PTP delay request–response exchange. Sync and Follow_Up carry the master's send time t1; Delay_Req and Delay_Resp carry the slave's request back and the master's receive time t4. After four messages the slave knows all four timestamps (right column)."
 />
 
-Write $d$ for the one-way delay, assumed equal in both directions, and $o$ for the offset of the slave clock from the master clock. With the timestamps of Figure 3, the master sends at $T_1$ and the slave receives at $T_1'$; the slave sends at $T_2$ and the master receives at $T_2'$. Then
+The **offset** is how far the slave clock is from the master clock at the same instant: an offset of +3 µs means the slave reads 3 µs ahead, so it must step or slow its clock by 3 µs. The **path delay** is the time a message takes on the wire between them. The exchange of Figure 3 measures both:
+
+1. The master sends **Sync** at $t_1$ (master time); the slave receives it at $t_2$ (slave time). In two-step clocks, a **Follow_Up** message carries the exact $t_1$.
+2. The slave sends **Delay_Req** at $t_3$ (slave time); the master receives it at $t_4$ (master time) and returns $t_4$ in **Delay_Resp**.
+
+Write $d$ for the path delay, assumed equal in both directions, and $o$ for the offset. Then $t_2 = t_1 + d + o$ and $t_4 = t_3 + d - o$, which give
 
 $$
-T_1' = T_1 + d + o, \qquad T_2' = T_2 + d - o,
+d = \frac{(t_4 - t_1) - (t_3 - t_2)}{2}, \qquad o = (t_2 - t_1) - d.
 $$
 
-which give
+For example, with $t_1 = 100$ µs, $t_2 = 108$ µs, $t_3 = 120$ µs and $t_4 = 122$ µs, the round trip outside the slave is $(122 - 100) - (120 - 108) = 10$ µs, so $d = 5$ µs and $o = 8 - 5 = 3$ µs: the slave is 3 µs ahead.
 
-$$
-o = \frac{(T_1' - T_1) - (T_2' - T_2)}{2}, \qquad d = \frac{(T_1' - T_1) + (T_2' - T_2)}{2}.
-$$
-
-The symmetry assumption is the weak point: any asymmetry between the two directions goes straight into the offset as an error of half the asymmetry.
+The symmetry assumption is the weak point: any difference between the two directions goes straight into the offset as an error of half that difference.
 
 ### Peer delay in 802.1AS
 

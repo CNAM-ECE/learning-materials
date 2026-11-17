@@ -10,7 +10,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── blog/                  # Learning path: twenty-four posts (MDX, KaTeX), authors.yml, tags.yml
+├── blog/                  # Learning path: twenty-five posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
 │   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
@@ -37,6 +37,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | Network calculus | Aggregate multiplexing | Blind, FIFO, static-priority residual service; TFA vs. path-based analyses |
 | Network calculus | ATM and MPLS | GCRA as an arrival curve, VBR worked example, LSPs and aggregates, then and now |
 | IEEE 802.1 | IEEE 802.1 and the TSN task group | Organisation, AVB to TSN, naming rules, tiers of standards, process |
+| IEEE 802.1 | The IEEE 802.1Q bridge | Control and data planes, data-plane actions, forwarding process (802.1Q clause 8.6), topology layers |
 | IETF | IETF DetNet | Charter, RFC 8655 sub-layers, node types, planes, DetNet over TSN |
 | TSN | The TSN toolbox | Each TSN mechanism and the stage of the 802.1Q bridge it extends |
 | TSN | IEEE 802.1AS | gPTP, grandmaster election, peer delay, synchronisation error in schedules |

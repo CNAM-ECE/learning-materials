@@ -10,7 +10,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── blog/                  # Learning path: twenty-five posts (MDX, KaTeX), authors.yml, tags.yml
+├── blog/                  # Learning path: thirty posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
 │   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
@@ -43,13 +43,18 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | TSN | IEEE 802.1AS | gPTP, grandmaster election, peer delay, synchronisation error in schedules |
 | TSN | Credit-Based Shaper | Credit rules, AVB classes, limits of the 802.1BA formula |
 | TSN | Time-Aware Shaper | Gates, GCL, guard band, scheduling models and lessons from 17 methods |
-| TSN | Frame preemption | eMAC, pMAC and MAC Merge; guard band; what preemption does not change |
+| TSN | IEEE 802.3br | MAC Merge sublayer, verification, mPacket formats, hold and release |
+| TSN | IEEE 802.1Qbu | Express and preemptable status per class, preemption with scheduled traffic, worst-case blocking |
 | TSN | Cyclic Queuing and Forwarding | PSFP and TAS jointly configured; cycle-time condition |
 | TSN | Asynchronous Traffic Shaping | Per-stream token buckets, queue allocation rules, shaper-to-shaper segments |
 | TSN | Per-Stream Filtering and Policing | Stream identification, filter, gate, MEF 10.3 meter |
 | TSN | Frame Replication and Elimination | FRER functions, recovery algorithms, burst after merging |
 | TSN | Stream reservation | SRP, RAP, information for local bounds, the per-class bound |
 | TSN | Network calculus for TSN shapers | TAS, CBS, ATS, PSFP, FRER; analysis tools |
+| TSN profiles | IEEE 802.1BA | What a profile is; AVB goals, base standards and plug-and-play operation |
+| TSN profiles | IEEE 802.1CM | Fronthaul, functional splits, Profiles A and B |
+| TSN profiles | IEC/IEEE 60802 | Industrial requirements, IA-station, conformance classes, common resource management |
+| TSN profiles | IEEE 802.1DG | Automotive PHYs, what TSN brings to vehicles, how the profile was written |
 | SDN | SDN and TSN configuration | SDN planes, 802.1Qcc models, what the CNC computes, central versus decentralised |
 | SDN | Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
 

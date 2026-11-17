@@ -12,7 +12,7 @@ These notes are personal preparation material for the doctoral project *Certifie
 
 The site has two parts.
 
-- **[Learning path](/blog)** — twenty-five posts grouped into six topics, meant to be read in this order: deterministic networks, network calculus, IEEE 802.1, IETF, TSN and SDN. The TSN topic has one post per standard (802.1AS, CBS, TAS, preemption, CQF, ATS, PSFP, FRER, stream reservation). 
+- **[Learning path](/blog)** — thirty posts grouped into seven topics, meant to be read in this order: deterministic networks, network calculus, IEEE 802.1, IETF, TSN, TSN profiles and SDN. The TSN topic has one post per standard (802.1AS, CBS, TAS, 802.3br, 802.1Qbu, CQF, ATS, PSFP, FRER, stream reservation), and the profiles topic one post per profile (802.1BA, 802.1CM, IEC/IEEE 60802, 802.1DG). 
 - **Reference** — material for consultation rather than reading: a [notation and results sheet](./notation.md), a [TSN glossary](./tsn-glossary.md), and an [annotated list of resources](./resources.md).
 
 ## Prerequisites

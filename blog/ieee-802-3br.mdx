@@ -1,0 +1,125 @@
+---
+slug: ieee-802-3br-interspersing-express-traffic
+title: "IEEE 802.3br: Interspersing Express Traffic in the Ethernet MAC"
+date: 2026-11-23
+authors: [trang]
+tags: [standard, tsn, preemption, presentation]
+description: The Ethernet half of frame preemption. The MAC Merge sublayer with its express and preemptable MACs, how a link verifies that preemption is safe, the mPacket formats that protect reassembly, and the hold and release primitive used with scheduled traffic.
+---
+
+import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/figures/tsn';
+import {MacMergeFigure} from '@site/src/components/figures/standards';
+import {MPacketFigure, HoldReleaseFigure} from '@site/src/components/figures/profiles';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+Frame preemption is specified by two standards. IEEE 802.3br changes the Ethernet MAC so that a frame can be cut and resumed. [IEEE 802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) tells a bridge which traffic may cut which. This post covers the Ethernet half: everything that happens below the bridge port.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['mac']}
+  caption="Figure 1. Where 802.3br acts: in the MAC of each Ethernet port, below transmission selection. The bridge above it is unchanged except for the per-priority setting of 802.1Qbu."
+/>
+
+## 1. Definition
+
+[IEEE 802.3br](https://www.ieee802.org/3/br/), *Interspersing Express Traffic* (IET), is an amendment to [IEEE 802.3](https://standards.ieee.org/ieee/802.3/10422/) Ethernet. Its task force completed its work with the approval of IEEE Std 802.3br-2016 by the IEEE-SA Standards Board on 30 June 2016 [1]. IET lets *express* frames interrupt *preemptable* frames, which resume afterwards without losing the part already sent.
+
+The joint IEEE 802.3/802.1 tutorial that introduced it summarises its properties as follows [2]:
+
+- it supports preemption **without changing the Ethernet MAC and PHYs**: a new sublayer sits between two ordinary MACs and the PHY;
+- it **maintains data integrity**: a reassembled frame is as well protected as an uncut one;
+- it provides **capability discovery and verification**;
+- it supplies a **primitive to reduce latency further** for scheduled traffic;
+- it works with all full-duplex Ethernet PHYs faster than 10 Mb/s.
+
+Why it was needed is spelled out by the industrial requirements collected for the tutorial. Scheduled and alarm traffic needed a maximum accumulated latency below 3 µs per hop on Gigabit Ethernet, for payloads of 40 to 300 bytes sent every 31.25 µs to 100 ms, while sharing the link with reserved and best-effort traffic [2].
+
+## 2. The MAC Merge sublayer
+
+<MacMergeFigure caption="Figure 2. The structure added by 802.3br. The bridge port feeds an express MAC (eMAC) and a preemptable MAC (pMAC); the MAC Merge sublayer between them and the PHY interleaves their traffic on one link." />
+
+<SourceFigure
+  id="intro2017-mac-merge"
+  caption="Figure 2b. The same structure as drawn by the IEEE 802.1 task group: transmission selection above, the express and preemptable MACs, the MAC Merge sublayer, and a PHY that is unaware of preemption."
+/>
+
+The **MAC Merge sublayer** has four functions [2]:
+
+| Function | Role |
+| --- | --- |
+| Transmit processing | Arbitrates between eMAC and pMAC frames, and preempts a pMAC frame when preemption is active |
+| Express filter | Sends received express packets to the eMAC |
+| Receive processing | Handles the mPacket formats, checks the fragments, and passes reassembled frames to the pMAC |
+| Verification | Tests that the link can carry preemptable traffic before preemption is activated |
+
+The cut never leaves the link. The receiving MAC Merge sublayer reassembles the frame before the bridge relay sees it, so preemption is not IP fragmentation [2][3].
+
+## 3. Turning preemption on: discovery and verification
+
+A port goes through three states [2]:
+
+| State | Behaviour |
+| --- | --- |
+| Preemption disabled | Express frames still have priority when both MACs are ready, but nothing is cut and the preemptable mPacket formats are not sent. The port can still receive preempted traffic from its partner, and it answers verification requests. |
+| Enabled, not active | The verification function sends a *verify* mPacket. A *response* mPacket confirms that the link carries preemptable traffic, and preemption can become active. |
+| Active | Transmit processing uses the mPacket formats and cuts preemptable frames when the eMAC has a frame to send, or when a HOLD is requested. |
+
+Each end learns that its partner supports preemption through [LLDP](https://standards.ieee.org/ieee/802.1AB/6047/). This is **discovery, not negotiation**: each end activates preemption on its own, and a receiver is always ready to reassemble [2]. Verification is still needed because a non-standard device between the two ports, such as a buffered repeater, may forward LLDP frames it should block and then drop or alter preemptable mPackets [2].
+
+## 4. mPacket formats
+
+<MPacketFigure caption="Figure 3. The five mPacket formats. An express or uncut frame is an ordinary Ethernet frame with a distinct start delimiter. A preempted frame is sent as a first fragment, intermediate fragments and a last fragment; every fragment but the last ends with an MCRC instead of the frame check sequence." />
+
+On the wire, frames are sent as **mPackets**. The start mPacket delimiter (SMD) that replaces the start-of-frame delimiter tells the receiver what follows: an express frame (SMD-E), the start of a preemptable frame (SMD-Sx), or its continuation (SMD-Cx) [2]. The other fields work as follows:
+
+- **MCRC.** A non-final fragment ends with an MCRC: the check sequence of the bytes sent so far, XORed with FFFF0000. A fragment with an MCRC is therefore recognised as cut.
+- **Fragment and frame counts.** Continuation fragments carry a fragment count modulo 4, and the SMD values encode a frame count modulo 4.
+- **Minimum size.** Each fragment, data plus check sequence, is at least the Ethernet minimum packet size.
+
+These choices keep Ethernet's protection against accepting a corrupted frame. They detect up to 3 bit errors in the mPacket format, up to 3 lost fragments in a frame, and the loss of the last fragment of one frame together with the start of the next. The SMD values are therefore chosen with a Hamming distance of 4. Uncut traffic carries no extra overhead, and the inter-packet gap and minimum packet size of Ethernet are unchanged [2].
+
+<SourceFigure
+  id="intro2017-preemption-frame"
+  caption="Figure 3b. A preemption request on the wire, as illustrated by the task group: the preemptable frame is cut after at least the minimum fragment, the express frame follows after an inter-frame gap, and the remainder is sent with its own preamble and header."
+/>
+
+## 5. Hold and release
+
+Preemption is not instantaneous. The current fragment must reach the minimum size, and a frame shorter than 123 octets cannot be preempted at all [2]. For most traffic this residual delay is small enough, but not for a scheduled window that must start on an idle link.
+
+<HoldReleaseFigure caption="Figure 4. Hold and release. The MAC client asserts HOLD a guard band before a scheduled express window, so the preemptable frame is cut in advance and the window starts on an idle link; RELEASE after the window lets the rest of the frame go." />
+
+802.3br therefore gives the MAC client one primitive of the **MAC Merge Service Interface**, `MM_CTL.request(hold_req)`, with two values [2]:
+
+- **HOLD** stops transmission from the pMAC, cutting the current frame if preemption is active;
+- **RELEASE** allows the pMAC to transmit again.
+
+Asserted a guard band before a scheduled express window, HOLD lets express traffic go through the bridge with minimal latency. The bridge side of this coordination is defined by [802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) together with [scheduled traffic](/blog/time-aware-shaper).
+
+<PreemptionFigure caption="Figure 5. The effect on one express frame: without preemption it waits for the whole preemptable frame; with preemption it waits only for the part that cannot be cut." />
+
+## 6. Preemption and MACsec
+
+When a port protects its traffic with [MACsec](https://standards.ieee.org/ieee/802.1AE/7154/), one secure channel may carry both express and preemptable traffic. Preemption can then change the order in which packets arrive, and a packet sent with an old key may arrive after the channel has moved to a new one. The tutorial discusses two remedies: a non-zero replay window, which tolerates some reordering at a small cost in security, or separate secure connections for the two kinds of traffic [2].
+
+## 7. Summary
+
+| Property | IEEE 802.3br |
+| --- | --- |
+| Standard | Amendment to IEEE 802.3, approved 30 June 2016 |
+| Acts on | The Ethernet MAC of one full-duplex link |
+| Adds | MAC Merge sublayer, express and preemptable MACs, mPacket formats |
+| Activation | Discovery by LLDP, then verification on the link |
+| Interface to the bridge | Which frames are express ([802.1Qbu](/blog/ieee-802-1qbu-frame-preemption)); `MM_CTL.request` HOLD and RELEASE |
+| Cannot be cut | Frames shorter than 123 octets, and the last part of a frame below the minimum fragment |
+
+## Further reading
+
+- "IEEE 802.3br & IEEE 802.1Qbu: The Next Evolution in Network Performance," *tsn-network.com*, October 2022. [Article](https://tsn-network.com/ieee-802-3br-ieee-802-1qbu-the-next-evolution-in-network-performance/). A short vendor overview. Note that it swaps the two titles: 802.3br is *Interspersing Express Traffic* and 802.1Qbu is *Frame Preemption*.
+
+## References
+
+1. IEEE P802.3br Interspersing Express Traffic Task Force. [Task force page](https://www.ieee802.org/3/br/)
+2. L. Winkel, M. Johas Teener, N. Finn, P. Thaler, "Real-time Ethernet on IEEE 802.3 Networks," joint IEEE 802.3br and IEEE 802.1 TSN tutorial, IEEE 802 plenary, March 2015, slides 11–12 and 40–59. [Slides (PPTX)](https://www.ieee802.org/802_tutorials/2015-03/8023-IET-TF-1501-Winkel-Tutorial-20150115_r06.pptx)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 29–30. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)

@@ -98,7 +98,7 @@ This mechanism is the Time-Aware Shaper of the analysis literature. The service 
 
 <PreemptionFigure />
 
-*In depth: [the frame preemption post](/blog/frame-preemption).*
+*In depth: [the 802.3br post](/blog/ieee-802-3br-interspersing-express-traffic) for the Ethernet side and [the 802.1Qbu post](/blog/ieee-802-1qbu-frame-preemption) for the bridge side.*
 
 A gate does not help if a long frame is already on the wire when the critical window opens. Preemption lets an *express* frame suspend the transmission of a *preemptable* frame, which resumes afterwards. Each traffic-class queue is assigned one of the two statuses [4]. The MAC is split into an express MAC and a preemptable MAC above a merge sublayer; the minimum fragment is 64 bytes including its check sequence [4].
 

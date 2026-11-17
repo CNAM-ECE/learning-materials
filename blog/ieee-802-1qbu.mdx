@@ -1,0 +1,101 @@
+---
+slug: ieee-802-1qbu-frame-preemption
+title: "IEEE 802.1Qbu: frame preemption in the bridge"
+date: 2026-11-23
+authors: [trang]
+tags: [standard, tsn, ieee-802-1, preemption, tas, article]
+description: The bridge half of frame preemption. How 802.1Qbu assigns each priority an express or preemptable status, how preemption combines with scheduled traffic to shrink the guard band, and what it changes, and does not change, in a worst-case analysis.
+---
+
+import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/figures/tsn';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
+
+A long frame already on the wire delays everything behind it: a 1522-byte frame occupies a 1 Gbit/s link for about 12 µs. [IEEE 802.3br](/blog/ieee-802-3br-interspersing-express-traffic) gave Ethernet the means to cut such a frame. IEEE 802.1Qbu decides, inside the bridge, which frames may cut which, and coordinates the cut with the gates of scheduled traffic.
+
+{/* truncate */}
+
+<BridgeIntegrationFigure
+  highlight={['selection', 'mac']}
+  caption="Figure 1. Where 802.1Qbu acts: on transmission selection, where each traffic class is marked express or preemptable and scheduled traffic can hold preemptable frames, and on its interface to the MAC of 802.3br."
+/>
+
+## 1. Definition
+
+[IEEE 802.1Qbu-2016](https://standards.ieee.org/ieee/802.1Qbu/5464/), *Frame Preemption*, is Amendment 26 to IEEE 802.1Q-2014. It provides the enhancements to the forwarding process that support frame preemption [1]. It was approved on 30 June 2016, the same day as 802.3br, and has since been merged into [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) [1][3].
+
+The division of labour is simple [2][3]:
+
+| Standard | Group | Defines |
+| --- | --- | --- |
+| [IEEE 802.3br](/blog/ieee-802-3br-interspersing-express-traffic) | IEEE 802.3 (Ethernet) | How a frame is cut, sent in fragments and reassembled on one link |
+| IEEE 802.1Qbu | IEEE 802.1 (bridging) | Which frames are express and which are preemptable, how this is managed, and how it interacts with scheduled traffic |
+
+## 2. Frame preemption status
+
+802.1Qbu makes the changes that 802.1Q needs to use 802.3br. Each traffic-class queue supported by a port is assigned a **frame preemption status** with two possible values, *express* or *preemptable* [3]:
+
+- frames from **express** queues go to the express MAC and are never cut;
+- frames from **preemptable** queues go to the preemptable MAC and may be cut by any express frame.
+
+The status is a per-port configuration of the bridge, like the queue mapping itself. A bridge typically marks the classes of time-critical streams as express and all other classes as preemptable. The two traffic types then share the link with almost no interference from the preemptable side.
+
+<SourceFigure
+  id="farkas2018-preemption"
+  caption="Figure 2. The idea of preemption on the original slide: critical packets are scheduled “rocks” in each cycle; best-effort traffic in the same queue structure would collide with them, but as preemptable “sand” it fills the gaps instead."
+/>
+
+## 3. Preemption with scheduled traffic
+
+<SourceFigure
+  id="intro2017-qbv-preemption"
+  caption="Figure 3. Scheduled traffic and preemption together, as drawn by the task group: the gates of 802.1Qbv above, and the express and preemptable MACs of 802.3br below, with the transmission selection of each side."
+/>
+
+Preemption matters most with [scheduled traffic](/blog/time-aware-shaper). A time-aware schedule protects a critical window with a guard band: no frame may start that could still be on the wire when the window opens. Without preemption, the guard band must be as long as the largest interfering frame. That bandwidth is lost every cycle [3][4].
+
+<CommonsFigure
+  id="frame-preemption"
+  caption="Figure 4. Preemption combined with an 802.1Qbv schedule. The best-effort frame is interrupted when the time-critical slice begins, so the guard band (G) shrinks to a fragment. Part 2 is sent after the slice and reassembled in the next switch."
+/>
+
+With preemption, the guard band only has to cover the part of a frame that cannot be cut. The bridge also uses the hold-and-release primitive of 802.3br: the schedule holds preemptable traffic slightly before the express window and releases it afterwards, so the window opens on an idle link [2][3].
+
+<SourceFigure
+  id="intro2017-guard-band"
+  caption="Figure 5. Guard band and hold/release on the original slide: the express gate at the egress port, and preemptable transmission held (HOLD) and released (RELEASE) around it."
+/>
+
+## 4. What preemption changes in the worst case
+
+<PreemptionFigure caption="Figure 6. Without preemption the express frame waits for the whole preemptable frame; with preemption it waits only for the part that cannot be cut." />
+
+For an express class, the worst-case **blocking by lower priorities** drops from one maximum-size frame to the largest piece that cannot be cut. A frame shorter than 123 octets cannot be preempted, and the current fragment must reach the minimum size first [2]. At 1 Gbit/s this is of the order of 1 µs instead of about 12 µs. For preemptable traffic, each cut adds overhead, because every fragment carries its own preamble, delimiter and check sequence.
+
+Two observations from the scheduling literature complete the picture [5]:
+
+- **Preemption does not shorten store-and-forward delay.** The next bridge reassembles a preempted frame before forwarding it, so the frame still crosses each hop as one unit.
+- **Preemption can make an infeasible schedule feasible.** Some express streams miss their deadlines behind long frames without it. Because frames are cut only when needed, it also wastes less bandwidth than always fragmenting.
+
+## 5. Where it is required
+
+Profiles turn preemption from an option into a requirement. The fronthaul profile [802.1CM](/blog/ieee-802-1cm-fronthaul-profile) defines a Profile B that combines strict priority with frame preemption, with fronthaul traffic express and all other traffic preemptable. The automotive profile [802.1DG](/blog/ieee-802-1dg-automotive-profile) lists preemption among the tools for bounded low latency.
+
+## 6. Summary
+
+| Property | IEEE 802.1Qbu |
+| --- | --- |
+| Standard | Amendment 26 to IEEE 802.1Q-2014, approved 30 June 2016, now in 802.1Q |
+| Acts on | Transmission selection and the bridge port's interface to the MAC |
+| Per traffic class | Frame preemption status: express or preemptable |
+| Works with | [802.3br](/blog/ieee-802-3br-interspersing-express-traffic) underneath; [802.1Qbv](/blog/time-aware-shaper) for hold and release |
+| Needs time synchronisation | No (only when combined with scheduled traffic) |
+| Gain | Blocking by lower priorities drops to a short non-preemptable piece; guard bands shrink |
+
+## References
+
+1. IEEE, *IEEE 802.1Qbu-2016, Frame Preemption*. [IEEE SA](https://standards.ieee.org/ieee/802.1Qbu/5464/)
+2. L. Winkel, M. Johas Teener, N. Finn, P. Thaler, "Real-time Ethernet on IEEE 802.3 Networks," joint IEEE 802.3br and IEEE 802.1 TSN tutorial, March 2015, slides 47–50. [Slides (PPTX)](https://www.ieee802.org/802_tutorials/2015-03/8023-IET-TF-1501-Winkel-Tutorial-20150115_r06.pptx)
+3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 29–33; "TSN Basic Concepts," 2018, slide 12. [2017](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf), [2018](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+4. Wikipedia, "Time-Sensitive Networking," section on frame preemption. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
+5. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, Section II-C. [arXiv](https://arxiv.org/abs/2305.16772)

@@ -61,7 +61,7 @@ The baggy-pants drawing can be unfolded into a pipeline of three stages. Each ap
 | --- | --- | --- | --- |
 | Ingress port | Action set 1 | Filtering (drop), tagging and untagging, VID translation, de- and encapsulation | Stream identification, [PSFP](/blog/per-stream-filtering-and-policing), the ingress side of [FRER](/blog/frame-replication-and-elimination) |
 | Relay | Action set 2 | Forwarding, filtering | Explicit trees ([802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/)), replication and elimination |
-| Egress port | Action set 3 | Filtering, tagging and untagging, VID translation, de- and encapsulation, metering, queuing, transmission selection | [CBS](/blog/credit-based-shaper), [ATS](/blog/asynchronous-traffic-shaping), [TAS](/blog/time-aware-shaper), [CQF](/blog/cyclic-queuing-and-forwarding), [preemption](/blog/frame-preemption) |
+| Egress port | Action set 3 | Filtering, tagging and untagging, VID translation, de- and encapsulation, metering, queuing, transmission selection | [CBS](/blog/credit-based-shaper), [ATS](/blog/asynchronous-traffic-shaping), [TAS](/blog/time-aware-shaper), [CQF](/blog/cyclic-queuing-and-forwarding), [preemption](/blog/ieee-802-1qbu-frame-preemption) |
 
 Most TSN tools therefore act on the egress port, where queuing and transmission selection happen.
 

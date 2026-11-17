@@ -116,7 +116,7 @@ The two efforts meet where a routed DetNet path crosses a bridged TSN segment. W
 | Credit-based shaper | Limits the flow's class to its reserved rate and spreads its frames evenly | [IEEE 802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/), see [the CBS post](/blog/credit-based-shaper) |
 | Scheduled traffic | Opens and closes transmission gates on a timetable that repeats every cycle | [IEEE 802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/), see [the TAS post](/blog/time-aware-shaper) |
 | Cyclic queuing and forwarding | Alternates two or three buffers in synchronised cycles, so each hop takes a fixed time | [IEEE 802.1Qch](https://1.ieee802.org/tsn/802-1qch/), see [the CQF post](/blog/cyclic-queuing-and-forwarding) |
-| Frame preemption | Lets urgent frames interrupt a long frame already on the wire | [IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) and [IEEE 802.3br](https://www.ieee802.org/3/br/), see [the preemption post](/blog/frame-preemption) |
+| Frame preemption | Lets urgent frames interrupt a long frame already on the wire | [IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) and [IEEE 802.3br](https://www.ieee802.org/3/br/), see [the preemption post](/blog/ieee-802-1qbu-frame-preemption) |
 | Frame replication and elimination | Sends copies over disjoint paths and removes the duplicates | [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), see [the FRER post](/blog/frame-replication-and-elimination) |
 
 ### Matching a DetNet flow to a TSN stream
@@ -147,7 +147,7 @@ Figure 1 placed the two efforts in the stack. Figure 4 goes one step further and
 | Network (L3) | Carries DetNet flows over IP or MPLS. The *service sub-layer* replicates, eliminates and reorders packets; the *forwarding sub-layer* uses the reserved resources and explicit routes [4]. Policing and shaping at the ingress keep each flow within its declared rate and also protect ordinary [IT](https://en.wikipedia.org/wiki/Information_technology) traffic from a misbehaving DetNet source [3]. |
 | L3 → L2 | Where a routed path crosses a bridged segment, each DetNet flow becomes a TSN stream. The bridge recognises it by destination MAC address, VLAN ID and priority, using the stream identification functions of [802.1CB](https://1.ieee802.org/tsn/802-1cb/) [3]. |
 | Data link (L2) | Provides the queuing, shaping, scheduling, preemption and replication mechanisms that actually bound delay on each hop (see the [TSN toolbox](/blog/tsn-toolbox)) [3]. |
-| Physical (L1) | The physical link. The only change is the MAC Merge sublayer of [802.3br](https://www.ieee802.org/3/br/), which lets urgent frames interrupt long ones (see [frame preemption](/blog/frame-preemption)). |
+| Physical (L1) | The physical link. The only change is the MAC Merge sublayer of [802.3br](https://www.ieee802.org/3/br/), which lets urgent frames interrupt long ones (see [frame preemption](/blog/ieee-802-1qbu-frame-preemption)). |
 | Under every layer | A shared time base at every node, with accuracy from nanoseconds to microseconds [3]. |
 
 In other words, the TSN algorithms for queuing, shaping and scheduling are not tied to Ethernet. DetNet reuses them at Layer 3 to deliver IP packets with the same guarantees, and hands traffic to TSN hardware where it exists [3]. How traffic-engineering protocols turn a DetNet flow specification into those TSN settings is explained under "Traffic engineering" in section 5.

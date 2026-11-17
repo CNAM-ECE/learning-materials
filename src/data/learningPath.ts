@@ -22,14 +22,15 @@ export const learningPath: LearningPathTopic[] = [
   {
     label: 'Deterministic networks',
     sections: [
-      {label: 'Motivation', posts: ['why-deterministic-guarantees']},
+      {label: 'Overview', posts: ['why-deterministic-guarantees']},
       {label: 'Architecture', posts: ['deterministic-networking']},
     ],
   },
   {
     label: 'Network calculus',
     sections: [
-      {label: 'Foundations', posts: ['min-plus-algebra', 'arrival-curves', 'service-curves']},
+      {label: 'Overview', posts: ['min-plus-algebra']},
+      {label: 'Curves', posts: ['arrival-curves', 'service-curves']},
       {
         label: 'Bounds',
         posts: [
@@ -45,9 +46,10 @@ export const learningPath: LearningPathTopic[] = [
     label: 'IEEE 802.1',
     sections: [
       {
-        label: 'Organisation and process',
-        posts: ['ieee-802-1-tsn-task-group', 'ieee-standards-amendments-revisions'],
+        label: 'Overview',
+        posts: ['ieee-802-1-tsn-task-group'],
       },
+      {label: 'Standards process', posts: ['ieee-standards-amendments-revisions']},
       {label: 'Bridge architecture', posts: ['ieee-802-1q-bridge']},
       {
         label: 'Active topology control',
@@ -63,7 +65,7 @@ export const learningPath: LearningPathTopic[] = [
   },
   {
     label: 'IETF',
-    sections: [{label: 'Deterministic networking', posts: ['ietf-detnet']}],
+    sections: [{label: 'Overview', posts: ['ietf-detnet']}],
   },
   {
     label: 'TSN',
@@ -94,7 +96,7 @@ export const learningPath: LearningPathTopic[] = [
   {
     label: 'TSN profiles',
     sections: [
-      {label: 'Audio and video', posts: ['ieee-802-1ba-avb-profile']},
+      {label: 'Overview', posts: ['ieee-802-1ba-avb-profile']},
       {label: 'Mobile fronthaul', posts: ['ieee-802-1cm-fronthaul-profile']},
       {label: 'Industrial automation', posts: ['iec-ieee-60802-industrial-profile']},
       {label: 'Automotive', posts: ['ieee-802-1dg-automotive-profile']},
@@ -103,7 +105,7 @@ export const learningPath: LearningPathTopic[] = [
   {
     label: 'SDN',
     sections: [
-      {label: 'Centralised configuration', posts: ['sdn-and-tsn-configuration']},
+      {label: 'Overview', posts: ['sdn-and-tsn-configuration']},
       {label: 'Reconfiguration', posts: ['dynamic-reconfiguration-of-tsn']},
     ],
   },

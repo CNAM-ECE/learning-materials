@@ -7,7 +7,7 @@ tags: [standard, presentation, ieee-802-1, tsn]
 description: Where IEEE 802.1 sits in the protocol stack, how the TSN task group grew out of Audio Video Bridging, how its standards are named, grouped and developed, and which ones are published today.
 ---
 
-import {Ieee802PlacementFigure, AvbToTsnFigure, StandardsProcessFigure} from '@site/src/components/figures/ieee8021';
+import {Ieee802PlacementFigure, AvbToTsnFigure} from '@site/src/components/figures/ieee8021';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
 
@@ -57,6 +57,8 @@ The naming rules explain most of what looks arbitrary [1]:
 - Amendments are periodically merged into a **revision** of the base standard. 802.1Qbv and [802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/), for instance, became part of 802.1Q-2018, so their text now lives in clauses of 802.1Q.
 - A designation **without a year** means the latest revision.
 
+How amendments are merged into new editions, and how a standard is maintained and retired, is the subject of [the post on base standards, amendments and revisions](/blog/ieee-standards-amendments-revisions).
+
 In practice, 802.1Q is many standards integrated into one document. A useful way into it is to read clauses 6 to 9 for the bridge architecture, then the clause titled "Principles of …" for the feature of interest [1].
 
 ## 4. Three tiers of documents
@@ -89,7 +91,10 @@ The profile standards listed by the task group today are [3]:
 
 ## 5. How a standard is made
 
-<StandardsProcessFigure />
+<SourceFigure
+  id="overview2018-process"
+  caption="Figure 4. The path of an IEEE 802.1 project from authorisation to publication. Each ballot can repeat until no new comments remain; recirculation ballots are open only on the changes."
+/>
 
 A project starts with a Project Authorization Request (PAR), judged against the Criteria for Standards Development (CSD). Once the New Standards Committee approves it, the draft passes through three levels of ballot (task group, working group and sponsor) before the Standards Review Committee approves publication [1][2]. Technical decisions need a 75 % majority. The process rests on five principles: due process, consensus, openness, balance between interested parties, and a right of appeal [1].
 

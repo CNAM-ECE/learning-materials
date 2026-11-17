@@ -32,6 +32,7 @@ export const learningPath: LearningPathTopic[] = [
     label: 'IEEE 802.1',
     posts: [
       'ieee-802-1-tsn-task-group',
+      'ieee-standards-amendments-revisions',
       'ieee-802-1q-bridge',
       'rstp-rapid-spanning-tree',
       'mstp-multiple-spanning-tree',

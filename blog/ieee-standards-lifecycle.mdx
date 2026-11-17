@@ -1,0 +1,148 @@
+---
+slug: ieee-standards-amendments-revisions
+title: "How IEEE 802.1 standards grow: base standards, amendments, revisions and families"
+date: 2026-11-17
+authors: [trang]
+tags: [standard, ieee-802-1, presentation]
+description: How an IEEE 802.1 standard is born from a PAR, changed by amendments and corrigenda, rolled up into a new edition by a revision, and retired. The history of 802.1Q edition by edition, how standards are grouped into families, and how to read and cite them.
+---
+
+import {DotQHistoryFigure, StandardLifecycleFigure} from '@site/src/components/figures/lifecycle';
+import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+Papers on TSN cite "802.1Qbv-2015", "802.1Q-2018" and "802.1Q-2022" for what looks like the same mechanism. They are not contradictory: the mechanism was written as an amendment, then merged into a new edition of the base standard, which was later revised again. This post explains how IEEE 802.1 documents are created, changed, merged and grouped, using 802.1Q as the running example.
+
+{/* truncate */}
+
+<StandardLifecycleFigure caption="Figure 1. The life of an IEEE standard. A PAR starts a new base standard. While it is active, amendments add or change content and corrigenda fix errors. A revision rolls them all into a new edition, which supersedes the old one. A standard not revised within 10 years becomes inactive." />
+
+<Abbreviations terms={['IEEE', 'PAR', 'CSD', 'NesCom', 'RevCom', 'SASB', 'LMSC', 'WG', 'TG', 'TAG', 'Cor', 'TSN', 'MSTP', 'MRP', 'CBS', 'SRP', 'SPB', 'TAS', 'CQF', 'PSFP', 'ATS', 'YANG', 'IEC']} />
+
+## 1. Definition: three kinds of projects
+
+IEEE 802.1 works on three kinds of standards projects [1][2]:
+
+| Kind | What it is | How it is named | Example |
+| --- | --- | --- | --- |
+| **Base standard** | A stand-alone document | Upper-case letters after "802.1" (the rule since about 2003) | [802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) (bridging), 802.1AS (timing), 802.1CB (redundancy) |
+| **Amendment** | A change to a base standard; only the amendment's changes are open to ballot comments | Lower-case letters added to the name of the base standard | [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) (scheduled traffic), 802.1ASdm (hot standby), 802.1CBdb (extended stream identification) |
+| **Revision** | A new edition of a base standard; the whole document may be open to comments | The base name followed by "-Rev" while in progress, then by the year | 802.1Q-Rev, a roll-up; 802.1AS-Rev, in which the entire document was open |
+
+Two more conventions complete the picture [1]:
+
+- A **corrigendum** ("Cor") fixes errors or ambiguities only and may not add material, for example 802.1Q-2014/Cor 1-2015.
+- A leading **P** marks a project that is still a draft: P802.1Q is the revision now in progress, 802.1Q-2022 the published edition.
+
+When a revision is used only to **roll up** amendments into a new edition, its scope forbids adding features [2]. New functions arrive through amendments; the roll-up gathers them into one document.
+
+## 2. Who writes them
+
+<SourceFigure
+  id="overview2018-ieee-sa"
+  caption="Figure 2. Where IEEE 802 sits in the IEEE Standards Association: the Standards Board and its committees (NesCom approves new projects, RevCom approves finished standards) above the standards committees, of which IEEE 802 is one, formed by the Computer Society."
+/>
+
+IEEE 802, the LAN/MAN Standards Committee, is one of the standards committees of the IEEE Computer Society. Its **working groups** each own an area: 802.1 bridging and architecture, 802.3 Ethernet, 802.11 wireless LANs [1]. Inside a working group, **task groups** focus on one subject, as the TSN task group does for time-sensitive networking [1]. The terms used along the way [1]:
+
+| Term | Meaning |
+| --- | --- |
+| PAR, Project Authorization Request | The document that authorises work on a project |
+| CSD, Criteria for Standards Development | The basis for deciding whether to forward a PAR |
+| WG, Working Group | Responsible for developing the standards of one area |
+| TG, Task Group (or task force) | Part of a working group, focused on one subject |
+| TAG, Technical Advisory Group | Experts on a topic that crosses working groups; may write a recommended practice |
+
+## 3. From idea to published standard
+
+<SourceFigure
+  id="pannell2020-stages"
+  caption="Figure 3. The stages of an IEEE 802.1 project, as the 802.1DG editor summarised them."
+/>
+
+<SourceFigure
+  id="overview2018-process"
+  caption="Figure 4. The development process in more detail. Each ballot can repeat (the loops i to m) until no new comments remain; recirculation ballots are open only on the changes since the previous round."
+/>
+
+The stages, in the words of an 802.1 editor [2]:
+
+1. **Ideas and presentations.** Anyone may bring a problem within the scope of 802.1; the proposers must show there is a need and a market.
+2. **PAR.** Enough 802.1 voters must support it, and the IEEE approves it (through NesCom).
+3. **Task group ballots.** Requirements are collected and solutions worked out. Anyone can comment and vote.
+4. **Working group ballots.** The solutions are validated. Anyone can comment and every comment is answered, but only 802.1 voters' votes count.
+5. **Standards Association (sponsor) ballots.** The last step, checking that all IEEE procedures were followed. Anyone can join the ballot pool.
+6. **Approval and publication**, after RevCom has reviewed the process.
+
+At each level a first ballot covers the whole document, and recirculations cover only the changes [3]. Technical decisions need agreement of at least 75 %. The process rests on due process, consensus, openness, balance between interested parties, and a right of appeal [3].
+
+## 4. How amendments merge into editions
+
+The IEEE 802.1 introduction to newcomers puts it in one sentence: periodically the amendments get merged into a revision of the main standard [1]. 802.1Q shows how this plays out over 25 years.
+
+<DotQHistoryFigure caption="Figure 5. The editions of IEEE 802.1Q. Each row shows an edition and the amendments and corrigenda approved before the next edition, which rolled them into its text. Where an IEEE SA page lists an amendment against an older edition than the one it was merged from, the row follows the approval dates." />
+
+Reading the figure:
+
+- **Each TSN mechanism entered 802.1Q twice.** First as an amendment (802.1Qbv-2015, 802.1Qbu-2016, 802.1Qci-2017), then as clauses of the next edition, 802.1Q-2018. A paper citing "802.1Q-2018" for scheduled traffic and one citing "802.1Qbv-2015" mean the same text.
+- **A whole standard can be absorbed.** 802.1Q-2014 superseded not only 802.1Q-2011 but also **802.1D-2004**, the separate standard for MAC bridges, whose content it took over [4].
+- **The cycle never stops.** 802.1Q-2022 is the active edition. It already has six amendments (2023 to 2025) and three amendment projects, and a revision PAR approved on 5 June 2023 will supersede it [4].
+
+Other base standards follow the same pattern. [802.1AS](/blog/ieee-802-1as-time-synchronization) went from 802.1AS-2011 to 802.1AS-2020, a revision in which the whole document was open, and has since had amendments such as 802.1ASdm (hot standby) and a further revision [2][5]. 802.1CB-2017 was amended by 802.1CBdb-2021 and is being revised [5].
+
+Because 802.1Q gathers so many former amendments, it can be considered many individual standards integrated into a single document. The introduction suggests a reading order [1]:
+
+- clauses 6 to 9 for the general bridge architecture;
+- the clause titled "Principles of …" for an unfamiliar area;
+- clause 5, Conformance, to find the requirements of a given device.
+
+## 5. Status and maintenance
+
+Every approved IEEE standard has a **10-year life cycle** [6]:
+
+| Status | Meaning |
+| --- | --- |
+| Active | Being maintained |
+| Superseded | Replaced by a revised edition, or by a compilation of the standard with all its amendments, corrigenda and errata |
+| Inactive-reserved | Removed from active status because no revision was completed within 10 years |
+| Inactive-withdrawn | Removed from active status by a ballot of the balloting group |
+
+An active standard must go through a revision at least every 10 years to stay active [6]. Amendments and corrigenda change its content but do not reset that clock: only a revision does [6]. This is one reason why base standards such as 802.1Q are revised regularly even when no single amendment requires it.
+
+## 6. How standards are grouped
+
+The word "group" means several things in IEEE 802.1:
+
+- **By working group.** The number after "802." names the working group that owns a standard: 802.1 for bridging and architecture, 802.3 for Ethernet [1]. Frame preemption, for example, needed one standard from each: [802.3br](/blog/ieee-802-3br-interspersing-express-traffic) and [802.1Qbu](/blog/ieee-802-1qbu-frame-preemption).
+- **By base standard.** A base standard, its amendments and its corrigenda form one family until the next revision merges them. The letters after the base name show the family: 802.1Qcc belongs to 802.1Q, 802.1CBdb to 802.1CB.
+- **By role in TSN.** The TSN task group sorts its documents into three tiers.
+
+<SourceFigure
+  id="overview2018-grouping"
+  caption="Figure 6. The three tiers of TSN standards and projects: base technology (the tools), configuration (YANG models and configuration protocols), and profiles (selections of tools for one application)."
+/>
+
+1. **Base technology:** the tools themselves, for example 802.1AS, 802.1Qbv and 802.1CB.
+2. **Configuration:** how the tools are set up, for example 802.1Qcc and the YANG models 802.1Qcp and 802.1Qcw.
+3. **Profiles:** documents that select and constrain the tools for one application, for example [802.1BA](/blog/ieee-802-1ba-avb-profile), [802.1CM](/blog/ieee-802-1cm-fronthaul-profile) and [IEC/IEEE 60802](/blog/iec-ieee-60802-industrial-profile).
+
+A profile may make an optional feature mandatory but may not create new features or protocols. A gap found while writing a profile becomes an amendment to a base standard [2]. In the other direction, mechanisms that change how a bridge forwards frames are written as amendments to 802.1Q, while functions also used outside the bridge, such as time synchronisation (802.1AS) or frame replication (802.1CB), are separate base standards.
+
+Some standards are written jointly with another body and carry both logos. IEC/IEEE 60802 is a joint IEC SC65C/WG18 and IEEE 802 project that produces one dual-logo standard [7].
+
+## 7. How to cite a standard
+
+- **Cite with a year for a specific text:** "IEEE Std 802.1Q-2022". A designation without a year means the latest edition [1].
+- **Cite the amendment for history, the edition for the text:** "introduced by 802.1Qbv-2015, now specified in 802.1Q-2022".
+- **Check the status first.** An IEEE SA page states whether a standard is active, superseded or inactive, and lists its amendments and the edition that superseded it, as used for Figure 5.
+- **Free access.** IEEE 802 standards become free to download through the [IEEE GET Program](https://standards.ieee.org/products-programs/ieee-get-program/) some months after publication.
+
+## References
+
+1. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 10–16. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+2. D. Pannell, "Status & Content of the IEEE TSN Auto Profile," IEEE Ethernet & IP @ Automotive Technology Day, September 2020, slides 4–6 and 9. [Slides](https://standards.ieee.org/wp-content/uploads/import/documents/other/eipatd-presentations/2020/D1-05-Pannell-Status-and-Content-of-the-IEEE-TSN-Automotive-Profile.pdf)
+3. J. Farkas, "IEEE 802.1 TSN TG Overview," DetNet–TSN workshop, 11 November 2018, slides 3, 5, 7 and 9. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-overview-1118-v01.pdf)
+4. IEEE SA, pages of IEEE 802.1Q-1998, -2005, -2011, -2014, -2018, -2022 and of the P802.1Q revision project. [802.1Q-2014](https://standards.ieee.org/ieee/802.1Q/5801/), [802.1Q-2022](https://standards.ieee.org/ieee/802.1Q/10323/), [P802.1Q](https://standards.ieee.org/ieee/802.1Q/11285/)
+5. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*, list of standards and projects. [Web page](https://1.ieee802.org/tsn/)
+6. IEEE SA, "Maintenance of IEEE Standards FAQs." [Web page](https://standards.ieee.org/faqs/maintenance/)
+7. IEEE 802.1, *IEC/IEEE 60802 TSN Profile for Industrial Automation*, project page. [Web page](https://1.ieee802.org/tsn/iec-ieee-60802/)

@@ -48,6 +48,10 @@ const docs = {
     cite: 'J. Woods, “IEC/IEEE 60802: The Case for the Converged Network in the Factory of the Future,” IEEE SA TSN webinar series, 6 April 2023',
     url: 'https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf',
   },
+  rfc7813: {
+    cite: 'J. Farkas (Ed.), N. Bragg, P. Unbehagen, G. Parsons, P. Ashwood-Smith, C. Bowers, RFC 7813, “IS-IS Path Control and Reservation,” IETF, June 2016',
+    url: 'https://www.rfc-editor.org/rfc/rfc7813',
+  },
   grigorjew: {
     cite: 'A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, “Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial,” arXiv:2610.11999, 2026',
     url: 'https://arxiv.org/abs/2610.11999',
@@ -116,6 +120,11 @@ export const sourceFigures = {
   'iec60802-2023-sync': {doc: 'iec60802', where: 'slide 12', alt: 'Two time domains, global time and working clock, each with a PTP clock and an application clock', width: 480},
   'iec60802-2023-ia-station': {doc: 'iec60802', where: 'slide 13', alt: 'An IA-station: end station components and bridge components sharing one chassis and one management entity'},
   'iec60802-2023-resource-management': {doc: 'iec60802', where: 'slide 19', alt: 'Common resource management: a centralized user and network configuration entity aware of all OT and IT traffic in its domain'},
+  'ieee8021q-tutorial-active-topology': {doc: 'tutorial', where: 'slide 26', alt: 'Five bridges controlled by RSTP (one shared tree), MSTP (one tree per group of VLANs) and SPB (one shortest path tree per bridge)'},
+  'ieee8021q-tutorial-spb-spt': {doc: 'tutorial', where: 'slide 31', alt: 'Shortest path trees of bridges A and C over four SPT bridges running ISIS-SPB', width: 520},
+  'ieee8021q-tutorial-spb-load': {doc: 'tutorial', where: 'slide 32', alt: 'Two equal-cost shortest path tree options for bridge A in a five-bridge network', width: 480},
+  'ieee8021q-tutorial-srp-example': {doc: 'tutorial', where: 'slide 53', alt: 'A talker advertise propagating through bridges to listeners, with the accumulated latency increased at each bridge, and listener ready messages returning'},
+  'rfc7813-fig2': {doc: 'rfc7813', where: 'Figure 2', edit: 'ASCII figure rendered from the RFC text, otherwise unchanged', alt: 'ASCII figure of a strict explicit tree over nine bridges A to I, and its description as a list of hops starting at root A', width: 360},
   'grigorjew2026-fig1': {doc: 'grigorjew', where: 'Fig. 1', alt: 'Use cases for decentralised latency models: fully decentralised reservation, reservation between CNC domains, reshaping after FRER merging'},
   'grigorjew2026-fig4': {doc: 'grigorjew', where: 'Fig. 4', alt: 'Switch delay model: propagation, store and forward, processing, shaper queuing and priority queuing', width: 520},
   'grigorjew2026-fig5': {doc: 'grigorjew', where: 'Fig. 5', alt: 'Delay segments between shapers of consecutive switches'},

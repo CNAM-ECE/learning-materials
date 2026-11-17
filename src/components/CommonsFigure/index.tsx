@@ -7,9 +7,10 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
  * the image is always complete and always the same wherever it is used.
  */
 
-type License = 'CC BY-SA 3.0' | 'CC BY-SA 4.0' | 'CC0' | 'Public domain';
+type License = 'CC BY 3.0' | 'CC BY-SA 3.0' | 'CC BY-SA 4.0' | 'CC0' | 'Public domain';
 
 const licenseUrl: Record<License, string> = {
+  'CC BY 3.0': 'https://creativecommons.org/licenses/by/3.0/',
   'CC BY-SA 3.0': 'https://creativecommons.org/licenses/by-sa/3.0/',
   'CC BY-SA 4.0': 'https://creativecommons.org/licenses/by-sa/4.0/',
   CC0: 'https://creativecommons.org/publicdomain/zero/1.0/',
@@ -30,6 +31,16 @@ type CommonsImage = {
   changes?: string;
   /** Maximum displayed width in pixels. */
   width?: number;
+};
+
+const stpArticle = {
+  title: 'Spanning Tree Protocol',
+  url: 'https://en.wikipedia.org/wiki/Spanning_Tree_Protocol',
+};
+
+const spbArticle = {
+  title: 'IEEE 802.1aq',
+  url: 'https://en.wikipedia.org/wiki/IEEE_802.1aq',
 };
 
 const tsnArticle = {
@@ -184,6 +195,46 @@ export const commonsImages = {
     article: {title: 'Network calculus', url: 'https://en.wikipedia.org/wiki/Network_calculus'},
     alt: 'Two servers in sequence: input A enters the first server, its output X enters the second, whose output is D',
     width: 560,
+  },
+  'stp-2': {
+    path: 'stp-2.svg', commons: 'Spanning tree protocol at work 2.svg', author: 'GhosT', license: 'CC BY 3.0',
+    article: stpArticle, width: 420,
+    alt: 'A bridged network of seven bridges and six LAN segments, with bridge 3 elected root bridge',
+  },
+  'stp-4': {
+    path: 'stp-4.svg', commons: 'Spanning tree protocol at work 4.svg', author: 'GhosT', license: 'CC BY 3.0',
+    article: stpArticle, width: 420,
+    alt: 'The same network after root and designated ports are chosen; the ports that would close loops are blocked',
+  },
+  'stp-5': {
+    path: 'stp-5.svg', commons: 'Spanning tree protocol at work 5.svg', author: 'GhosT', license: 'CC BY 3.0',
+    article: stpArticle, width: 420,
+    alt: 'A failed link between bridge 24 and segment c',
+  },
+  'stp-6': {
+    path: 'stp-6.svg', commons: 'Spanning tree protocol at work 6.svg', author: 'GhosT', license: 'CC BY 3.0',
+    article: stpArticle, width: 420,
+    alt: 'The spanning tree rebuilt after the failure, with a previously blocked port now forwarding',
+  },
+  'spb-example': {
+    path: 'spb-example.gif', commons: '802d1aq Wiki Example.gif', author: 'Peterashwoodsmith', license: 'Public domain',
+    article: spbArticle, width: 520,
+    alt: 'An example SPB network of eight nodes: a fully meshed core of four nodes and four dual-homed outer nodes, with interface numbers',
+  },
+  'spb-ecmp-paths': {
+    path: 'spb-ecmp-paths.png', commons: '802d1aq Wiki Example3.png', author: 'Peterashwoodsmith', license: 'Public domain',
+    article: spbArticle, width: 520,
+    alt: 'Two equal-cost paths from node 7 to node 5: the low path ID path on VID 101 and the high path ID path on VID 102',
+  },
+  'spb-ecmt': {
+    path: 'spb-ecmt.png', commons: '802d1aq Wiki Example 4.png', author: 'Peterashwoodsmith', license: 'Public domain',
+    article: spbArticle, width: 520,
+    alt: 'Three equal-cost trees between nodes 7 and 5 produced by three tie-breaking algorithms, each on its own VID',
+  },
+  'spb-ecmp-anim': {
+    path: 'spb-ecmp-anim.gif', commons: '802d1aqECMP (cropped).gif', author: 'Peterashwoodsmith', license: 'Public domain',
+    article: spbArticle, width: 420,
+    alt: 'Animation of eight equal-cost tree algorithms between a source and a destination in a larger SPB network',
   },
 } satisfies Record<string, CommonsImage>;
 

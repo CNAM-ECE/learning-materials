@@ -10,6 +10,7 @@ description: Shortest Path Bridging replaces the shared spanning tree with one s
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Spanning trees avoid loops by switching links off. Shortest Path Bridging (SPB) avoids loops differently: every bridge computes its own shortest path tree from a shared view of the network, so all links can be used. It brings to Ethernet the link-state routing that IP networks have long used.
 
@@ -19,6 +20,8 @@ Spanning trees avoid loops by switching links off. Shortest Path Bridging (SPB) 
   highlight={['control']}
   caption="Figure 1. Where SPB acts: in the control plane, where IS-IS replaces the spanning tree protocols. The data plane still forwards on destination MAC address and VLAN ID, using the filtering entries SPB computes."
 />
+
+<Abbreviations terms={["IEEE", "RFC", "MAC", "VLAN", "VID", "IP", "STP", "RSTP", "MSTP", "SPB", "SPT", "SPBV", "SPBM", "ECT", "IS-IS", "MPLS"]} />
 
 ## 1. Definition
 

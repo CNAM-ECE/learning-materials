@@ -84,7 +84,7 @@ export function BridgeIntegrationFigure({highlight, caption}: BridgeProps): Reac
         </Txt>
       </a>
 
-      <Box x={x0} y={40} w={648} h={44} lines={['Control plane', 'SRP (Qat) · TSN configuration (Qcc) · path control (Qca)']} title size={12} tone={tone('control', 'arrival')} />
+      <Box x={x0} y={40} w={648} h={44} lines={['Control plane', 'SRP (Qat), TSN configuration (Qcc), path control (Qca)']} title size={12} tone={tone('control', 'arrival')} />
 
       <Txt x={x0} y={118} size={11.5} italic anchor="start">frame in</Txt>
       <Txt x={x0 + 648} y={118} size={11.5} italic anchor="end">frame out</Txt>
@@ -122,9 +122,9 @@ export function ToolboxFigure(): ReactNode {
         </>
       }>
       <Box x={10} y={10} w={340} h={96} lines={['Time synchronisation', 'gPTP (802.1AS), a profile of IEEE 1588']} title size={12} tone="service" />
-      <Box x={370} y={10} w={340} h={96} lines={['Ultra reliability', 'FRER (CB) · path control (Qca) · PSFP (Qci)']} title size={12} />
-      <Box x={10} y={222} w={340} h={96} lines={['Bounded low latency', 'CBS (Qav) · TAS (Qbv) · preemption (Qbu, 802.3br)', 'CQF (Qch) · ATS (Qcr)']} title size={12} />
-      <Box x={370} y={222} w={340} h={96} lines={['Dedicated resources and API', 'SRP (Qat) · TSN configuration (Qcc)', 'YANG models (Qcp, …) · LRP (CS)']} title size={12} tone="arrival" />
+      <Box x={370} y={10} w={340} h={96} lines={['Ultra reliability', 'FRER (CB), path control (Qca), PSFP (Qci)']} title size={12} />
+      <Box x={10} y={222} w={340} h={96} lines={['Bounded low latency', 'CBS (Qav), TAS (Qbv), preemption (Qbu, 802.3br)', 'CQF (Qch), ATS (Qcr)']} title size={12} />
+      <Box x={370} y={222} w={340} h={96} lines={['Dedicated resources and API', 'SRP (Qat), TSN configuration (Qcc)', 'YANG models (Qcp, …), LRP (CS)']} title size={12} tone="arrival" />
 
       {goals.map(([x, name]) => (
         <Box key={name} x={x} y={146} w={220} h={36} lines={[name]} title size={12.5} tone="muted" />

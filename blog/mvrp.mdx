@@ -10,6 +10,7 @@ description: The Multiple Registration Protocol is the registration framework of
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {MrpFigure} from '@site/src/components/figures/bridging';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Once [RSTP, MSTP](/blog/rstp-rapid-spanning-tree) or [SPB](/blog/ieee-802-1aq-shortest-path-bridging) has fixed the active topology, a bridge still needs to know where the members of each VLAN are, so that it does not flood VLAN traffic everywhere. The Multiple VLAN Registration Protocol (MVRP) learns this automatically. It is one application of a general framework, the Multiple Registration Protocol (MRP), which also carries [stream reservations](/blog/ieee-802-1qat-srp).
 
@@ -19,6 +20,8 @@ Once [RSTP, MSTP](/blog/rstp-rapid-spanning-tree) or [SPB](/blog/ieee-802-1aq-sh
   highlight={['control']}
   caption="Figure 1. Where MRP and MVRP act: in the control plane of each bridge. What they register becomes dynamic entries of the filtering database used by the relay."
 />
+
+<Abbreviations terms={["IEEE", "LAN", "MAC", "VLAN", "IP", "TSN", "AVB", "SRP", "MSRP", "RSTP", "MSTP", "SPB", "IS-IS", "MRP", "MVRP", "MMRP", "GARP", "MAD", "MAP"]} />
 
 ## 1. Definition
 

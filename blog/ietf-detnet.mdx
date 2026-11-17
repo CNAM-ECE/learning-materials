@@ -7,24 +7,19 @@ tags: [standard, deterministic-networking, detnet, tsn]
 description: The charter of the IETF Deterministic Networking working group and the architecture of RFC 8655, including sub-layers, node types, planes, and how a DetNet flow crosses a TSN sub-network.
 ---
 
-import {
-  DetnetNetworkFigure,
-  DetnetStackFigure,
-  DetnetPlanesFigure,
-  DetnetOverTsnFigure,
-} from '@site/src/components/figures/detnet';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [TSN](https://1.ieee802.org/tsn/) makes a bridged network deterministic. The [IETF](https://www.ietf.org/) Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
 
 {/* truncate */}
 
-<DetnetNetworkFigure />
-
 <SourceFigure
   id="rfc8655-fig3"
-  caption="Figure 1b. The original Figure 3 of RFC 8655, from which Figure 1 is redrawn: end systems, edge, transit and relay nodes, and TSN sub-networks along one DetNet path."
+  caption="Figure 1. A simple DetNet-enabled network, Figure 3 of RFC 8655: end systems, edge, transit and relay nodes, and TSN sub-networks along one DetNet path."
 />
+
+<Abbreviations terms={["IEEE", "IETF", "RFC", "MAC", "VLAN", "IP", "UDP", "TSN", "YANG", "DetNet", "CPF", "MPLS", "MPLS-TE", "PW", "GRE", "OAM"]} />
 
 ## 1. Definition
 
@@ -55,7 +50,10 @@ The last item explains the shape of the architecture: DetNet composes existing I
 
 ## 3. Two sub-layers
 
-<DetnetStackFigure />
+<SourceFigure
+  id="rfc8655-fig2"
+  caption="Figure 2. Figure 2 of RFC 8655: the DetNet data-plane protocol stack, with the functions of the service and forwarding sub-layers on the sending and receiving side."
+/>
 
 The data plane is described as two sub-layers above the existing lower layers [2].
 
@@ -65,13 +63,8 @@ The data plane is described as two sub-layers above the existing lower layers [2
 These map directly onto the three techniques described in [the deterministic networking post](/blog/deterministic-networking). The model is conceptual: not every sub-layer is needed in every network, and the RFC states that the separation is not a formal requirement [2].
 
 <SourceFigure
-  id="rfc8655-fig2"
-  caption="Figure 2b. The original Figure 2 of RFC 8655: the DetNet data-plane protocol stack, with the functions of the service and forwarding sub-layers on the sending and receiving side."
-/>
-
-<SourceFigure
   id="rfc8655-fig4"
-  caption="Figure 2c. The original Figure 4 of RFC 8655: the service sub-layer can be carried by PW, UDP or GRE, and the forwarding sub-layer by IPv6, IPv4, MPLS TE LSPs or MPLS segment routing."
+  caption="Figure 2b. DetNet adaptation to the data plane, Figure 4 of RFC 8655: the service sub-layer can be carried by PW, UDP or GRE, and the forwarding sub-layer by IPv6, IPv4, MPLS TE LSPs or MPLS segment routing."
 />
 
 ## 4. Node types
@@ -89,7 +82,10 @@ Two horizontal relations appear in the figure: the *end-to-end service* between 
 
 ## 5. Three planes
 
-<DetnetPlanesFigure />
+<SourceFigure
+  id="rfc8655-fig7"
+  caption="Figure 3. The DetNet planes, Figure 7 of RFC 8655: the northbound interface between end systems and controller plane functions (CPF), and the southbound interface between the CPF and DetNet nodes."
+/>
 
 RFC 8655 separates three planes [2]:
 
@@ -99,14 +95,12 @@ RFC 8655 separates three planes [2]:
 
 This is the same separation that makes centralised [admission control](https://en.wikipedia.org/wiki/Admission_control) possible. A controller that receives a flow request through the northbound interface must decide whether the flow can be admitted without breaking existing guarantees before it writes anything through the southbound interface. That decision is the problem studied in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
 
-<SourceFigure
-  id="rfc8655-fig7"
-  caption="Figure 3b. The original Figure 7 of RFC 8655: the northbound interface between end systems and controller plane functions (CPF), and the southbound interface between the CPF and DetNet nodes."
-/>
-
 ## 6. Crossing a TSN sub-network
 
-<DetnetOverTsnFigure />
+<SourceFigure
+  id="rfc8655-fig10"
+  caption="Figure 4. Figure 10 of RFC 8655: DetNet IP nodes interconnected by an Ethernet domain, with the IP and Ethernet flow identifiers used at each stage."
+/>
 
 When DetNet nodes are interconnected by a TSN network, the DetNet flow has to be mapped to a TSN Stream [2]. In Figure 4 the first IP node adds a Layer 2 flow identifier, and the [bridges](https://en.wikipedia.org/wiki/Network_bridge) forward on that identifier alone. Each domain uses an identifier that is unique within that domain, either derived from the application flow or assigned by the domain.
 
@@ -120,11 +114,6 @@ The vocabulary changes at the boundary, although the concepts do not [2]:
 | Listener | Destination |
 | Stream | Flow |
 | Relay system (bridge) | Intermediate node |
-
-<SourceFigure
-  id="rfc8655-fig10"
-  caption="Figure 4b. The original Figure 10 of RFC 8655: DetNet IP nodes interconnected by an Ethernet domain, with the IP and Ethernet flow identifiers used at each stage."
-/>
 
 ## 7. Current work
 

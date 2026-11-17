@@ -7,23 +7,18 @@ tags: [standard, presentation, tsn, tas, ieee-802-1]
 description: The basic terms of Time-Sensitive Networking and its four groups of tools (time synchronisation, bounded latency, reliability and resource management), each shown at the place where it extends an IEEE 802.1Q bridge.
 ---
 
-import {
-  BridgeIntegrationFigure,
-  ToolboxFigure,
-  ScheduledTrafficFigure,
-  PreemptionFigure,
-  PerStreamFigure,
-  CyclicQueuingFigure,
-  ConfigurationFigure,
-} from '@site/src/components/figures/tsn';
+import {BridgeIntegrationFigure, ToolboxFigure, ScheduledTrafficFigure, PreemptionFigure, PerStreamFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) is a set of [IEEE 802.1](https://1.ieee802.org/) standards for time-sensitive transmission over [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet [bridge](https://en.wikipedia.org/wiki/Network_bridge) does this tool change?
 
 {/* truncate */}
 
 <BridgeIntegrationFigure />
+
+<Abbreviations terms={["IEEE", "MAC", "IP", "gPTP", "TSN", "AVB", "CQF", "ATS", "PSFP", "FRER", "CNC", "YANG", "NETCONF", "RESTCONF", "SDN", "IS-IS", "DetNet"]} />
 
 ## 1. Definition
 
@@ -176,7 +171,10 @@ The Stream Reservation Protocol performs distributed [admission control](https:/
 
 ### TSN configuration: 802.1Qcc
 
-<ConfigurationFigure />
+<SourceFigure
+  id="farkas2018-configuration"
+  caption="Figure 8. The three configuration models of 802.1Qcc: fully distributed, centralized network and distributed user, and fully centralized."
+/>
 
 *In depth: [the SDN post](/blog/sdn-and-tsn-configuration).*
 
@@ -187,11 +185,6 @@ The Stream Reservation Protocol performs distributed [admission control](https:/
 - **fully centralised**: a Centralized User Configuration entity collects the requirements of the end stations and passes them to a Centralized Network Configuration entity.
 
 The CNC has a view of the whole network, performs reservation and scheduling centrally, and configures bridges through [NETCONF](https://www.rfc-editor.org/rfc/rfc6241) or [RESTCONF](https://www.rfc-editor.org/rfc/rfc8040) with [YANG](https://www.rfc-editor.org/rfc/rfc7950) data models [2]. This is the architecture assumed by most work on online reconfiguration, including [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn): the CNC is the place where an admission test must run.
-
-<SourceFigure
-  id="farkas2018-configuration"
-  caption="Figure 8b. The three configuration models of 802.1Qcc on the original slide: fully distributed, centralized network and distributed user, and fully centralized."
-/>
 
 ## 7. Summary
 

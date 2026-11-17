@@ -10,6 +10,7 @@ description: How the Stream Reservation Protocol registers a stream, reserves re
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 The Stream Reservation Protocol (SRP) was AVB's answer to congestion loss: a stream is admitted only if every bridge on its path can carry it. This post covers the protocol itself. [The stream reservation post](/blog/stream-reservation) places SRP among later reservation approaches and derives the latency bound that each bridge has to compute.
 
@@ -19,6 +20,8 @@ The Stream Reservation Protocol (SRP) was AVB's answer to congestion loss: a str
   highlight={['control', 'queuing']}
   caption="Figure 1. Where SRP acts: in the control plane, where it registers streams, and on the queues and shapers it configures for each admitted stream."
 />
+
+<Abbreviations terms={["IEEE", "MAC", "VLAN", "PCP", "gPTP", "TSN", "AVB", "SRP", "MSRP", "MRP", "MVRP", "MMRP"]} />
 
 ## 1. Definition
 

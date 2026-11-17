@@ -7,9 +7,13 @@ tags: [youtube, article, presentation, guide, tsn, sdn, tas, reconfiguration]
 description: A reading of two recent approaches to TSN reconfiguration, SDN-based path migration and resilient Time-Aware Shaper schedules, and the role of network calculus as a certificate.
 ---
 
+import Abbreviations from '@site/src/components/Abbreviations';
+
 The guarantees developed in this series are established for a fixed configuration. This final post examines what happens when the configuration changes at run time, through two recent contributions, and argues that [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is the natural tool to *certify* a reconfiguration, whatever method proposes it.
 
 {/* truncate */}
+
+<Abbreviations terms={["IEEE", "TSN", "SDN"]} />
 
 ## 1. Why reconfigure?
 

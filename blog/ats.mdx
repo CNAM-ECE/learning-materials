@@ -7,9 +7,9 @@ tags: [standard, tsn, ieee-802-1, ats, network-calculus, article]
 description: Asynchronous Traffic Shaping reshapes every stream at every hop with a token bucket and an eligibility time, using only local clocks. Its queue allocation rules, its delay segments, why its bound does not grow with burstiness, and where it beats the other shapers.
 ---
 
-import {BridgeIntegrationFigure, PerStreamFigure} from '@site/src/components/figures/tsn';
-import {DelaySegmentsFigure} from '@site/src/components/figures/standards';
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping ([ATS](https://1.ieee802.org/tsn/802-1qcr/)) avoids both problems: it restores each stream's original traffic contract at every hop, using only the [bridge](https://en.wikipedia.org/wiki/Network_bridge)'s local clock.
 
@@ -20,6 +20,8 @@ Class-based shapers let the bursts of a stream grow from hop to hop, and schedul
   caption="Figure 1. Where ATS acts: per-stream state is selected at the ingress, by the same stream filter as PSFP, and applied in front of shared shaped queues at the egress. It does not touch the time base."
 />
 
+<Abbreviations terms={["IEEE", "ATS", "PSFP", "FRER", "BE"]} />
+
 ## 1. Definition
 
 **Asynchronous Traffic Shaping**, [IEEE 802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/), is based on the urgency-based scheduler of Specht and Samii. Each stream gets its own **[token bucket](https://en.wikipedia.org/wiki/Token_bucket)** at every bridge, with a committed burst size $b$ and a committed rate $r$. A frame becomes **eligible** for transmission at the earliest time its bucket holds enough tokens for it. Strict priority then serves eligible frames [2][3][4].
@@ -29,16 +31,14 @@ Two features distinguish it from plain per-flow shaping:
 - **Shared queues.** Streams share a small number of shaped queues. The shaper state of each frame's stream is applied to the frame at the head of the queue [3].
 - **No synchronisation.** Eligibility times are computed from the local clock. A frame whose eligibility time lies too far in the future, beyond a configured maximum residence time, is discarded [2].
 
-<PerStreamFigure caption="Figure 2. Per-stream processing ahead of the queues. ATS reuses the stream filter and stream gate of PSFP, but instead of a meter that drops it applies a token bucket that delays each frame to its eligibility time." />
-
 <SourceFigure
   id="farkas2018-ats-components"
-  caption="Figure 2b. The ATS components on the original slide: a filter, a gate that sets the internal priority, the ATS shaper, then queuing."
+  caption="Figure 2. The ATS components on the original slide: a filter, a gate that sets the internal priority, the ATS shaper, then queuing."
 />
 
 <SourceFigure
   id="farkas2018-ats"
-  caption="Figure 2c. ATS hop by hop: traffic is reshaped in high- and low-priority shaped queues at every hop, so the pattern after each link stays smooth even when best-effort (BE) traffic shares the link."
+  caption="Figure 2b. ATS hop by hop: traffic is reshaped in high- and low-priority shaped queues at every hop, so the pattern after each link stays smooth even when best-effort (BE) traffic shares the link."
 />
 
 ## 2. Queue allocation rules
@@ -53,7 +53,10 @@ Inside one queue, all frames then come from the same upstream queue, so they arr
 
 ## 3. Delay segments: from shaper to shaper
 
-<DelaySegmentsFigure caption="Figure 3. Shaper-to-shaper delay segments. A segment starts when a frame becomes eligible at the upstream shaper and ends when it becomes eligible at the downstream shaper. The downstream bridge bounds the whole segment." />
+<SourceFigure
+  id="grigorjew2026-fig5"
+  caption="Figure 3. Shaper-to-shaper delay segments, the borders of responsibility for a local bound: each segment runs from the shaper of one switch to the shaper of the next."
+/>
 
 The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) analysis of Specht and Samii. It was proposed for the [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
 
@@ -62,11 +65,6 @@ The choice matters because traffic leaving a token-bucket shaper is known to con
 <SourceFigure
   id="grigorjew2026-fig4"
   caption="Figure 3b. The switch delay model of the tutorial: propagation, store and forward, processing, shaper queuing and priority queuing between the RX and TX ports."
-/>
-
-<SourceFigure
-  id="grigorjew2026-fig5"
-  caption="Figure 3c. The original delay segments, from which Figure 3 is redrawn: each segment runs from the shaper of one switch to the shaper of the next."
 />
 
 ## 4. Why the bound does not cascade

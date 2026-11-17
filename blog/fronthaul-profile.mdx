@@ -9,14 +9,15 @@ description: The TSN profile that carries the link between a radio unit and its 
 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 In a mobile network, the link between a radio unit at the antenna and the equipment that controls it, the fronthaul, used to be a dedicated fibre with a dedicated protocol. IEEE 802.1CM shows how to carry it over ordinary bridged Ethernet, and which TSN features that takes.
 
 {/* truncate */}
 
 <ProfileFigure
-  application={['Mobile fronthaul: radio equipment (RE/eRE) to its controller (REC/eREC)', 'Class 1: CPRI split · Class 2: eCPRI split · synchronisation via ITU-T telecom profiles']}
-  profile={['IEEE 802.1CM: TSN for Fronthaul', 'Profile A: strict priority · Profile B: strict priority + frame preemption']}
+  application={['Mobile fronthaul: radio equipment (RE/eRE) to its controller (REC/eREC)', 'Class 1: CPRI split/ Class 2: eCPRI split in synchronisation via ITU-T telecom profiles']}
+  profile={['IEEE 802.1CM: TSN for Fronthaul', 'Profile A: strict priority/ Profile B: strict priority + frame preemption']}
   picks={['priority', 'pre']}
   caption="Figure 1. The fronthaul profile between its application and the TSN toolbox. Highlighted: the two features its profiles are built on. Synchronisation comes from ITU-T solutions rather than from a TSN tool."
   source={
@@ -25,8 +26,11 @@ In a mobile network, the link between a radio unit at the antenna and the equipm
       <a href="https://www.ieee802.org/1/files/public/docs2018/cm-farkas-overview-0718-v01.pdf">IEEE Std 802.1CM: An Overview</a>,
       IEEE 802.1, July 2018, slides 7–8.
     </>
+
   }
 />
+
+<Abbreviations terms={["CPRI", "eCPRI", "RE", "REC", "eRE", "eREC", "IQ", "PHY-U", "PHY-L", "MEF", "UNI", "ITU-T", "IEEE", "PHY", "VLAN", "TSN"]} />
 
 ## 1. Definition
 
@@ -54,6 +58,21 @@ A radio base station is split into **radio equipment** (RE, or eRE for eCPRI) ne
 />
 
 Where the split is made decides what crosses the fronthaul. In the **CPRI** split, everything above the radio stays at the controller, and the link carries radio samples. In the **eCPRI** split, part of the physical layer (PHY-L) moves to the radio side, which reduces the bandwidth needed. Both are in the scope of 802.1CM; further splits can be added by amendment [2].
+
+### CPRI and eCPRI in brief
+
+**CPRI** (*Common Public Radio Interface*) is the interface that carried most 2G, 3G and 4G fronthaul. It sends **IQ** samples (the *in-phase* and *quadrature* parts of the sampled radio signal) in the time domain, over a dedicated point-to-point fibre, at a constant bit rate. That rate depends only on the sample width, the sample rate and the number of antennas, whether or not any user is active [4]:
+
+| Example | CPRI line rate needed |
+| --- | --- |
+| One 20 MHz LTE carrier, 4 transmit and 4 receive antennas (4T4R) | Option 7: 9.8304 Gbit/s |
+| One 100 MHz carrier, 8 transmit and 8 receive antennas (8T8R) | Option 10: 24.33024 Gbit/s |
+
+Because the rate grows linearly with bandwidth and antenna count, CPRI does not scale to 5G massive MIMO: an industry estimate gives about 157 Gbit/s for 64 antennas on a 100 MHz carrier [4]. CPRI links are also point to point, so they cannot be switched like ordinary Ethernet [4].
+
+**eCPRI** is the packet-based interface of the same cooperation. The specification uses the name without expanding the "e"; it is often read as "enhanced CPRI". It moves the split inside the physical layer, so that the **eRE** (*eCPRI Radio Equipment*) performs the lower physical-layer functions and the link carries frequency-domain IQ symbols or bits instead of time-domain samples. These travel as messages over Ethernet or IP/UDP. In the specification's words, this lowers the data rate between **eREC** (*eCPRI Radio Equipment Control*) and eRE while keeping the eRE simple [3]. With IQ compression, practical 5G fronthaul rates drop to a few tens of Gbit/s, which fit 25 or 50 Gbit/s Ethernet [4].
+
+Being packet traffic, eCPRI can share a switched network with other traffic. That is exactly the situation 802.1CM addresses: it bounds the delay of fronthaul frames in such a network.
 
 ## 3. Ethernet-based fronthaul
 
@@ -100,3 +119,4 @@ The difference is the blocking term of a worst-case analysis. Under Profile A, a
 1. IEEE 802.1, *802.1CM-2018: Time-Sensitive Networking for Fronthaul*, project page; *802.1CMde*. [802.1CM](https://1.ieee802.org/tsn/802-1cm-2018/), [802.1CMde](https://1.ieee802.org/tsn/802-1cmde/)
 2. J. Farkas, "IEEE Std 802.1CM Time-Sensitive Networking for Fronthaul: An Overview," IEEE 802.1, July 2018, slides 3–9. [Slides](https://www.ieee802.org/1/files/public/docs2018/cm-farkas-overview-0718-v01.pdf)
 3. CPRI Cooperation, *eCPRI Specification V1.1* and *Requirements for the eCPRI Transport Network V1.1*, January 2018. [Specification](http://www.cpri.info/downloads/eCPRI_v_1_1_2018_01_10.pdf), [Requirements](http://www.cpri.info/downloads/Requirements_for_the_eCPRI_Transport_Network_V1_1_2018_01_10.pdf)
+4. "5G Fronthaul Interface: eCPRI, CPRI, O-RAN Transport & Bandwidth Optimization," Superb Automation, technical article, June 2026. [Article](https://www.superb-tech.com/technical-articles/5g-fronthaul-interface-ecpri-cpri-o-ran-transport-bandwidth-optimization.html). Industry article, used for the CPRI line rates and bandwidth estimates.

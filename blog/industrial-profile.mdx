@@ -9,14 +9,15 @@ description: The joint IEC and IEEE profile that brings TSN to the factory. Why 
 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Factories have long run their control loops on fieldbuses and proprietary variants of Ethernet. They work, but they cannot share their wires with anything else. IEC/IEEE 60802 is the profile that defines how standard TSN equipment should be selected and configured to replace them.
 
 {/* truncate */}
 
 <ProfileFigure
-  application={['Industrial automation: motion control, line topologies, OT and IT on one network', 'control loops of tens of µs · 64+ hops · global time and working clock']}
-  profile={['IEC/IEEE 60802: TSN Profile for Industrial Automation', 'joint IEC SC65C/WG18 and IEEE 802 · conformance classes A and B']}
+  application={['Industrial automation: motion control, line topologies, OT and IT on one network', 'control loops of tens of µs, 64+ hops, global time and working clock']}
+  profile={['IEC/IEEE 60802: TSN Profile for Industrial Automation', 'joint IEC SC65C/WG18 and IEEE 802, conformance classes A and B']}
   picks={['priority', 'as', 'tas', 'frer', 'qcc']}
   caption="Figure 1. The industrial profile between its application and the TSN toolbox. Highlighted: the tools that the requirements and the overview cited here emphasise (time synchronisation, scheduled traffic, stream redundancy, central configuration). The standard itself gives the complete normative selection."
   source={
@@ -26,8 +27,11 @@ Factories have long run their control loops on fieldbuses and proprietary varian
       IEEE SA TSN webinar, April 2023, and the{' '}
       <a href="https://www.ieee802.org/1/files/public/docs2018/60802-industrial-requirements-0918-v10.pdf">60802 requirements</a>, 2018.
     </>
+
   }
 />
+
+<Abbreviations terms={["IEEE", "IEC", "OT", "IT", "PTP", "TSN", "LLDP"]} />
 
 ## 1. Definition
 

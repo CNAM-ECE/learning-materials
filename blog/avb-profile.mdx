@@ -9,13 +9,14 @@ description: What a TSN profile is, and the first one. How Audio Video Bridging 
 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 The TSN posts so far describe tools. A real network does not use every tool: it uses the subset that its application needs, configured in a particular way. IEEE 802.1 writes such subsets down as **profiles**. Audio Video Bridging (AVB), specified in IEEE 802.1BA, was the first.
 
 {/* truncate */}
 
 <ProfileFigure
-  application={['Audio and video: residential, professional A/V, automotive infotainment', 'synchronous playback · no drops beside best effort · plug and play']}
+  application={['Audio and video: residential, professional A/V, automotive infotainment', 'synchronous playback, no drops beside best effort, plug and play']}
   profile={['IEEE 802.1BA: Audio Video Bridging (AVB) Systems', 'plus IEEE 1722 (transport) and IEEE 1722.1 (discovery and control)']}
   picks={['priority', 'as', 'cbs', 'srp']}
   caption="Figure 1. The AVB profile between its application and the TSN toolbox. Highlighted: the base standards AVB is built on. AVB also needs two transport and control standards from outside IEEE 802.1."
@@ -25,8 +26,11 @@ The TSN posts so far describe tools. A real network does not use every tool: it 
       <a href="https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf">An Introduction to AVB</a>,
       IEEE SA TSN webinar, June 2022, slides 24 and 30.
     </>
+
   }
 />
+
+<Abbreviations terms={["IEEE", "IEC", "PCP", "gPTP", "TSN", "AVB", "SRP"]} />
 
 ## 1. What a profile is
 

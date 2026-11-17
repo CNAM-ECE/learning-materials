@@ -9,13 +9,14 @@ description: The TSN profile for the Ethernet network inside a vehicle. Its scop
 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Cars were among the first users of AVB, for infotainment. Driver assistance and automated driving now put cameras, radars and control traffic on the same in-vehicle Ethernet, with much stricter requirements. IEEE 802.1DG is the profile that defines how TSN should be used there.
 
 {/* truncate */}
 
 <ProfileFigure
-  application={['In-vehicle Ethernet: infotainment, ADAS sensors, control', 'PHYs from 10 Mb/s to 10 Gb/s · security · high availability · bounded latency']}
+  application={['In-vehicle Ethernet: infotainment, ADAS sensors, control', 'PHYs from 10 Mb/s to 10 Gb/s, security, high availability, bounded latency']}
   profile={['IEEE 802.1DG: TSN Profile for Automotive In-Vehicle Ethernet Communications', 'based on IEEE 802.1 TSN and IEEE 802.1 security standards']}
   picks={['priority', 'as', 'tas', 'pre', 'psfp', 'frer', 'sec']}
   caption="Figure 1. The automotive profile between its application and the TSN toolbox. Highlighted: the tools named for vehicles in the IEEE SA material cited here (time synchronisation, scheduling, preemption, filtering and policing, redundancy, security). The standard itself gives the complete normative selection."
@@ -26,8 +27,11 @@ Cars were among the first users of AVB, for infotainment. Driver assistance and 
       2024, and the{' '}
       <a href="https://1.ieee802.org/tsn/802-1dg/">802.1DG project page</a>.
     </>
+
   }
 />
+
+<Abbreviations terms={["IEEE", "MAC", "PHY", "ADAS", "gPTP", "TSN", "AVB", "FRER"]} />
 
 ## 1. Definition
 

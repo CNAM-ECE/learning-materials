@@ -7,19 +7,17 @@ tags: [standard, presentation, ieee-802-1, tsn]
 description: Where IEEE 802.1 sits in the protocol stack, how the TSN task group grew out of Audio Video Bridging, how its standards are named, grouped and developed, and which ones are published today.
 ---
 
-import {
-  Ieee802PlacementFigure,
-  AvbToTsnFigure,
-  StandardsGroupingFigure,
-  StandardsProcessFigure,
-} from '@site/src/components/figures/ieee8021';
+import {Ieee802PlacementFigure, AvbToTsnFigure, StandardsProcessFigure} from '@site/src/components/figures/ieee8021';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) is not one standard but the output of one task group inside the [IEEE 802.1](https://1.ieee802.org/) working group. Reading the TSN literature is much easier once the organisation, the naming rules and the three tiers of documents are clear.
 
 {/* truncate */}
 
 <Ieee802PlacementFigure />
+
+<Abbreviations terms={["IEEE", "IEC", "LAN", "MAC", "gPTP", "TSN", "AVB", "CBS", "PSFP", "SRP", "YANG", "LLDP"]} />
 
 ## 1. Definition
 
@@ -63,7 +61,10 @@ In practice, 802.1Q is many standards integrated into one document. A useful way
 
 ## 4. Three tiers of documents
 
-<StandardsGroupingFigure />
+<SourceFigure
+  id="overview2018-grouping"
+  caption="Figure 3. Three tiers of TSN standards and projects: base technology, configuration, and profiles. A profile selects and constrains tools from the lower tiers for one application."
+/>
 
 TSN documents fall into three tiers [1]:
 
@@ -82,13 +83,8 @@ The profile standards listed by the task group today are [3]:
 | IEEE 802.1DP-2025 / SAE AS 6675 | Aerospace onboard Ethernet |
 
 <SourceFigure
-  id="overview2018-grouping"
-  caption="Figure 3b. The original grouping of TSN standards and projects into base technology, configuration and profiles."
-/>
-
-<SourceFigure
   id="overview2018-profiles"
-  caption="Figure 3c. Profiles as the original slide shows them: a profile picks a subset of the many IEEE 802 features for one application area, such as AVB, fronthaul or industrial automation."
+  caption="Figure 3b. Profiles as the original slide shows them: a profile picks a subset of the many IEEE 802 features for one application area, such as AVB, fronthaul or industrial automation."
 />
 
 ## 5. How a standard is made

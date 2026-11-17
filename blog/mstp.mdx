@@ -9,6 +9,7 @@ description: The Multiple Spanning Tree Protocol extends RSTP so that different 
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [RSTP](/blog/rstp-rapid-spanning-tree) builds one tree for the whole network, so every redundant link stays idle. Once a network carries several VLANs, there is an obvious improvement: give different VLANs different trees, so that each link carries some traffic. That is what the Multiple Spanning Tree Protocol (MSTP) does.
 
@@ -18,6 +19,8 @@ import SourceFigure from '@site/src/components/SourceFigure';
   highlight={['control']}
   caption="Figure 1. Where MSTP acts: in the control plane, like RSTP. It computes several active topologies; the data plane uses the one assigned to each frame's VLAN."
 />
+
+<Abbreviations terms={["IEEE", "VLAN", "TSN", "CNC", "STP", "RSTP", "MSTP", "MST", "MSTI", "CST", "IST", "BPDU", "SPB", "IS-IS"]} />
 
 ## 1. Definition
 

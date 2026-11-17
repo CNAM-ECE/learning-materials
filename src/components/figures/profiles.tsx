@@ -54,7 +54,7 @@ export function MPacketFigure({caption}: Numbered): ReactNode {
         );
       })}
       <Txt x={360} y={256} size={11} italic>
-        SMD: start mPacket delimiter · Frag: fragment count (mod 4) · MCRC: CRC of a non-final fragment
+        SMD: start mPacket delimiter, Frag: fragment count (mod 4), MCRC: CRC of a non-final fragment
       </Txt>
     </Figure>
   );

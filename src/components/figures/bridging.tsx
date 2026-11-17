@@ -38,7 +38,7 @@ export function MrpFigure({caption}: {caption: ReactNode}): ReactNode {
       <Arrow d="M610,160 H130" tone="service" dashed />
       <Txt x={370} y={176} size={11} tone="service">frames for VLAN 10 now reach the registering port, and only the ports that lead to members</Txt>
       <Txt x={370} y={200} size={10.5} italic>
-        MRP applications: MVRP (VLANs) · MMRP (multicast MAC addresses) · MSRP (streams)
+        MRP applications: MVRP (VLANs), MMRP (multicast MAC addresses), MSRP (streams)
       </Txt>
     </Figure>
   );

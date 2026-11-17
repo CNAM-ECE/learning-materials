@@ -7,10 +7,10 @@ tags: [standard, tsn, preemption, presentation]
 description: The Ethernet half of frame preemption. The MAC Merge sublayer with its express and preemptable MACs, how a link verifies that preemption is safe, the mPacket formats that protect reassembly, and the hold and release primitive used with scheduled traffic.
 ---
 
-import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/figures/tsn';
-import {MacMergeFigure} from '@site/src/components/figures/standards';
+import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {MPacketFigure, HoldReleaseFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Frame preemption is specified by two standards. IEEE 802.3br changes the Ethernet MAC so that a frame can be cut and resumed. [IEEE 802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) tells a bridge which traffic may cut which. This post covers the Ethernet half: everything that happens below the bridge port.
 
@@ -20,6 +20,8 @@ Frame preemption is specified by two standards. IEEE 802.3br changes the Etherne
   highlight={['mac']}
   caption="Figure 1. Where 802.3br acts: in the MAC of each Ethernet port, below transmission selection. The bridge above it is unchanged except for the per-priority setting of 802.1Qbu."
 />
+
+<Abbreviations terms={["IEEE", "MAC", "PHY", "IP", "IET", "eMAC", "pMAC", "SMD", "MCRC", "LLDP"]} />
 
 ## 1. Definition
 
@@ -37,11 +39,9 @@ Why it was needed is spelled out by the industrial requirements collected for th
 
 ## 2. The MAC Merge sublayer
 
-<MacMergeFigure caption="Figure 2. The structure added by 802.3br. The bridge port feeds an express MAC (eMAC) and a preemptable MAC (pMAC); the MAC Merge sublayer between them and the PHY interleaves their traffic on one link." />
-
 <SourceFigure
   id="intro2017-mac-merge"
-  caption="Figure 2b. The same structure as drawn by the IEEE 802.1 task group: transmission selection above, the express and preemptable MACs, the MAC Merge sublayer, and a PHY that is unaware of preemption."
+  caption="Figure 2. The structure added by 802.3br, as drawn by the IEEE 802.1 task group: transmission selection above, the express and preemptable MACs, the MAC Merge sublayer, and a PHY that is unaware of preemption."
 />
 
 The **MAC Merge sublayer** has four functions [2]:
@@ -96,8 +96,6 @@ Preemption is not instantaneous. The current fragment must reach the minimum siz
 - **RELEASE** allows the pMAC to transmit again.
 
 Asserted a guard band before a scheduled express window, HOLD lets express traffic go through the bridge with minimal latency. The bridge side of this coordination is defined by [802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) together with [scheduled traffic](/blog/time-aware-shaper).
-
-<PreemptionFigure caption="Figure 5. The effect on one express frame: without preemption it waits for the whole preemptable frame; with preemption it waits only for the part that cannot be cut." />
 
 ## 6. Preemption and MACsec
 

@@ -10,6 +10,7 @@ description: The bridge half of frame preemption. How 802.1Qbu assigns each prio
 import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 A long frame already on the wire delays everything behind it: a 1522-byte frame occupies a 1 Gbit/s link for about 12 µs. [IEEE 802.3br](/blog/ieee-802-3br-interspersing-express-traffic) gave Ethernet the means to cut such a frame. IEEE 802.1Qbu decides, inside the bridge, which frames may cut which, and coordinates the cut with the gates of scheduled traffic.
 
@@ -19,6 +20,8 @@ A long frame already on the wire delays everything behind it: a 1522-byte frame 
   highlight={['selection', 'mac']}
   caption="Figure 1. Where 802.1Qbu acts: on transmission selection, where each traffic class is marked express or preemptable and scheduled traffic can hold preemptable frames, and on its interface to the MAC of 802.3br."
 />
+
+<Abbreviations terms={["IEEE", "MAC"]} />
 
 ## 1. Definition
 

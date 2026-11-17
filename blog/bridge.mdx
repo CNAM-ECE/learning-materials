@@ -9,6 +9,7 @@ description: How an IEEE 802.1Q bridge is organised. The control and data planes
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Every TSN mechanism in this series is described as an addition to "the bridge". This post opens that box. It uses the figures with which the IEEE 802.1 working group itself explains the bridge: in its 2013 tutorial to the IETF, and in its 2017 and 2018 introductions to TSN.
 
@@ -18,6 +19,8 @@ Every TSN mechanism in this series is described as an addition to "the bridge". 
   id="farkas2018-bridge-architecture"
   caption="Figure 1. The simplified “baggy pants” model of a MAC bridge. The control plane (higher layer entities, or an external agent such as an SDN controller) sits above a data plane made of a relay and at least two ports. Below the ports, media-specific functions connect each port to its LAN, for example IEEE 802.3 Ethernet."
 />
+
+<Abbreviations terms={["IEEE", "IETF", "LAN", "MAC", "VLAN", "VID", "QoS", "TSN", "CBS", "TAS", "CQF", "ATS", "PSFP", "FRER", "SRP", "CNC", "SDN", "RSTP", "MSTP", "SPB", "IS-IS", "PCR", "PCE", "MRP", "MVRP", "MMRP"]} />
 
 ## 1. Definition
 

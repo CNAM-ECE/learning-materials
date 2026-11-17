@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {PsfpTablesFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Every bound in this series assumes that each talker respects its arrival curve. Per-Stream Filtering and [Policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) ([PSFP](https://1.ieee802.org/tsn/802-1qci/)) is the [TSN](https://1.ieee802.org/tsn/) mechanism that makes that assumption hold. It checks each stream where it enters a [bridge](https://en.wikipedia.org/wiki/Network_bridge) and stops a faulty or malicious talker before it can harm the streams that behave.
 
@@ -20,6 +21,8 @@ Every bound in this series assumes that each talker respects its arrival curve. 
   highlight={['ingress']}
   caption="Figure 1. Where PSFP acts: at the ingress port, before the relay and the queues. A frame that violates its stream's contract is dropped before it consumes any shared resource."
 />
+
+<Abbreviations terms={["MEF", "IEEE", "MAC", "VLAN", "VID", "PCP", "DEI", "IP", "TSN", "CBS", "ATS", "PSFP", "IPV", "CIR", "EIR", "EBS"]} />
 
 ## 1. Definition
 
@@ -46,18 +49,16 @@ The match yields a **stream handle**, an internal number that the following tabl
 
 ## 3. Filter, gate and meter
 
-<PsfpTablesFigure caption="Figure 3. The PSFP pipeline. Stream identification gives a handle. The filter checks it, the gate checks the time, and the meter checks the rate. Each element can discard the frame, and each keeps counters." />
+<SourceFigure
+  id="farkas2018-psfp"
+  caption="Figure 3. PSFP on the original slide: an incoming frame passes the filter, the time gate (which also sets the internal priority) and the meter before queuing."
+/>
 
 | Element | Selected by | Decides |
 | --- | --- | --- |
 | **Stream filter** | Stream handle and priority (either may be a wildcard) | Which gate and meter apply. Also enforces a **maximum frame size**: an oversized frame is dropped and can block the stream. |
 | **Stream gate** | The filter | Whether the frame may pass **now**. The gate opens and closes on a gate control list, like the transmission gates of [802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/), and can set the frame's **internal priority value (IPV)**. |
 | **Flow meter** | The filter | Whether the stream is within its **bandwidth profile**. The meter uses the two-rate, two-bucket profile of [MEF 10.3](https://www.mef.net/resources/mef-10-3-ethernet-services-attributes-phase-3/): committed rate and burst (CIR, CBS) and excess rate and burst (EIR, EBS). Frames are marked green, yellow or red; red frames are dropped, and yellow frames can be dropped or demoted. |
-
-<SourceFigure
-  id="farkas2018-psfp"
-  caption="Figure 3b. PSFP on the original slide: an incoming frame passes the filter, the time gate (which also sets the internal priority) and the meter before queuing."
-/>
 
 ## 4. What PSFP does for the analysis
 

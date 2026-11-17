@@ -9,6 +9,7 @@ description: The credit-based shaper of IEEE 802.1Qav, now part of IEEE 802.1Q. 
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) shaper. It comes from [Audio Video Bridging](https://www.ieee802.org/1/pages/avbridges.html) (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
 
@@ -18,6 +19,8 @@ The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) sh
   highlight={['queuing']}
   caption="Figure 1. Where the credit-based shaper acts: it is a transmission selection algorithm attached to a traffic-class queue of an 802.1Q egress port. The queues, the relay and the MAC are unchanged."
 />
+
+<Abbreviations terms={["IEEE", "MAC", "TSN", "AVB", "CBS", "ATS"]} />
 
 ## 1. Definition
 

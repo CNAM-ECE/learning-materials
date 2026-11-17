@@ -10,6 +10,7 @@ description: How a bridged network with redundant links avoids loops. The spanni
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Ethernet frames carry no hop count, so a loop in a bridged network would circulate broadcasts forever. Bridges therefore agree on a loop-free subset of the links: a spanning tree. The Rapid Spanning Tree Protocol (RSTP) is the standard way to compute it, and the first control protocol listed for the active topology in [the bridge post](/blog/ieee-802-1q-bridge).
 
@@ -19,6 +20,8 @@ Ethernet frames carry no hop count, so a loop in a bridged network would circula
   highlight={['control']}
   caption="Figure 1. Where RSTP acts: in the control plane of every bridge. It decides which ports forward; the data plane enforces that decision in its first step, active topology enforcement."
 />
+
+<Abbreviations terms={["IEEE", "LAN", "VLAN", "FRER", "STP", "RSTP", "MSTP", "BPDU", "SPB"]} />
 
 ## 1. Definition
 

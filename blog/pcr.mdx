@@ -9,6 +9,7 @@ description: How IEEE 802.1Qca lets a controller install explicit, non-shortest 
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [SPB](/blog/ieee-802-1aq-shortest-path-bridging) computes shortest paths. Deterministic networks often need other paths: two disjoint routes for [FRER](/blog/frame-replication-and-elimination), or a route that avoids a link already carrying critical streams. IEEE 802.1Qca, Path Control and Reservation (PCR), lets a controller impose such paths, while IS-IS keeps doing everything else.
 
@@ -18,6 +19,8 @@ import SourceFigure from '@site/src/components/SourceFigure';
   highlight={['control', 'relay']}
   caption="Figure 1. Where path control acts: in the control plane, where IS-IS installs explicit trees, and in the relay, whose filtering entries IS-IS sets so that frames of a VLAN follow the tree."
 />
+
+<Abbreviations terms={["IEEE", "IETF", "RFC", "MAC", "VLAN", "TSN", "FRER", "SRP", "MSRP", "CNC", "SDN", "SPB", "ECT", "IS-IS", "PCR", "PCE", "PCA", "ET"]} />
 
 ## 1. Definition
 

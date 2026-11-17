@@ -7,19 +7,18 @@ tags: [standard, presentation, deterministic-networking, detnet, ieee-802-1, tsn
 description: What a deterministic service is, what it requires from a network, and how IEEE 802.1 TSN and IETF DetNet divide the work between Layer 2 and Layer 3.
 ---
 
-import {
-  StackPlacementFigure,
-  ServiceComparisonFigure,
-  LayerRolesFigure,
-} from '@site/src/components/figures/deterministic';
+import {StackPlacementFigure, LayerRolesFigure} from '@site/src/components/figures/deterministic';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 "Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
 
 {/* truncate */}
 
 <StackPlacementFigure />
+
+<Abbreviations terms={["IEEE", "IETF", "RFC", "OSI", "MAC", "VLAN", "QoS", "IP", "UDP", "TCP", "IT", "TSN", "AVB", "CBS", "TAS", "CQF", "FRER", "CNC", "SDN", "IS-IS", "DetNet", "MPLS", "MPLS-TE", "RSVP-TE", "RSVP", "IntServ", "DiffServ", "DSCP", "TEAS"]} />
 
 <SourceFigure
   id="overview2018-ieee802-osi"
@@ -39,7 +38,10 @@ The two groups collaborate on a common architecture, so that a routed determinis
 
 ## 2. Deterministic versus traditional service
 
-<ServiceComparisonFigure />
+<SourceFigure
+  id="farkas2018-deterministic-service"
+  caption="Figure 2. Traditional versus deterministic service: buffers allocated against loss probability, end-to-end latency, and latency variation. A traditional service (left) has a good average and a long tail; a deterministic service (right) has no tail beyond the bound."
+/>
 
 A traditional packet service is engineered for a good average. Its latency distribution has a long tail, and the only ways to shorten the tail are to drop late packets or to over-provision. A deterministic service is specified differently [2]:
 
@@ -48,11 +50,6 @@ A traditional packet service is engineered for a good average. Its latency distr
 - the aim is the right packet at the right time, not the fastest packet on average.
 
 The reason standard equipment cannot offer this is that queuing in [switches](https://en.wikipedia.org/wiki/Network_switch) and [routers](https://en.wikipedia.org/wiki/Router_(computing)) is not controlled per flow: a burst from one source delays every other flow sharing the queue. Larger buffers reduce loss but lengthen the delay, which is the wrong trade for a [control loop](https://en.wikipedia.org/wiki/Control_loop) [3].
-
-<SourceFigure
-  id="farkas2018-deterministic-service"
-  caption="Figure 2b. The original slide behind Figure 2: buffers allocated against loss probability, end-to-end latency, and latency variation, for a traditional service (left) and a deterministic service (right)."
-/>
 
 ## 3. What a deterministic flow requires
 

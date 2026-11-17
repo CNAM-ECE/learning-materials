@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {ReservationFlowFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the [bridges](https://en.wikipedia.org/wiki/Network_bridge) themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
 
@@ -20,6 +21,8 @@ A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) o
   highlight={['control']}
   caption="Figure 1. Where stream reservation acts: in the control plane of every bridge. It changes no forwarding stage. It decides which streams the shapers and queues below will have to carry."
 />
+
+<Abbreviations terms={["IEEE", "MAC", "AVB", "CBS", "CQF", "ATS", "SRP", "RAP", "CNC", "SDN"]} />
 
 ## 1. Definition
 

@@ -9,8 +9,8 @@ description: How IEEE 802.1CB numbers, replicates and later eliminates the frame
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {FrerFunctionsFigure} from '@site/src/components/figures/standards';
-import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability ([FRER](https://1.ieee802.org/tsn/802-1cb/)) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
 
@@ -21,31 +21,20 @@ Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useles
   caption="Figure 1. Where FRER acts: per stream, around the relay. A replicating bridge numbers and copies the frames of a stream towards several egress ports; an eliminating bridge removes the duplicates. Disjoint paths come from the control plane."
 />
 
+<Abbreviations terms={["IEEE", "IETF", "IEC", "ATS", "PSFP", "FRER", "R-TAG", "HSR", "PRP", "CNC", "SDN", "IS-IS", "DetNet"]} />
+
 ## 1. Definition
 
 **Frame Replication and Elimination for Reliability**, [IEEE 802.1CB](https://1.ieee802.org/tsn/802-1cb/), is per-frame 1+1 (or 1+n) redundancy. The frames of a stream are numbered and sent on two or more maximally disjoint paths. They are then merged, and the extra copies are deleted. Nothing detects the failure and nothing [switches](https://en.wikipedia.org/wiki/Network_switch) over, so a path failure causes no interruption [3].
 
-<ReplicationFigure
-  ends={['Talker', 'Listener']}
-  nodes={['Bridge N1', 'Bridge N2']}
-  caption="Figure 2. FRER on two paths. N1 sends a copy of every numbered frame on each path; N2 forwards the first copy of each number and discards the second."
-  source={
-    <>
-      redrawn after J. Farkas,{' '}
-      <a href="https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf">
-        TSN Basic Concepts
-      </a>
-      , DetNet–TSN workshop, 11 November 2018, slide 16.
-    </>
+<SourceFigure
+  id="farkas2018-frer"
+  caption="Figure 2. The original FRER slide: frames 14, 15 and 16 are replicated at N1, travel over two disjoint paths, and the duplicates are eliminated at N2."
+/>
   }
 />
 
 Replication and elimination can happen in the end stations themselves or in [bridges](https://en.wikipedia.org/wiki/Network_bridge). A non-redundant talker can then use a redundant network.
-
-<SourceFigure
-  id="farkas2018-frer"
-  caption="Figure 2b. The original FRER slide: frames 14, 15 and 16 are replicated at N1, travel over two disjoint paths, and the duplicates are eliminated at N2."
-/>
 
 ## 2. The functions on each side
 

@@ -7,9 +7,13 @@ tags: [youtube, article, network-calculus, tsn, tas]
 description: How the Time-Aware Shaper, Credit-Based Shaper, Asynchronous Traffic Shaper, policing and redundancy are modelled with arrival and service curves, and which tools implement the analyses.
 ---
 
+import Abbreviations from '@site/src/components/Abbreviations';
+
 The previous posts developed a general theory. This post maps each [TSN](https://1.ieee802.org/tsn/) mechanism onto the objects of that theory: which mechanisms create *service curves*, which enforce *arrival curves*, and which modify burstiness along a path.
 
 {/* truncate */}
+
+<Abbreviations terms={["TSN", "AVB", "CBS", "ATS"]} />
 
 ## 1. A mapping table
 

@@ -7,18 +7,18 @@ tags: [standard, sdn, tsn, ieee-802-1, reservation, article]
 description: Software-defined networking separates the control plane from the data plane. This post shows how the centralised configuration model of IEEE 802.1Qcc maps onto SDN, what the CNC computes and through which interfaces, and the trade-off between central and decentralised control.
 ---
 
-import {
-  SdnTsnPlanesFigure,
-  ConfigurationModelsFigure,
-} from '@site/src/components/figures/standards';
+import {SdnTsnPlanesFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
 
 [TSN](https://1.ieee802.org/tsn/) gives every [bridge](https://en.wikipedia.org/wiki/Network_bridge) gates, shapers, filters and redundancy. Something still has to decide how all of them are set, in a consistent way, across the whole network. In most TSN deployments that is a central controller, and the architecture it fits into is [software-defined networking](https://www.rfc-editor.org/rfc/rfc7426) (SDN).
 
 {/* truncate */}
 
 <SdnTsnPlanesFigure caption="Figure 1. SDN planes and their TSN counterparts. The CUC and other applications sit in the application plane. The CNC is the SDN controller, and TSN bridges form the data plane. The northbound interface is the user/network interface of 802.1Qcc; the southbound interface is NETCONF or RESTCONF with YANG models, or OpenFlow." />
+
+<Abbreviations terms={["IEEE", "IETF", "PTP", "TSN", "TAS", "FRER", "CUC", "CNC", "YANG", "NETCONF", "RESTCONF", "SDN", "IS-IS", "DetNet"]} />
 
 ## 1. Definition of SDN
 
@@ -41,18 +41,16 @@ The vocabulary of Figure 2 maps directly onto the TSN components of Figure 1:
 
 ## 2. The three configuration models of 802.1Qcc
 
-<ConfigurationModelsFigure caption="Figure 3. The three configuration models of 802.1Qcc. In the fully distributed model, requirements travel hop by hop. In the centralised network / distributed user model, end stations still signal at the edge but a CNC configures the bridges. In the fully centralised model, a CUC also handles the end stations." />
+<SourceFigure
+  id="farkas2018-configuration"
+  caption="Figure 3. The three configuration models of 802.1Qcc: fully distributed, centralized network and distributed user, and fully centralized configuration."
+/>
 
 [IEEE 802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/) defines three ways to configure a TSN network [3][4]:
 
 1. **Fully distributed.** End stations and bridges exchange requirements hop by hop, with the reservation protocols of [the stream reservation post](/blog/stream-reservation). There is no central entity.
 2. **Centralised network, distributed user.** End stations still signal their streams to the first bridge, but a CNC with a view of the whole network computes and configures.
 3. **Fully centralised.** A CUC talks to the end stations, typically through an industrial engineering tool, and passes their requirements to the CNC. This is the SDN model of Figure 1.
-
-<SourceFigure
-  id="farkas2018-configuration"
-  caption="Figure 3b. The original slide behind Figure 3: fully distributed, centralized network and distributed user, and fully centralized configuration."
-/>
 
 ## 3. What the CNC computes
 
@@ -68,7 +66,7 @@ For the Time-Aware Shaper a central controller is not optional. A review of [ind
 
 <SourceFigure
   id="farkas2018-explicit-trees"
-  caption="Figure 3c. A controller (Ctrl) installing an explicit tree with path control (802.1Qca), while IS-IS keeps providing shortest path trees."
+  caption="Figure 3b. A controller (Ctrl) installing an explicit tree with path control (802.1Qca), while IS-IS keeps providing shortest path trees."
 />
 
 ## 4. SDN in industrial real-time networks
@@ -93,7 +91,7 @@ Its answer is not to drop the CNC. It proposes latency models that each bridge c
 
 <SourceFigure
   id="grigorjew2026-fig1"
-  caption="Figure 3d. Where decentralised models help, from the tutorial: (a) fully decentralised reservation, (b) reservation between two CNC domains, (c) reshaping when redundant FRER streams merge."
+  caption="Figure 3c. Where decentralised models help, from the tutorial: (a) fully decentralised reservation, (b) reservation between two CNC domains, (c) reshaping when redundant FRER streams merge."
 />
 
 ## 6. Where this connects in the series

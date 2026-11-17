@@ -86,8 +86,8 @@ type BoxProps = {
   lines?: string[];
   tone?: Tone;
   dashed?: boolean;
-  /** Render the first line in bold. */
-  title?: boolean;
+  /** Render the first line in bold, or the first n lines when a number. */
+  title?: boolean | number;
   size?: number;
   rx?: number;
 };
@@ -125,7 +125,7 @@ export function Box({
           x={x + w / 2}
           y={first + i * lineHeight}
           fontSize={size}
-          fontWeight={title && i === 0 ? 700 : 400}
+          fontWeight={i < (title === true ? 1 : title || 0) ? 700 : 400}
           textAnchor="middle"
           dominantBaseline="central"
           fill={textColor}>

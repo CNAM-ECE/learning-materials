@@ -3,25 +3,30 @@ import {Arrow, Box, Figure, Txt} from '@site/src/components/Diagram';
 
 const sa = (id: string): string => `https://standards.ieee.org/ieee/802.1Q/${id}/`;
 
-type Edition = {name: string; when: string; id: string; merged: string[]; active?: boolean};
+/** Keyword lines, then the designation. */
+type Chip = string[];
+type Edition = {name: string; when: string; id: string; chips: Chip[]; more?: string; active?: boolean};
 
+/** Key amendments of each edition, merged into the next one; the full lists are on the IEEE SA pages. */
 const editions: Edition[] = [
-  {name: '802.1Q-1998', when: 'approved 1998', id: '1039', merged: ['802.1u-2001 (corrigendum), 802.1v-2001, 802.1s-2002 (MSTP)']},
-  {name: '802.1Q-2005', when: 'approved 2005', id: '3495', merged: ['802.1ad-2005, 802.1ak-2007 (MRP), 802.1ag-2007, 802.1ah-2008, 802.1ap-2008, Cor 1-2008,', '802.1aj-2009, 802.1Qav-2009 (CBS), 802.1Qaw-2009, 802.1Qay-2009, 802.1Qau-2010, 802.1Qat-2010 (SRP)']},
-  {name: '802.1Q-2011', when: 'approved 2011', id: '4410', merged: ['802.1Qaz-2011, 802.1Qbb-2011, 802.1Qbc-2011, 802.1Qbe-2011, 802.1Qbf-2011, 802.1Qbg-2012,', '802.1aq-2012 (SPB), Cor 2-2012, 802.1Qbp-2014; and the separate standard 802.1D-2004 (MAC bridges)']},
-  {name: '802.1Q-2014', when: 'approved 2014', id: '5801', merged: ['Cor 1-2015, 802.1Qbv-2015 (TAS), 802.1Qca-2015 (path control), 802.1Qcd-2015,', '802.1Qbu-2016 (preemption), 802.1Qbz-2016, 802.1Qch-2017 (CQF), 802.1Qci-2017 (PSFP)']},
-  {name: '802.1Q-2018', when: 'approved 2018', id: '6844', merged: ['802.1Qcc-2018 (TSN configuration), 802.1Qcp-2018 (YANG), 802.1Qcy-2019,', '802.1Qcr-2020 (ATS), 802.1Qcx-2020']},
-  {name: '802.1Q-2022', when: 'active standard', id: '10323', active: true, merged: ['802.1Qcj-2023, 802.1Qcw-2023 (YANG for Qbv, Qbu, Qci), 802.1Qcz-2023, 802.1Qdj-2024,', '802.1Qdx-2024, 802.1Qdy-2025; projects P802.1Qdq, P802.1Qdt, P802.1Qee']},
-  {name: 'P802.1Q', when: 'revision PAR 2023', id: '11285', merged: ['the next roll-up, in progress: it will supersede 802.1Q-2022 and absorb its amendments']},
+  {name: '802.1Q-1998', when: '1998', id: '1039', chips: [['MSTP', '802.1s'], ['Protocol', 'VLANs', '802.1v']], more: '+1 corrigendum'},
+  {name: '802.1Q-2005', when: '2005', id: '3495', chips: [['Provider', 'bridges', '802.1ad'], ['MRP', '802.1ak'], ['PBB', '802.1ah'], ['CBS', 'Qav'], ['SRP', 'Qat']], more: '+6 more'},
+  {name: '802.1Q-2011', when: '2011', id: '4410', chips: [['SPB', '802.1aq'], ['ETS', 'Qaz'], ['PFC', 'Qbb'], ['EVB', 'Qbg'], ['MAC bridges', '802.1D-2004']], more: '+5 more'},
+  {name: '802.1Q-2014', when: '2014', id: '5801', chips: [['TAS', 'Qbv'], ['Preemption', 'Qbu'], ['PCR', 'Qca'], ['CQF', 'Qch'], ['PSFP', 'Qci']], more: '+3 more'},
+  {name: '802.1Q-2018', when: '2018', id: '6844', chips: [['TSN', 'configuration', 'Qcc'], ['YANG', 'Qcp'], ['ATS', 'Qcr']], more: '+2 more'},
+  {name: '802.1Q-2022', when: 'active', id: '10323', active: true, chips: [['YANG for', 'TSN', 'Qcw'], ['PBB', 'attachment', 'Qcj'], ['Congestion', 'isolation', 'Qcz']], more: '+3 more'},
+  {name: 'P802.1Q', when: 'revision in progress', id: '11285', chips: []},
 ];
 
 /** How the amendments of each 802.1Q edition were rolled into the next edition. */
 export function DotQHistoryFigure({caption}: {caption: ReactNode}): ReactNode {
-  const rowH = 52;
+  const rowH = 78;
+  const boxH = 46;
+  const chipW = 88;
   return (
     <Figure
-      height={editions.length * rowH + 22}
-      label="Timeline of IEEE 802.1Q: each edition, the amendments and corrigenda approved against it, and the next edition that rolled them up, from 802.1Q-1998 to the 802.1Q-2022 active standard and the P802.1Q revision in progress"
+      height={editions.length * rowH - (rowH - boxH) + 34}
+      label="Timeline of IEEE 802.1Q editions from 1998 to the 2022 active standard and the revision in progress; for each edition, its key amendments shown as keywords, which the next edition rolled up"
       caption={caption}
       source={
         <>
@@ -32,21 +37,26 @@ export function DotQHistoryFigure({caption}: {caption: ReactNode}): ReactNode {
               {i < editions.length - 2 ? ', ' : i === editions.length - 2 ? ' and ' : ''}
             </span>
           ))}
-          , which list for each edition its amendments, corrigenda and the edition that superseded it.
+          , which list every amendment and corrigendum of each edition.
         </>
       }>
-      <Txt x={75} y={10} size={11} bold>Edition</Txt>
-      <Txt x={435} y={10} size={11} bold>Amendments and corrigenda approved before the next edition, then rolled into it</Txt>
+      <Txt x={75} y={12} size={11} bold>Edition</Txt>
+      <Txt x={420} y={12} size={11} bold>Key amendments, rolled into the next edition</Txt>
       {editions.map((e, i) => {
-        const y = 22 + i * rowH;
+        const y = 28 + i * rowH;
         const last = i === editions.length - 1;
         return (
           <g key={e.name}>
-            <Box x={10} y={y} w={130} h={36} lines={[e.name, e.when]} title size={10.5} tone={e.active ? 'service' : last ? 'muted' : 'plain'} dashed={last} />
-            <Box x={160} y={y} w={550} h={36} lines={e.merged} size={9.5} tone={last ? 'muted' : 'arrival'} dashed={last} />
-            <Arrow d={`M140,${y + 18} H160`} tone="muted" heads="none" />
-            {!last && <Arrow d={`M75,${y + 36} V${y + rowH}`} />}
-            {!last && <Txt x={84} y={y + 44} size={9} italic anchor="start">roll-up revision</Txt>}
+            <Box x={10} y={y} w={130} h={boxH} lines={[e.name, e.when]} title size={10.5} tone={e.active ? 'service' : last ? 'muted' : 'plain'} dashed={last} />
+            {e.chips.map((lines, k) => (
+              <Box key={lines.join()} x={160 + k * (chipW + 8)} y={y} w={chipW} h={boxH} lines={lines} title={lines.length - 1} size={9.5} tone="arrival" />
+            ))}
+            {e.more && (
+              <Txt x={164 + e.chips.length * (chipW + 8)} y={y + boxH / 2} size={9.5} italic anchor="start">{e.more}</Txt>
+            )}
+            {last && <Txt x={160} y={y + boxH / 2} size={10} italic anchor="start">the next roll-up: it will supersede 802.1Q-2022 and absorb its amendments</Txt>}
+            {!last && <Arrow d={`M75,${y + boxH} V${y + rowH - 2}`} />}
+            {!last && <Txt x={84} y={y + boxH + (rowH - boxH) / 2} size={9} italic anchor="start">roll-up</Txt>}
           </g>
         );
       })}

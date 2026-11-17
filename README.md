@@ -10,7 +10,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── blog/                  # Learning path: thirty posts (MDX, KaTeX), authors.yml, tags.yml
+├── blog/                  # Learning path: thirty-six posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
 │   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
@@ -38,6 +38,12 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | Network calculus | ATM and MPLS | GCRA as an arrival curve, VBR worked example, LSPs and aggregates, then and now |
 | IEEE 802.1 | IEEE 802.1 and the TSN task group | Organisation, AVB to TSN, naming rules, tiers of standards, process |
 | IEEE 802.1 | The IEEE 802.1Q bridge | Control and data planes, data-plane actions, forwarding process (802.1Q clause 8.6), topology layers |
+| IEEE 802.1 | RSTP | Spanning tree, port roles and states, proposal/agreement, what reconvergence means for bounds |
+| IEEE 802.1 | MSTP | MST regions and instances, one BPDU with an MD5 digest, a region seen as one bridge |
+| IEEE 802.1 | SPB (802.1aq) | IS-IS link state, SPBV and SPBM, equal-cost trees, failure recovery |
+| IEEE 802.1 | Path control (802.1Qca) | Explicit trees, PCE and PCA, five control modes, disjoint paths for FRER |
+| IEEE 802.1 | MRP and MVRP | Declarations and registrations, VLAN registration, MMRP and MSRP |
+| IEEE 802.1 | SRP (802.1Qat) | Talker advertise and listener ready, advertise fields, AVB domains |
 | IETF | IETF DetNet | Charter, RFC 8655 sub-layers, node types, planes, DetNet over TSN |
 | TSN | The TSN toolbox | Each TSN mechanism and the stage of the 802.1Q bridge it extends |
 | TSN | IEEE 802.1AS | gPTP, grandmaster election, peer delay, synchronisation error in schedules |

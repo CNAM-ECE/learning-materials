@@ -62,13 +62,13 @@ function BlogSidebarContent({
             {group.label}
           </Heading>
           {group.sections.map((section, i) => (
-            <div
-              key={section.label ?? i}
-              className={section.label ? 'blog-sidebar-section' : undefined}>
+            <div key={section.label ?? i} className="blog-sidebar-section">
               {section.label && (
                 <div className="blog-sidebar-section__label">{section.label}</div>
               )}
-              <ListComponent items={section.items} />
+              <div className="blog-sidebar-section__items">
+                <ListComponent items={section.items} />
+              </div>
             </div>
           ))}
         </div>

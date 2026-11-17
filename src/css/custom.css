@@ -133,17 +133,19 @@
   white-space: nowrap;
 }
 
-/* Sub-categories inside a topic of the learning-path sidebar. */
+/* Sub-categories inside a topic of the learning-path sidebar: a small
+   heading, then the posts beside a vertical line. */
 .blog-sidebar-section {
-  margin: 0.15rem 0 0.4rem 0.5rem;
-  padding-left: 0.6rem;
-  border-left: 2px solid var(--ifm-color-emphasis-300);
+  margin: 0.2rem 0 0.5rem;
 }
 .blog-sidebar-section__label {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--ifm-color-emphasis-600);
-  margin: 0.35rem 0 0.15rem;
+  color: var(--ifm-color-emphasis-700);
+  margin: 0.4rem 0 0.2rem;
+}
+.blog-sidebar-section__items {
+  margin-left: 0.25rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--ifm-color-emphasis-300);
 }

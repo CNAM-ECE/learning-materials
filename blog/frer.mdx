@@ -10,6 +10,7 @@ description: How IEEE 802.1CB numbers, replicates and later eliminates the frame
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {FrerFunctionsFigure} from '@site/src/components/figures/standards';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability ([FRER](https://1.ieee802.org/tsn/802-1cb/)) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
 
@@ -40,6 +41,11 @@ Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useles
 />
 
 Replication and elimination can happen in the end stations themselves or in [bridges](https://en.wikipedia.org/wiki/Network_bridge). A non-redundant talker can then use a redundant network.
+
+<SourceFigure
+  id="farkas2018-frer"
+  caption="Figure 2b. The original FRER slide: frames 14, 15 and 16 are replicated at N1, travel over two disjoint paths, and the duplicates are eliminated at N2."
+/>
 
 ## 2. The functions on each side
 

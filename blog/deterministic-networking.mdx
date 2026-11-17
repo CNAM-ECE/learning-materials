@@ -13,12 +13,18 @@ import {
   LayerRolesFigure,
 } from '@site/src/components/figures/deterministic';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 "Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
 
 {/* truncate */}
 
 <StackPlacementFigure />
+
+<SourceFigure
+  id="overview2018-ieee802-osi"
+  caption="Figure 1b. The original placement of IEEE 802 in the OSI reference model: IEEE 802 covers the physical and data link layers, with IEEE 802.1 at the top of the data link layer."
+/>
 
 ## 1. Definition
 
@@ -42,6 +48,11 @@ A traditional packet service is engineered for a good average. Its latency distr
 - the aim is the right packet at the right time, not the fastest packet on average.
 
 The reason standard equipment cannot offer this is that queuing in [switches](https://en.wikipedia.org/wiki/Network_switch) and [routers](https://en.wikipedia.org/wiki/Router_(computing)) is not controlled per flow: a burst from one source delays every other flow sharing the queue. Larger buffers reduce loss but lengthen the delay, which is the wrong trade for a [control loop](https://en.wikipedia.org/wiki/Control_loop) [3].
+
+<SourceFigure
+  id="farkas2018-deterministic-service"
+  caption="Figure 2b. The original slide behind Figure 2: buffers allocated against loss probability, end-to-end latency, and latency variation, for a traditional service (left) and a deterministic service (right)."
+/>
 
 ## 3. What a deterministic flow requires
 

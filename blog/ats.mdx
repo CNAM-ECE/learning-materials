@@ -9,6 +9,7 @@ description: Asynchronous Traffic Shaping reshapes every stream at every hop wit
 
 import {BridgeIntegrationFigure, PerStreamFigure} from '@site/src/components/figures/tsn';
 import {DelaySegmentsFigure} from '@site/src/components/figures/standards';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping ([ATS](https://1.ieee802.org/tsn/802-1qcr/)) avoids both problems: it restores each stream's original traffic contract at every hop, using only the [bridge](https://en.wikipedia.org/wiki/Network_bridge)'s local clock.
 
@@ -30,6 +31,16 @@ Two features distinguish it from plain per-flow shaping:
 
 <PerStreamFigure caption="Figure 2. Per-stream processing ahead of the queues. ATS reuses the stream filter and stream gate of PSFP, but instead of a meter that drops it applies a token bucket that delays each frame to its eligibility time." />
 
+<SourceFigure
+  id="farkas2018-ats-components"
+  caption="Figure 2b. The ATS components on the original slide: a filter, a gate that sets the internal priority, the ATS shaper, then queuing."
+/>
+
+<SourceFigure
+  id="farkas2018-ats"
+  caption="Figure 2c. ATS hop by hop: traffic is reshaped in high- and low-priority shaped queues at every hop, so the pattern after each link stays smooth even when best-effort (BE) traffic shares the link."
+/>
+
 ## 2. Queue allocation rules
 
 Sharing a queue between streams can cause [head-of-line blocking](https://en.wikipedia.org/wiki/Head-of-line_blocking): a frame that is not yet eligible holds up an eligible frame behind it. ATS limits this with **queue allocation rules**. Frames go to separate shaped queues if they differ in [4]:
@@ -47,6 +58,16 @@ Inside one queue, all frames then come from the same upstream queue, so they arr
 The ATS analysis does not measure delay from ingress to ingress. It measures **from the end of one shaper to the end of the next**, as in Figure 3. This boundary was first used in the ATS [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) analysis of Specht and Samii. It was proposed for the [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) Resource Allocation Protocol, and a 2026 tutorial applies it to all shapers [4].
 
 The choice matters because traffic leaving a token-bucket shaper is known to conform to $(b, r)$. Each segment therefore starts from a clean, well-defined arrival curve, whatever happened upstream. The downstream bridge computes the bound for the segment that ends in it, using what its neighbour tells it [4]. The [stream reservation post](/blog/stream-reservation) lists the information it receives.
+
+<SourceFigure
+  id="grigorjew2026-fig4"
+  caption="Figure 3b. The switch delay model of the tutorial: propagation, store and forward, processing, shaper queuing and priority queuing between the RX and TX ports."
+/>
+
+<SourceFigure
+  id="grigorjew2026-fig5"
+  caption="Figure 3c. The original delay segments, from which Figure 3 is redrawn: each segment runs from the shaper of one switch to the shaper of the next."
+/>
 
 ## 4. Why the bound does not cascade
 

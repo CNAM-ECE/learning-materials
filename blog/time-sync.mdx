@@ -10,6 +10,7 @@ description: How IEEE 802.1AS (gPTP) distributes a common time through bridges a
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {PeerDelayFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post explains how it works and what an analysis has to assume about it.
 
@@ -76,6 +77,11 @@ gPTP does not measure the delay from master to slave end to end. Each pair of ne
 - a correction for the **rate ratio**, the frequency difference between neighbouring clocks.
 
 Errors therefore accumulate hop by hop. Queuing does not add error, because each bridge measures how long the message stayed inside it and adds exactly that time to the correction field.
+
+<SourceFigure
+  id="intro2017-gptp-network"
+  caption="Figure 4b. One time domain across several media, as shown when the 802.1AS revision started: Ethernet, an optical access network (EPON), Wi-Fi and a coordinated shared network, from a stratum 1 clock source to the end points."
+/>
 
 ## 4. What changed in the 2020 revision
 

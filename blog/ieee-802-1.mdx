@@ -13,6 +13,7 @@ import {
   StandardsGroupingFigure,
   StandardsProcessFigure,
 } from '@site/src/components/figures/ieee8021';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) is not one standard but the output of one task group inside the [IEEE 802.1](https://1.ieee802.org/) working group. Reading the TSN literature is much easier once the organisation, the naming rules and the three tiers of documents are clear.
 
@@ -27,6 +28,11 @@ import {
 **IEEE 802.1** is the working group responsible for the 802 architecture, for interworking between 802 networks, for security, and for network management and the protocol layers above the MAC [1]. It occupies the top of the link layer [2]: 802.1 [bridges](https://en.wikipedia.org/wiki/Network_bridge) forward frames between media defined by other working groups, such as 802.3 ([Ethernet](https://standards.ieee.org/ieee/802.3/10422/)), 802.11 (wireless LAN) and 802.15 (wireless personal area networks).
 
 The **TSN task group** is the part of 802.1 chartered to provide deterministic services through IEEE 802 networks, which the group defines as guaranteed packet transport with bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), low packet [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) and low packet loss [1][3]. Figure 1 shows the consequence: TSN changes nothing below the MAC service and nothing above Layer 2. It amends the bridge.
+
+<SourceFigure
+  id="overview2018-ieee-sa"
+  caption="Figure 1b. Where IEEE 802 sits in the IEEE Standards Association: below the Board of Governors, the Standards Board and its committees, as one of the standards committees of the Computer Society."
+/>
 
 ## 2. From AVB to TSN
 
@@ -74,6 +80,16 @@ The profile standards listed by the task group today are [3]:
 | [IEC/IEEE 60802](https://1.ieee802.org/tsn/iec-ieee-60802/) | Industrial automation (a joint IEC and IEEE 802 project) |
 | IEEE Std 802.1DG-2025 | Automotive in-vehicle Ethernet |
 | IEEE 802.1DP-2025 / SAE AS 6675 | Aerospace onboard Ethernet |
+
+<SourceFigure
+  id="overview2018-grouping"
+  caption="Figure 3b. The original grouping of TSN standards and projects into base technology, configuration and profiles."
+/>
+
+<SourceFigure
+  id="overview2018-profiles"
+  caption="Figure 3c. Profiles as the original slide shows them: a profile picks a subset of the many IEEE 802 features for one application area, such as AVB, fronthaul or industrial automation."
+/>
 
 ## 5. How a standard is made
 

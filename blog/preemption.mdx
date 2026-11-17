@@ -10,6 +10,7 @@ description: How frame preemption splits the Ethernet MAC into an express and a 
 import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/figures/tsn';
 import {MacMergeFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 Strict priority and gates decide which frame starts next. Neither can stop a frame that has already started. A 1522-byte frame occupies a 1 Gbit/s link for about 12 µs, and an urgent frame that arrives just after it must wait that long. Frame preemption removes most of that wait.
 
@@ -38,11 +39,26 @@ The interruption is **local to one link**. The receiving MAC Merge sublayer reas
 - a preemptable frame may be interrupted more than once;
 - both ends of the link must support preemption, and 802.3br verifies this before the feature is used.
 
+<SourceFigure
+  id="intro2017-mac-merge"
+  caption="Figure 2b. The original drawing of the MAC split: transmission selection feeds an express MAC (eMAC) and a preemptable MAC (pMAC), joined by the MAC Merge sublayer above a PHY that is unaware of preemption."
+/>
+
 ## 3. What it changes on the wire
 
 <PreemptionFigure caption="Figure 3. Without preemption, the express frame waits for the whole preemptable frame. With preemption, the preemptable frame is cut, the express frame goes out, and the remainder follows." />
 
 Because of the 64-byte rule, a preemptable frame shorter than 128 bytes cannot be split at all, and the tail of a longer frame cannot be cut once less than 64 bytes remain. An express frame can therefore still wait for a short piece of preemptable traffic, of the order of a hundred bytes. At 1 Gbit/s that is about 1 µs instead of about 12 µs.
+
+<SourceFigure
+  id="intro2017-preemption-frame"
+  caption="Figure 3b. The 802.3br illustration of a preemption request: the preemptable frame is cut, the express frame is sent, and the remainder follows with its own header; fragment sizes and inter-frame gaps are marked."
+/>
+
+<SourceFigure
+  id="farkas2018-preemption"
+  caption="Figure 3c. The “rocks and sand” picture of the original slide: critical packets are scheduled rocks in each cycle, and preemptable packets are sand that fills the gaps between them."
+/>
 
 ## 4. Preemption and the guard band
 
@@ -54,6 +70,11 @@ Because of the 64-byte rule, a preemptable frame shorter than 128 bytes cannot b
 [The TAS post](/blog/time-aware-shaper) explains why a schedule needs a guard band as long as the largest interfering frame. With preemption, the guard band only has to cover the largest piece that cannot be cut. 802.1Qbu lets the gate control list hold back preemptable traffic slightly before a protected window opens and release it afterwards. The window then starts on an idle link [2][3].
 
 Preemption reduces [delay variation](https://en.wikipedia.org/wiki/Packet_delay_variation) for express traffic and gives preemptable traffic back the bandwidth that a full guard band would waste [3].
+
+<SourceFigure
+  id="intro2017-qbv-preemption"
+  caption="Figure 4b. Preemption and scheduled traffic together, as drawn by the task group: the gates of 802.1Qbv above, and the express and preemptable MACs of 802.3br below."
+/>
 
 ## 5. What preemption does not change
 

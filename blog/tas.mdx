@@ -10,6 +10,7 @@ description: Scheduled traffic in IEEE 802.1Qbv. Transmission gates, the gate co
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {TasModelsFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 The Time-Aware Shaper ([TAS](https://standards.ieee.org/ieee/802.1Qbv/6068/)) is the [TSN](https://1.ieee802.org/tsn/) tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the [bridge](https://en.wikipedia.org/wiki/Network_bridge) is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
 
@@ -54,6 +55,21 @@ The remedy is a **guard band**: before each protected slice, no new frame of the
 
 The guard band is bandwidth lost on every cycle. [Frame preemption](/blog/frame-preemption) reduces it from a whole frame to a small fragment.
 
+<SourceFigure
+  id="farkas2018-scheduled-traffic"
+  caption="Figure 4b. Scheduled traffic on the original slide: each queue has a gate (G), open or closed according to a periodic schedule; closing the non-critical gates in advance protects the critical frames."
+/>
+
+<SourceFigure
+  id="intro2017-qbv-gates"
+  caption="Figure 4c. The structure added by 802.1Qbv, as drawn by the task group: a transmission gate after the transmission selection algorithm of each queue, all driven by one gate control list."
+/>
+
+<SourceFigure
+  id="intro2017-guard-band"
+  caption="Figure 4d. The guard band on the original slide: the express gate opens for frames from two ports, and preemptable transmission is held (HOLD) and released (RELEASE) around it."
+/>
+
 ## 3. What a schedule has to know
 
 <TasModelsFigure caption="Figure 5. The inputs of a TAS scheduling problem. A study of 17 methods sorts them into network, traffic and scheduling models. Each method picks one option per dimension, so two methods often solve different problems." />
@@ -67,6 +83,11 @@ A 2023 systematic review and experimental study of TAS scheduling [4] starts fro
 - **Queue isolation.** If two streams share a queue, the FIFO order must match the schedule. Otherwise a lost or delayed frame shifts the others. Methods enforce FIFO, frame-based or stream-based isolation, with stream-based the strictest.
 
 The 17 methods then split along three lines: fixed routing or joint routing and scheduling, no-wait or wait-allowed, and exact solutions ([SMT](https://en.wikipedia.org/wiki/Satisfiability_modulo_theories) or [ILP](https://en.wikipedia.org/wiki/Integer_programming) solvers) or heuristics [4].
+
+<SourceFigure
+  id="xue2023-fig1"
+  caption="Figure 5b. The bridge model of the scheduling study: ingress ports, a switching engine, a priority filter that maps the PCP to a queue, and egress queues gated by a gate control list (GCL)."
+/>
 
 ## 4. Lessons from the experimental study
 

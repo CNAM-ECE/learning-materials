@@ -9,6 +9,7 @@ description: Cyclic Queuing and Forwarding as a joint configuration of stream ga
 
 import {BridgeIntegrationFigure, CyclicQueuingFigure} from '@site/src/components/figures/tsn';
 import {CqfGatesFigure} from '@site/src/components/figures/standards';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 Cyclic Queuing and Forwarding ([CQF](https://1.ieee802.org/tsn/802-1qch/)) makes [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) independent of the other traffic. A frame advances exactly one hop per cycle, so its delay depends only on the path length. No new hardware is needed: CQF is a particular way of configuring two [TSN](https://1.ieee802.org/tsn/) tools that already exist.
 
@@ -40,6 +41,21 @@ Standardisation-wise, CQF is not a separate shaper. It is a joint configuration 
 2. The **transmission gates** of [TAS](https://standards.ieee.org/ieee/802.1Qbv/6068/) run out of phase: while arriving frames go to queue 7, gate 7 is closed and gate 6 is open, and vice versa.
 
 When bridge A opens a gate and sends, bridge B classifies those frames into its own closed queue. That queue opens exactly $T$ later. Both gating mechanisms need synchronised time, and every device carries the same configuration [4].
+
+<SourceFigure
+  id="grigorjew2026-fig12"
+  caption="Figure 3b. The original snapshot from which Figure 3 is redrawn: in each switch, PSFP assigns arriving frames to queue 7 while TAS transmits from queue 6."
+/>
+
+<SourceFigure
+  id="intro2017-cqf-gates"
+  caption="Figure 3c. The task group’s drawing of CQF: time-aware ingress filters at every input port steer frames into two class queues, each followed by a cycle gate."
+/>
+
+<SourceFigure
+  id="intro2017-cqf-timing"
+  caption="Figure 3d. CQF timing over four links: each frame of a stream stays exactly one cycle at each hop."
+/>
 
 ## 3. The cycle-time condition
 

@@ -17,6 +17,7 @@ import {
   ConfigurationFigure,
 } from '@site/src/components/figures/tsn';
 import {ReplicationFigure} from '@site/src/components/figures/shared';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) is a set of [IEEE 802.1](https://1.ieee802.org/) standards for time-sensitive transmission over [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet [bridge](https://en.wikipedia.org/wiki/Network_bridge) does this tool change?
 
@@ -29,6 +30,8 @@ import {ReplicationFigure} from '@site/src/components/figures/shared';
 **TSN** is the set of standards produced by the TSN task group of IEEE 802.1 to provide deterministic services over Ethernet ([IEEE 802](https://www.ieee802.org/)) networks. Most of them are extensions of Bridges and Bridged Networks ([IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/)), the standard for bridges and [virtual LANs](https://en.wikipedia.org/wiki/VLAN), and aim at very low [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) and high availability [1][2]. The organisation behind them is described in [the IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group).
 
 Figure 1 is the picture to keep in mind. A bridge already has a control plane and a data plane made of ingress processing, a relay, queues, transmission selection and a MAC [3]. Every TSN tool extends one of those existing stages. This is why TSN traffic and ordinary traffic can share a bridge: the eight priorities of 802.1Q are kept for backward compatibility, and the tools are added around them [2].
+
+The bridge itself (its control and data planes, the actions of each port and the steps of the forwarding process) is described in [the bridge post](/blog/ieee-802-1q-bridge).
 
 ### Why standard Ethernet is not enough
 
@@ -47,11 +50,21 @@ From the point of view of 802.1 there are two kinds of device, bridges and end s
 
 Three kinds of traffic then coexist on the network: time-triggered traffic, rate-constrained streams and [best-effort](https://en.wikipedia.org/wiki/Best-effort_delivery) traffic [2].
 
+<SourceFigure
+  id="farkas2018-bridged-network"
+  caption="Figure 1b. The basic components on the original slide: talkers and listeners at the edge, edge and core bridges in between, and three streams crossing the bridged network. Each bridge is drawn with its bridge ID and port IDs."
+/>
+
 ## 2. Four groups of tools
 
 <ToolboxFigure />
 
 The task group presents its standards as a toolbox with four groups: time synchronisation, bounded low latency, ultra reliability, and dedicated resources with their management interfaces [3][4]. A tool can be used on its own, but the full guarantee comes from combining them [2]. Figure 2 places the groups around the three guarantees they deliver together: zero congestion loss, bounded latency and low delay variation. The arrows show which guarantee each group mainly serves. The sections below follow this grouping.
+
+<SourceFigure
+  id="farkas2018-components"
+  caption="Figure 2b. The same four groups on the original slide, with the full list of standards and projects of each group. Projects whose name starts with “P” were still in progress in 2018."
+/>
 
 ## 3. Time synchronisation: 802.1AS
 
@@ -148,6 +161,11 @@ In the terms of this series, PSFP is what makes the declared [arrival curve](/bl
 
 Disjoint paths have to be installed. [802.1Qca](https://standards.ieee.org/ieee/802.1Qca/5557/) extends the [IS-IS](https://www.rfc-editor.org/rfc/rfc1195) routing protocol beyond shortest-path trees with *explicit trees*, in a hybrid arrangement: IS-IS provides topology discovery and default paths, while one or more controllers define the explicit trees [3].
 
+<SourceFigure
+  id="farkas2018-explicit-trees"
+  caption="Figure 7b. Path control (802.1Qca) on the original slide: IS-IS keeps the shortest path trees, and a controller (Ctrl) adds an explicit tree between edge bridges EB1 and EB2 through core bridges CB1 and CB2."
+/>
+
 ## 6. Dedicated resources and configuration
 
 ### Stream reservation: 802.1Qat
@@ -169,6 +187,11 @@ The Stream Reservation Protocol performs distributed [admission control](https:/
 - **fully centralised**: a Centralized User Configuration entity collects the requirements of the end stations and passes them to a Centralized Network Configuration entity.
 
 The CNC has a view of the whole network, performs reservation and scheduling centrally, and configures bridges through [NETCONF](https://www.rfc-editor.org/rfc/rfc6241) or [RESTCONF](https://www.rfc-editor.org/rfc/rfc8040) with [YANG](https://www.rfc-editor.org/rfc/rfc7950) data models [2]. This is the architecture assumed by most work on online reconfiguration, including [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn): the CNC is the place where an admission test must run.
+
+<SourceFigure
+  id="farkas2018-configuration"
+  caption="Figure 8b. The three configuration models of 802.1Qcc on the original slide: fully distributed, centralized network and distributed user, and fully centralized."
+/>
 
 ## 7. Summary
 

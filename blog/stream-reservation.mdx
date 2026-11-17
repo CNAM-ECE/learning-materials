@@ -10,6 +10,7 @@ description: How TSN streams reserve resources hop by hop. The Stream Reservatio
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {ReservationFlowFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the [bridges](https://en.wikipedia.org/wiki/Network_bridge) themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
 
@@ -84,6 +85,11 @@ d^P_{\text{seg}} \le \frac{\sum_{i \in H} \left(b_i^{\text{eff}} + r_i\,\Delta^P
 $$
 
 Admission control accepts a new stream only if, after adding it, $d^P_{\text{seg}} \le \Delta^P_{\text{seg}}$ still holds for every priority on the segment. The tutorial gives tighter [network calculus](https://en.wikipedia.org/wiki/Network_calculus) versions and versions for CQF, [ATS](https://1.ieee802.org/tsn/802-1qcr/) and CBS. All follow the same pattern: bound the workload from the traffic specifications and accumulated latencies, then divide by the service rate [4].
+
+<SourceFigure
+  id="intro2017-qcc-model"
+  caption="Figure 3b. The centralized network / distributed user model of 802.1Qcc as drawn by the task group: end stations exchange user/network configuration information at the edge, and a CNC manages the bridges."
+/>
 
 ## 5. Distributed or centralised?
 

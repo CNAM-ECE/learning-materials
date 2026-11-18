@@ -22,7 +22,7 @@ export const learningPath: LearningPathTopic[] = [
   {
     label: 'Deterministic networks',
     sections: [
-      {label: 'Overview', posts: ['why-deterministic-guarantees']},
+      {label: 'Overview', posts: ['determinism-from-ethernet-to-tsn', 'why-deterministic-guarantees']},
       {label: 'Architecture', posts: ['deterministic-networking']},
     ],
   },

@@ -1,0 +1,155 @@
+---
+slug: determinism-from-ethernet-to-tsn
+title: "Determinism: from the OSI and TCP/IP Ethernet stack to TSN"
+date: 2026-09-28
+authors: [trang]
+tags: [standard, deterministic-networking, tsn, ieee-802-1, article]
+description: What determinism means for a network, how ordinary Ethernet fits the seven OSI layers and the four TCP/IP layers, why that stack is not deterministic, and how TSN extends standard Ethernet so that IT and OT traffic can share one connection.
+---
+
+import {OsiTcpIpFigure} from '@site/src/components/figures/deterministic';
+import CommonsFigure from '@site/src/components/CommonsFigure';
+import SourceFigure from '@site/src/components/SourceFigure';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+A control loop on a factory floor and an e-mail server can share the same cable only if the network can promise the first one something the second never needs: that every packet arrives on time. This post starts from the ordinary Ethernet and TCP/IP stack, shows where its timing breaks down, and explains how Time-Sensitive Networking (TSN) extends it without replacing it.
+
+{/* truncate */}
+
+<OsiTcpIpFigure caption="Figure 1. The seven OSI layers, the four TCP/IP layers they correspond to, and where the deterministic extensions act. Upper layers are unchanged; IETF DetNet extends the internet layer, and IEEE 802.1 TSN extends the link layer that Ethernet implements." />
+
+<Abbreviations terms={['OSI', 'TCP', 'UDP', 'IP', 'MAC', 'PHY', 'PDU', 'LAN', 'CSMA/CD', 'IT', 'OT', 'QoS', 'TSN', 'PTP', 'gPTP', 'TAS', 'GCL', 'FRER', 'R-TAG', 'IEEE', 'IETF', 'RFC', 'DetNet', 'VLAN']} />
+
+## 1. Definition: determinism
+
+A network is **deterministic** for a flow when it can guarantee that every packet of the flow arrives within a precise, predictable and bounded time. In practice that means three properties, each stated as a bound rather than an average:
+
+| Property | Guarantee |
+| --- | --- |
+| Bounded latency | No packet takes longer than a known maximum from source to destination |
+| Bounded jitter | The variation of that latency stays within a known range |
+| No congestion loss | No packet is dropped because a queue overflowed |
+
+Fast is not the same as deterministic. A best-effort network can have a very low average delay and still, occasionally, delay a packet by orders of magnitude. For a closed control loop, one late packet can be as bad as a lost one [1]. [Why deterministic guarantees?](/blog/why-deterministic-guarantees) develops this contrast between average and worst case.
+
+## 2. The OSI reference model: seven layers
+
+The **OSI model**, published by ISO in 1984, describes communication in seven abstraction layers, from the transmission of bits to the data of a distributed application. Each layer serves the one above it and is served by the one below [2]:
+
+| Layer | Role | Ethernet / Internet example | Data unit |
+| --- | --- | --- | --- |
+| 7 Application | Services to applications | HTTP, MQTT, OPC UA | data |
+| 6 Presentation | Representation of data | encoding, encryption (TLS) | data |
+| 5 Session | Dialogue between applications | opening and closing sessions | data |
+| 4 Transport | End-to-end delivery between processes | TCP, UDP | segment, datagram |
+| 3 Network | Addressing and routing across networks | IP | packet |
+| 2 Data link | Delivery between neighbours on one network | Ethernet MAC, bridging (IEEE 802.1) | frame |
+| 1 Physical | Bits on the medium | Ethernet PHY (IEEE 802.3), cable, fibre | bits |
+
+<SourceFigure
+  id="overview2018-ieee802-osi"
+  caption="Figure 2. Where IEEE 802 sits in the OSI model: IEEE 802 standards cover the physical and data link layers, with IEEE 802.1 at the top of the data link layer. Ethernet (IEEE 802.3) and TSN (IEEE 802.1) are both here."
+/>
+
+## 3. From OSI to the TCP/IP model
+
+The protocols actually used on the Internet follow a simpler model. The **Internet protocol suite**, or TCP/IP model, defined in RFC 1122 and RFC 1123, has four layers named by their scope rather than numbered by function [3][4]:
+
+| TCP/IP layer | Scope | Corresponding OSI layers |
+| --- | --- | --- |
+| Application | Process-to-process data for applications | 7, 6 and most of 5 |
+| Transport | Host to host: TCP (reliable) or UDP (unreliable) | 4 (and part of 5) |
+| Internet | Between independent networks: IP | part of 3 |
+| Link | Within one network segment: for example Ethernet | 2, with functions of 1 |
+
+The OSI model is still the common vocabulary, but the TCP/IP suite became the standard for networking because its protocols were simpler and could be implemented independently [2]. Both models rest on **encapsulation**: each layer wraps the data of the layer above in its own header [3].
+
+<CommonsFigure
+  id="udp-encapsulation"
+  caption="Figure 3. Encapsulation down the TCP/IP stack: application data gets a UDP header, then an IP header, and finally an Ethernet frame header and trailer before it reaches the wire."
+/>
+
+<CommonsFigure
+  id="ip-stack-connections"
+  caption="Figure 4. Two hosts connected through two routers. Application and transport layers run end to end, between the hosts only; the internet layer runs in every router; the link layer, such as Ethernet, runs separately on each link."
+/>
+
+Figure 4 shows the key point for determinism: **the link layer is where frames wait.** Every switch or router on the path queues frames before sending them on the next link. Whatever happens in those queues decides the delay.
+
+## 4. Ethernet: the link layer of almost everything
+
+<CommonsFigure
+  id="ethernet-frame"
+  caption="Figure 5. An Ethernet Type II frame: a 14-byte MAC header (destination address, source address, EtherType), 46 to 1500 bytes of payload, and a 4-byte check sequence."
+/>
+
+Ethernet, standardised by the IEEE 802 project from 1980 onward, covers the physical layer and the lower part of the data link layer (IEEE 802.3), while bridging and VLANs are specified by IEEE 802.1 [5][6]. Its history explains why it was not deterministic to begin with:
+
+- **Shared medium.** The original Ethernet put every station on one coaxial cable. Access was governed by **CSMA/CD**: a station listens, transmits, and on a collision backs off for a random time and tries again. The random back-off makes the delay of a frame unpredictable, and heavy load makes collisions more frequent [5].
+- **Switched, full-duplex Ethernet.** Bridges and switches split the network into separate links, and full-duplex links remove collisions altogether [5]. This is the Ethernet used today. But a switch still **stores frames in queues** at each output port. When frames from several inputs head for the same output, they wait, and the waiting time depends on all the other traffic.
+- **Priorities are not enough.** IEEE 802.1Q gives eight priority levels, but a frame already being transmitted cannot be interrupted, and nothing ties transmission to a common time. A critical frame can still wait behind a long frame or a burst of other traffic [7].
+
+The layers above add their own variability. TCP retransmits lost segments and slows down on congestion, which is right for file transfer but useless for a control message that is only valid for a few milliseconds. UDP adds no retransmission, but no guarantee either. **The stack as a whole is best effort:** it delivers, usually quickly, but promises no bound.
+
+## 5. Why industry needs a deterministic Ethernet
+
+Industrial systems carry two kinds of traffic with opposite needs [1]:
+
+| | OT (operational technology) | IT (information technology) |
+| --- | --- | --- |
+| Examples | Machine control, sensor values | E-mail, firmware updates |
+| What matters | Fixed delay, low latency, low jitter | Throughput |
+| If late | The data is useless, and the machine may fail | Nothing serious; best effort is enough |
+| Bandwidth | Usually small | Usually larger |
+
+The traditional answer was **two networks**: one for OT, often a fieldbus or a proprietary variant of Ethernet, and one for IT. That doubles cabling and equipment, and the proprietary OT networks do not interoperate with each other or follow the speed increases of standard Ethernet [1][8].
+
+## 6. TSN: an extension of standard Ethernet
+
+**Time-Sensitive Networking** sits on top of standard Ethernet. It is a set of IEEE 802.1 standards that lets one Ethernet network carry IT and OT data on a shared connection, while each kind of traffic still gets what it needs [1][10]. In Cisco's description, the IEEE TSN task group develops specifications that provide deterministic services over layer 1 and layer 2. These are implemented in Ethernet switches such as the Cisco Industrial Ethernet 4000 Series, and are being extended towards wireless access such as 5G [9].
+
+TSN does not replace any layer. As Figure 1 shows, applications, TCP/IP and the Ethernet frame format stay the same; TSN adds functions to the bridges and the MAC. Each standard covers one function, and system designers combine the ones they need [1]. The three described in [1] cover the three gaps of Section 4:
+
+**A common time: 802.1AS.** TSN timing comes from the Precision Time Protocol (PTP, IEEE 1588), which distributes time from a grandmaster clock, such as a GPS-disciplined source, through a tree of master and slave clocks. The generalized PTP of 802.1AS is a stricter profile: it requires a peer-to-peer delay measurement on every link, expects all devices to run at the same frequency (syntonised), and in newer revisions brings back one-step timestamping [1]. Devices are synchronised to within nanoseconds [1]. See [the 802.1AS post](/blog/ieee-802-1as-time-synchronization).
+
+**Scheduled transmission: 802.1Qbv.** A time-aware shaper at each egress port gives each of the eight queues a gate. A gate control list opens and closes the gates on a repeating schedule, so time slots can be reserved for OT traffic and others left to IT traffic [1].
+
+<CommonsFigure
+  id="qbv-schedule"
+  caption="Figure 6. An 802.1Qbv schedule: in every cycle, one time slice is reserved for the time-critical priority and the rest is left to all other traffic."
+/>
+
+Before each protected slot, the hardware keeps a **guard band**: it does not start a frame that could not finish before the slot begins, and holds it for the next slot of its class instead [1]. Traffic is mapped to queues by priority, protocol, destination port or traffic type [1]. See [the TAS post](/blog/time-aware-shaper).
+
+**Redundancy without retransmission: 802.1CB.** Frames of a stream are replicated and sent over two paths, typically both ways round a ring. A redundancy tag carries a sequence number, and the receiver keeps the first copy of each number and discards the duplicates. If a link breaks, no frame is lost and no retransmission delay occurs, and the hardware does the work instead of application software [1]. See [the FRER post](/blog/frame-replication-and-elimination).
+
+The full set of tools, including credit-based shaping, preemption, cyclic queuing, policing and configuration, is described in [the TSN toolbox](/blog/tsn-toolbox).
+
+## 7. Why it prepares a system for the future
+
+- **One converged network.** IT and OT share cables, switches and management, instead of running two networks side by side [1].
+- **Standard Ethernet underneath.** TSN rides on IEEE 802.3, so it benefits from each new Ethernet speed and from multi-vendor, standard hardware rather than a proprietary fieldbus [1][8].
+- **Guarantees that can be proven.** Bounded latency and no congestion loss are properties of the configuration, which can be checked before a stream is admitted. That is the role of [network calculus](/blog/min-plus-algebra) in this series.
+- **Beyond one LAN.** Where a deterministic path must cross routers, IETF DetNet provides the same service at the internet layer (Figure 1 and [the DetNet post](/blog/ietf-detnet)).
+
+## 8. Summary
+
+| Layer (TCP/IP) | Ordinary behaviour | Deterministic extension |
+| --- | --- | --- |
+| Application, transport | TCP retransmits and adapts; UDP gives no guarantee | Unchanged: they receive a bounded service |
+| Internet | IP routing, best effort | IETF DetNet |
+| Link (Ethernet) | Switched queues, eight priorities, no common time | IEEE 802.1 TSN: 802.1AS time, 802.1Qbv schedules, 802.1CB redundancy, and more |
+| Physical | IEEE 802.3 PHY | Unchanged, plus frame preemption (802.3br) |
+
+## References
+
+1. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article, 19 January 2021. [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
+2. Wikipedia, "OSI model," sections on the layer architecture and the comparison with the TCP/IP model. [Article](https://en.wikipedia.org/wiki/OSI_model)
+3. Wikipedia, "Internet protocol suite," sections on key architectural principles and layers. [Article](https://en.wikipedia.org/wiki/Internet_protocol_suite)
+4. R. Braden (Ed.), RFC 1122, "Requirements for Internet Hosts – Communication Layers," IETF, October 1989. [RFC Editor](https://www.rfc-editor.org/rfc/rfc1122)
+5. Wikipedia, "Ethernet," sections on standardisation, shared medium, and bridging and switching. [Article](https://en.wikipedia.org/wiki/Ethernet)
+6. IEEE, *IEEE 802.3, Standard for Ethernet*. [IEEE SA](https://standards.ieee.org/ieee/802.3/10422/)
+7. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
+8. J. Woods, "IEC/IEEE 60802: The Case for the Converged Network in the Factory of the Future," IEEE SA TSN webinar series, April 2023, slide 8. [Slides](https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf)
+9. Cisco Systems, "Wi-Fi 6 and Private LTE/5G Technology and Business Models in Industrial IoT," white paper, 2019, section on IEEE standards. [PDF](https://www.cisco.com/c/dam/en_us/solutions/iot/iot-5g-wp.pdf)
+10. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)

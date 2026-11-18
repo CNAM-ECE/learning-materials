@@ -166,6 +166,8 @@ export const abbreviations: Record<string, Abbreviation> = {
   TG: {expansion: 'Task Group', definition: 'A part of a working group that focuses on one subject, such as the TSN task group of IEEE 802.1.'},
   TAG: {expansion: 'Technical Advisory Group', definition: 'A group of experts on a topic that crosses working groups; it may write a recommended practice.'},
   Cor: {expansion: 'Corrigendum', definition: 'A document that only corrects errors or ambiguities in a standard, without adding new material, for example 802.1Q-2014/Cor 1-2015.', link: 'https://standards.ieee.org/faqs/maintenance/'},
+  'CSMA/CD': {expansion: 'Carrier-Sense Multiple Access with Collision Detection', definition: 'The access method of the original shared-medium Ethernet: listen before sending, detect collisions, back off for a random time and retry. The random back-off makes the delay unpredictable.'},
+  PDU: {expansion: 'Protocol Data Unit', definition: 'The unit of data at one layer: a frame at the data link layer, a packet at the network layer, a segment (TCP) or datagram (UDP) at the transport layer.'},
 };
 
 export type AbbreviationKey = keyof typeof abbreviations;

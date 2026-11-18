@@ -171,3 +171,62 @@ export function LayerRolesFigure(): ReactNode {
     </Figure>
   );
 }
+
+/** OSI seven layers next to the four TCP/IP layers, with examples and where TSN and DetNet act. */
+export function OsiTcpIpFigure({caption}: {caption: ReactNode}): ReactNode {
+  type Row = [string, string, string];
+  const osi: Row[] = [
+    ['L7 Application', 'HTTP, OPC UA, MQTT', 'data'],
+    ['L6 Presentation', 'encoding, TLS', 'data'],
+    ['L5 Session', 'dialogue control', 'data'],
+    ['L4 Transport', 'TCP, UDP', 'segment, datagram'],
+    ['L3 Network', 'IP, routing', 'packet'],
+    ['L2 Data link', 'Ethernet MAC, bridging', 'frame'],
+    ['L1 Physical', 'Ethernet PHY, cable', 'bits'],
+  ];
+  const rowH = 38;
+  const y0 = 30;
+  const yOf = (i: number): number => y0 + i * rowH;
+  const tcp: [string, number, number][] = [
+    ['Application', 0, 3],
+    ['Transport', 3, 1],
+    ['Internet', 4, 1],
+    ['Link', 5, 2],
+  ];
+  return (
+    <Figure
+      height={y0 + 7 * rowH + 14}
+      label="The seven OSI layers with example protocols and data units, the four TCP/IP layers they map to, and where IETF DetNet (Internet layer) and IEEE 802.1 TSN (link layer) extend the stack"
+      caption={caption}
+      source={
+        <>
+          own drawing, after the layer descriptions and the OSI to TCP/IP comparison in the
+          Wikipedia articles <a href="https://en.wikipedia.org/wiki/OSI_model">OSI model</a> and{' '}
+          <a href="https://en.wikipedia.org/wiki/Internet_protocol_suite">Internet protocol suite</a>, and{' '}
+          <a href="https://www.rfc-editor.org/rfc/rfc1122">RFC 1122</a>.
+        </>
+      }>
+      <Txt x={85} y={14} size={11} bold>OSI model</Txt>
+      <Txt x={250} y={14} size={11} bold>Examples, data unit</Txt>
+      <Txt x={445} y={14} size={11} bold>TCP/IP model</Txt>
+      <Txt x={620} y={14} size={11} bold>Deterministic extension</Txt>
+      {osi.map(([layer, ex, pdu], i) => (
+        <g key={layer}>
+          <Box x={10} y={yOf(i)} w={150} h={rowH - 6} lines={[layer]} title size={11} tone={i >= 5 ? 'service' : i === 4 ? 'arrival' : 'plain'} />
+          <Box x={170} y={yOf(i)} w={170} h={rowH - 6} lines={[ex, pdu]} size={9.5} tone="muted" />
+        </g>
+      ))}
+      {tcp.map(([name, first, n]) => (
+        <g key={name}>
+          <Box x={370} y={yOf(first)} w={150} h={n * rowH - 6} lines={[name]} title size={11} tone={name === 'Link' ? 'service' : name === 'Internet' ? 'arrival' : 'plain'} />
+          <Arrow d={`M340,${yOf(first) + (n * rowH - 6) / 2} H370`} tone="muted" heads="none" />
+        </g>
+      ))}
+      <Box x={550} y={yOf(0)} w={160} h={4 * rowH - 6} lines={['unchanged', 'applications see', 'a bounded network']} size={10} tone="muted" dashed />
+      <Box x={550} y={yOf(4)} w={160} h={rowH - 6} lines={['IETF DetNet', 'IP, MPLS']} title size={10} tone="arrival" />
+      <Box x={550} y={yOf(5)} w={160} h={2 * rowH - 6} lines={['IEEE 802.1 TSN', 'time, shaping,', 'redundancy, config']} title size={10} tone="service" />
+      <Arrow d={`M520,${yOf(4) + 16} H550`} tone="arrival" />
+      <Arrow d={`M520,${yOf(5) + rowH - 3} H550`} tone="service" />
+    </Figure>
+  );
+}

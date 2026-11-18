@@ -236,6 +236,21 @@ export const commonsImages = {
     article: spbArticle, width: 420,
     alt: 'Animation of eight equal-cost tree algorithms between a source and a destination in a larger SPB network',
   },
+  'ip-stack-connections': {
+    path: 'ip-stack-connections.svg', commons: 'IP stack connections.svg', author: 'Kbrose', license: 'CC BY-SA 3.0',
+    article: {title: 'Internet protocol suite', url: 'https://en.wikipedia.org/wiki/Internet_protocol_suite'}, width: 420,
+    alt: 'Two hosts connected through two routers: application and transport layers run end to end between the hosts, the internet layer runs in every router, and the link layer is per link',
+  },
+  'udp-encapsulation': {
+    path: 'udp-encapsulation.svg', commons: 'UDP encapsulation.svg', author: 'Cburnett, colourised by Kbrose', license: 'CC BY-SA 3.0',
+    article: {title: 'Internet protocol suite', url: 'https://en.wikipedia.org/wiki/Internet_protocol_suite'}, width: 520,
+    alt: 'Application data wrapped in a UDP header, then an IP header, then an Ethernet frame header and footer as it descends the stack',
+  },
+  'ethernet-frame': {
+    path: 'ethernet-frame.svg', commons: 'Ethernet Type II Frame format.svg', author: 'Wikimedia Commons contributors', license: 'Public domain',
+    article: {title: 'Ethernet frame', url: 'https://en.wikipedia.org/wiki/Ethernet_frame'},
+    alt: 'Ethernet Type II frame: 14-byte MAC header with destination MAC, source MAC and EtherType, a 46 to 1500 byte payload, and a 4-byte CRC',
+  },
 } satisfies Record<string, CommonsImage>;
 
 export type CommonsImageId = keyof typeof commonsImages;

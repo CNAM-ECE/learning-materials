@@ -28,6 +28,26 @@ Figure 1 is the picture to keep in mind. A bridge already has a control plane an
 
 The bridge itself (its control and data planes, the actions of each port and the steps of the forwarding process) is described in [the bridge post](/blog/ieee-802-1q-bridge).
 
+### The TSN standards at a glance
+
+TSN is not one standard but a family. Each standard covers one function, and a system designer combines the ones a system needs, which is how TSN lets IT and OT traffic share one Ethernet connection [5]. The table follows the overview of the main TSN standards in [5], with each name linked to its post in this series and two standards added that complete the set.
+
+| Standard | Name | What it adds | Group |
+| --- | --- | --- | --- |
+| [802.1AS-2020](/blog/ieee-802-1as-time-synchronization) | Timing and Synchronization | A common time in every bridge and end station (gPTP) | Time synchronisation |
+| [802.1Qav](/blog/credit-based-shaper) | Forwarding and Queuing Enhancements for time-sensitive streams | The credit-based shaper, which spreads reserved traffic over time | Bounded latency |
+| [802.1Qbv](/blog/time-aware-shaper) | Enhancements for Scheduled Traffic | Gates opened and closed on a timetable (time-aware shaper) | Bounded latency |
+| [802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) | Frame Preemption | Express frames interrupt preemptable ones (with [802.3br](/blog/ieee-802-3br-interspersing-express-traffic) in the Ethernet MAC) | Bounded latency |
+| [802.1Qch](/blog/cyclic-queuing-and-forwarding) | Cyclic Queuing and Forwarding | Two queues per class alternate, one hop per cycle | Bounded latency |
+| [802.1Qcr](/blog/asynchronous-traffic-shaping) | Asynchronous Traffic Shaping | Per-stream token-bucket shaping without a clock (not in [5]) | Bounded latency |
+| [802.1Qci](/blog/per-stream-filtering-and-policing) | Per-Stream Filtering and Policing | Each stream checked against its contract at ingress | Reliability |
+| [802.1CB](/blog/frame-replication-and-elimination) | Frame Replication and Elimination for Reliability | Copies over disjoint paths, duplicates removed | Reliability |
+| [802.1Qca](/blog/ieee-802-1qca-path-control) | Path Control and Reservation | Explicit, non-shortest paths installed through IS-IS | Reliability |
+| [802.1Qat](/blog/ieee-802-1qat-srp) | Stream Reservation Protocol | Distributed admission control, hop by hop | Resources and configuration |
+| [802.1Qcc](/blog/sdn-and-tsn-configuration) | Stream Reservation Protocol enhancements and TSN configuration | Centralised configuration with a CUC and a CNC | Resources and configuration |
+
+On top of these base standards, **profiles** select the tools and settings for one application: [802.1BA](/blog/ieee-802-1ba-avb-profile) for audio and video, [802.1CM](/blog/ieee-802-1cm-fronthaul-profile) for mobile fronthaul, [IEC/IEEE 60802](/blog/iec-ieee-60802-industrial-profile) for industrial automation and [802.1DG](/blog/ieee-802-1dg-automotive-profile) for vehicles. The rest of this post goes through the four groups in turn.
+
 ### Why standard Ethernet is not enough
 
 Ordinary network equipment has no notion of time, and nothing at the link layer prevents [congestion](https://en.wikipedia.org/wiki/Network_congestion). Even with eight strict priorities, a frame of the highest priority can wait behind a lower-priority frame whose transmission has already started [2]. TSN addresses both problems.
@@ -200,9 +220,6 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 | Resources | Stream reservation | [802.1Qat](https://standards.ieee.org/ieee/802.1Qat/4050/) | Control plane | No |
 | Resources | TSN configuration | 802.1Qcc | Control plane | No |
 
-## Further reading
-
-- "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article. [Link](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/). Listed for further reading; it was not used as a source for this post.
 
 ## References
 
@@ -210,3 +227,4 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 2. Wikipedia, "Time-Sensitive Networking." [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+5. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article, 19 January 2021, Figure 1 and section "TSN Standards." [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)

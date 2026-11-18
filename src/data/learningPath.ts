@@ -90,16 +90,16 @@ export const learningPath: LearningPathTopic[] = [
         posts: ['per-stream-filtering-and-policing', 'frame-replication-and-elimination'],
       },
       {label: 'Resource management', posts: ['stream-reservation']},
+      {
+        label: 'Profiles',
+        posts: [
+          'ieee-802-1ba-avb-profile',
+          'ieee-802-1cm-fronthaul-profile',
+          'iec-ieee-60802-industrial-profile',
+          'ieee-802-1dg-automotive-profile',
+        ],
+      },
       {label: 'Analysis', posts: ['network-calculus-for-tsn']},
-    ],
-  },
-  {
-    label: 'TSN profiles',
-    sections: [
-      {label: 'Overview', posts: ['ieee-802-1ba-avb-profile']},
-      {label: 'Mobile fronthaul', posts: ['ieee-802-1cm-fronthaul-profile']},
-      {label: 'Industrial automation', posts: ['iec-ieee-60802-industrial-profile']},
-      {label: 'Automotive', posts: ['ieee-802-1dg-automotive-profile']},
     ],
   },
   {

@@ -59,10 +59,10 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 | TSN | Frame Replication and Elimination | FRER functions, recovery algorithms, burst after merging |
 | TSN | Stream reservation | SRP, RAP, information for local bounds, the per-class bound |
 | TSN | Network calculus for TSN shapers | TAS, CBS, ATS, PSFP, FRER; analysis tools |
-| TSN profiles | IEEE 802.1BA | What a profile is; AVB goals, base standards and plug-and-play operation |
-| TSN profiles | IEEE 802.1CM | Fronthaul, functional splits, Profiles A and B |
+| TSN (profiles) | IEEE 802.1BA | What a profile is; AVB goals, base standards and plug-and-play operation |
+| TSN (profiles) | IEEE 802.1CM | Fronthaul, functional splits, Profiles A and B |
 | TSN profiles | IEC/IEEE 60802 | Industrial requirements, IA-station, conformance classes, common resource management |
-| TSN profiles | IEEE 802.1DG | Automotive PHYs, what TSN brings to vehicles, how the profile was written |
+| TSN (profiles) | IEEE 802.1DG | Automotive PHYs, what TSN brings to vehicles, how the profile was written |
 | SDN | SDN and TSN configuration | SDN planes, 802.1Qcc models, what the CNC computes, central versus decentralised |
 | SDN | Dynamic reconfiguration | SDN path migration [3], resilient TAS schedules [4], certified admission gate |
 

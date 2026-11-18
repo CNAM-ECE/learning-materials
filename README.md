@@ -10,7 +10,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── blog/                  # Learning path: thirty-seven posts (MDX, KaTeX), authors.yml, tags.yml
+├── blog/                  # Learning path: thirty-eight posts (MDX, KaTeX), authors.yml, tags.yml
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
 ├── src/
 │   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
@@ -27,6 +27,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 | Topic | Post | Content |
 |:---|:---|:---|
+| Deterministic networks | Determinism: from OSI and TCP/IP to TSN | Determinism, the seven OSI and four TCP/IP layers, why Ethernet is best effort, IT/OT convergence, what TSN adds |
 | Deterministic networks | Why deterministic guarantees? | Average versus worst case; why measurement cannot certify TSN |
 | Deterministic networks | Deterministic networking | Deterministic service, requirements, the three techniques, what each layer provides, IntServ and DiffServ, SDN |
 | Network calculus | Min-plus algebra | Cumulative functions, convolution, deconvolution, sub-additive closure |

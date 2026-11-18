@@ -70,6 +70,11 @@ export const abbreviations: Record<string, Abbreviation> = {
   gPTP: {expansion: 'generalized Precision Time Protocol', definition: 'The profile of PTP defined by IEEE 802.1AS, in which every bridge takes part in time distribution.', link: TG + '802-1as-2020/'},
   BMCA: {expansion: 'Best Master Clock Algorithm', definition: 'The PTP algorithm that compares the clocks of a domain and elects the grandmaster.', link: SA + '1588/6825/'},
   GM: {expansion: 'Grandmaster', definition: 'The clock that is the time reference of a PTP or gPTP domain.'},
+  TAI: {expansion: 'International Atomic Time (Temps Atomique International)', definition: 'The continuous atomic timescale without leap seconds; the PTP timescale counts seconds of TAI from the 1970 epoch.', link: 'https://en.wikipedia.org/wiki/International_Atomic_Time'},
+  EPON: {expansion: 'Ethernet Passive Optical Network', definition: 'IEEE 802.3 point-to-multipoint access over a passive fibre tree, with its own ranging and timing mechanism that 802.1AS can reuse.', link: 'https://en.wikipedia.org/wiki/Ethernet_passive_optical_network'},
+  CSN: {expansion: 'Coordinated Shared Network', definition: 'A shared medium where a coordinator schedules access, such as MoCA over in-home coaxial cable; 802.1AS defines a media-dependent layer for it.'},
+  MoCA: {expansion: 'Multimedia over Coax Alliance', definition: 'A home networking technology that carries Ethernet frames over coaxial cable; an example of a coordinated shared network.', link: 'https://en.wikipedia.org/wiki/Multimedia_over_Coax_Alliance'},
+  FTM: {expansion: 'Fine Timing Measurement', definition: 'The IEEE 802.11 procedure that timestamps frames between two Wi-Fi stations, first for location; 802.1AS-2020 uses it to carry time over Wi-Fi.', link: 'https://en.wikipedia.org/wiki/Wi-Fi_positioning_system'},
 
   // TSN mechanisms
   TSN: {expansion: 'Time-Sensitive Networking', definition: 'The set of IEEE 802.1 standards that give Ethernet bounded latency, time synchronisation and high reliability.', link: TG},

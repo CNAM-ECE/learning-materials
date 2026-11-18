@@ -64,6 +64,14 @@ const docs = {
     cite: 'A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, “Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial,” arXiv:2610.11999, 2026',
     url: 'https://arxiv.org/abs/2610.11999',
   },
+  garner2022: {
+    cite: 'G. Garner, S. Rodrigues, “The Transport and Impact of Synchronization in Time-Sensitive Networking: An Introduction to IEEE 802.1AS,” IEEE SA TSN webinar series, 24 February 2022',
+    url: 'https://www.ieee802.org/1/files/public/docs2022/webinar-garner-synchronization-0222.pdf',
+  },
+  allaboutcircuits: {
+    cite: 'J. Steinheider (NXP Semiconductors), “The Fundamentals of Time-Sensitive Networking,” All About Circuits, 19 January 2021',
+    url: 'https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/',
+  },
 } satisfies Record<string, Doc>;
 
 type Entry = {
@@ -140,6 +148,9 @@ export const sourceFigures = {
   'grigorjew2026-fig4': {doc: 'grigorjew', where: 'Fig. 4', alt: 'Switch delay model: propagation, store and forward, processing, shaper queuing and priority queuing', width: 520},
   'grigorjew2026-fig5': {doc: 'grigorjew', where: 'Fig. 5', alt: 'Delay segments between shapers of consecutive switches'},
   'grigorjew2026-fig12': {doc: 'grigorjew', where: 'Fig. 12', alt: 'Cyclic queuing and forwarding as PSFP and TAS gates in two switches'},
+  'allaboutcircuits-ptp-vs-gptp': {doc: 'allaboutcircuits', where: 'Figure 2', edit: 'cropped from a screenshot, with the caption removed, otherwise unchanged', alt: 'A balance: PTP (1588) permits layer 4 and other transports, non-time-aware systems and overlapping time domains; gPTP (802.1AS) uses layer 2 Ethernet only, two-step timestamps, the peer delay mechanism, and all devices are syntonized', width: 460},
+  'garner2022-layering': {doc: 'garner2022', where: 'slide 17', alt: 'The 802.1AS architecture: ClockSource, ClockTarget, ClockMaster, ClockSlave, SiteSync and PortSync in the media-independent layer, above one media-dependent entity per port with the MAC and PHY', width: 520},
+  'garner2022-domains': {doc: 'garner2022', where: 'slide 22', alt: 'Two gPTP domains: domain 0 with a GNSS grandmaster using the PTP timescale, domain 1 with its own grandmaster using an arbitrary timescale, and bridges that belong to both', width: 600},
 } satisfies Record<string, Entry>;
 
 export type SourceFigureId = keyof typeof sourceFigures;

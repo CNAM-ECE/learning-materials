@@ -4,7 +4,7 @@ title: "IEEE 802.1AS gPTP: one clock for the whole network"
 date: 2026-11-20
 authors: [trang]
 tags: [standard, tsn, ieee-802-1, time-sync, article]
-description: How IEEE 802.1AS (gPTP) distributes a common time through bridges and end stations, how a link delay is measured, and why every time-based TSN mechanism depends on it.
+description: How IEEE 1588 PTP became the gPTP profile of IEEE 802.1AS, what the two protocols do differently, how a link delay is measured, and why every time-based TSN mechanism depends on it.
 ---
 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
@@ -13,7 +13,7 @@ import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
 
-Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post explains how it works and what an analysis has to assume about it.
+Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post traces how it grew out of the [Precision Time Protocol](https://en.wikipedia.org/wiki/Precision_Time_Protocol) of IEEE 1588, explains how it works, and states what an analysis has to assume about it.
 
 {/* truncate */}
 
@@ -22,7 +22,7 @@ Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Tra
   caption="Figure 1. Where 802.1AS acts: it adds a common time base under the whole data plane. It changes no forwarding stage itself, but scheduled traffic, cyclic queuing and time-gated policing read their timetables from it."
 />
 
-<Abbreviations terms={["IEEE", "LAN", "PTP", "gPTP", "BMCA", "TSN"]} />
+<Abbreviations terms={["IEEE", "LAN", "PTP", "gPTP", "BMCA", "GM", "TAI", "UDP", "IP", "MAC", "PHY", "EPON", "CSN", "MoCA", "FTM", "AVB", "TSN"]} />
 
 ## 1. Definition
 
@@ -35,27 +35,103 @@ Two properties set it apart from using PTP over an ordinary LAN:
 
 The table in [the TSN toolbox post](/blog/tsn-toolbox) shows which [TSN](https://1.ieee802.org/tsn/) tools depend on gPTP. Scheduled traffic ([802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/)), cyclic queuing ([802.1Qch](https://1.ieee802.org/tsn/802-1qch/)) and time-based stream gates ([802.1Qci](https://1.ieee802.org/tsn/802-1qci/)) need it. The credit-based shaper and asynchronous [traffic shaping](https://en.wikipedia.org/wiki/Traffic_shaping) do not.
 
-## 2. Who is the master
+## 2. From PTP to gPTP
+
+### Where PTP came from
+
+IEEE 1588 moves precise time across a packet network by a two-way exchange of timestamped messages. It also contains the BMCA, which picks the best clock and builds the tree along which time flows [6]. Three kinds of PTP clock appear in a network [2]:
+
+- an **ordinary clock** has one port and is either the source of time or a receiver of it;
+- a **boundary clock** has several ports: it recovers time on one port and serves it again on the others;
+- a **transparent clock** forwards PTP messages and writes its own residence time into them, so the receiver can remove it.
+
+The protocol and its offshoots evolved in steps:
+
+| Year | Standard | What it brought |
+| --- | --- | --- |
+| 2002 | [IEEE 1588-2002](https://en.wikipedia.org/wiki/Precision_Time_Protocol) (PTP version 1) | Precise time for small LANs in test and measurement |
+| 2008 | [IEEE 1588-2008](https://standards.ieee.org/ieee/1588/4355/) (PTP version 2) | Generalised for telecom, audio/video, industrial automation, power utilities and finance; transparent clocks, peer delay, unicast and the notion of a profile; not interoperable with version 1 |
+| 2011 | [IEEE 802.1AS-2011](https://www.ieee802.org/1/pages/802.1as.html) | gPTP: a profile of 1588-2008 for Audio Video Bridging, with every bridge time-aware |
+| 2019 | [IEEE 1588-2019](https://standards.ieee.org/ieee/1588/6825/) (version 2.1) | New optional features, among them the use of a medium's own timing mechanism; backward compatible with 2008 if the new options are not used |
+| 2020 | [IEEE 802.1AS-2020](https://1.ieee802.org/tsn/802-1as-2020/) | A profile of 1588-2019: multiple domains, one-step ports, Wi-Fi fine timing measurement, external port configuration |
+| from 2020 | 802.1AS amendments | YANG data model (P802.1ASdn), half-duplex 10 Mb/s links (P802.1ASds), inclusive terminology (P802.1ASdr), hot standby grandmasters (P802.1ASdm) |
+
+The movement therefore runs both ways. 802.1AS took the 2008 protocol and narrowed it, and 1588-2019 took back an idea that 802.1AS had introduced: carrying time with the native timing mechanism of a medium such as Wi-Fi [6][2].
+
+### Why a profile was needed
+
+IEEE 1588 is a menu, not a single protocol. A deployment has to choose [6]:
+
+- which of the two delay measurement modes to use;
+- whether the best clock is elected by the standard BMCA, by an alternate algorithm, or set from outside by a higher-layer entity;
+- the transport: Ethernet, IPv4 or IPv6, and multicast, unicast or both;
+- the timescale: the PTP timescale based on [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time), or an arbitrary one chosen by the application;
+- whether several timing domains are needed.
+
+1588 also sets no performance targets, because these depend on the application. Every application of PTP therefore conforms to a **PTP profile**: a fixed choice of the options that are required and those that are forbidden, together with the allowed ranges and default values of the configurable attributes. 1588 itself describes how an organisation may write such a profile [6].
+
+802.1AS is more than a profile. It contains [6]:
+
+1. a PTP profile, of 1588-2008 in the 2011 edition and of 1588-2019 in the 2020 edition;
+2. performance requirements, written for audio and video before industrial and automotive TSN existed (newer applications define their own, for example in their [TSN profiles](/blog/iec-ieee-60802-industrial-profile));
+3. protocol features that are not part of 1588, such as time transport over IEEE 802.11, EPON and coordinated shared networks.
+
+When AVB was standardised, gPTP was the only 1588 profile that worked plug-and-play and also ran over 802.11 [8].
+
+### PTP and gPTP side by side
+
+<SourceFigure
+  id="allaboutcircuits-ptp-vs-gptp"
+  caption="Figure 2. The trade between the two protocols. PTP leaves transport, the devices in between and the domain layout open. gPTP closes each of these choices so that every device in the network can be trusted to keep time."
+/>
+
+Figure 2 summarises the differences [7]. The table below expands them and marks where the 2020 revision narrowed the gap:
+
+| Aspect | PTP (IEEE 1588) | gPTP (IEEE 802.1AS) |
+| --- | --- | --- |
+| Transport | Ethernet, or [UDP](https://www.rfc-editor.org/rfc/rfc768) over IPv4 or IPv6 (event messages on port 319, general messages on port 320), plus other mappings [2] | Layer 2 only. On Ethernet, frames go to a link-local multicast address that bridges never forward, so each message crosses exactly one link. Wi-Fi, EPON and CSN links use their own timing mechanisms [6] |
+| Devices between clocks | Switches and routers that ignore PTP may sit on the path; their queuing appears as unknown delay | Every device on the path is time-aware. A port whose neighbour cannot run 802.1AS does not carry time |
+| Delay measurement | End-to-end delay request–response (Figure 5) or peer delay | Peer delay only, on every link (Figure 6) [7] |
+| Timestamps | One-step or two-step | Two-step only in 802.1AS-2011; one-step ports allowed since 802.1AS-2020 [6][7] |
+| Frequency | Not every device has to follow the grandmaster's rate | All devices are **syntonised**: each link measures the rate ratio to its neighbour, and the ratios accumulate to the rate ratio to the grandmaster [6] |
+| Domains | Several domains may overlap on one network | Domain 0 only in 802.1AS-2011; several domains since 802.1AS-2020 (Figure 8) [6] |
+| Choice of grandmaster | Standard BMCA, alternate BMCA, or external choice | BMCA that matches the port-role logic of RSTP; external port configuration added in 2020 [6] |
+| Performance targets | None; left to the profile | In the standard, and tightened by the TSN profiles that use it |
+
+*Syntonised* means equal in frequency; *synchronised* means equal in time. A syntonised clock ticks at the grandmaster's rate even between two Sync messages, which is what lets a bridge convert its own residence time into grandmaster time.
+
+### The 802.1AS architecture
+
+<SourceFigure
+  id="garner2022-layering"
+  caption="Figure 3. The 802.1AS architecture of one time-aware system. The media-independent layer relays time from port to port (SiteSync, PortSync) and hands it to and from the application (ClockMaster, ClockSlave). Below it, each port has a media-dependent entity for its link."
+/>
+
+The split in Figure 3 is what made gPTP portable across media [6]. Wi-Fi, EPON and coordinated shared networks such as [MoCA](https://en.wikipedia.org/wiki/Multimedia_over_Coax_Alliance) already have a way to align the two ends of a link; Wi-Fi developed it for location finding. Such mechanisms align one link only, not the whole network. 802.1AS reuses them in the media-dependent layer and chains the links together in the media-independent layer. Full-duplex Ethernet has no timing of its own, so its media-dependent layer uses the 1588 messages described in Section 4. Each media-dependent entity reports to the layer above in one common format, and the application sees the same abstract interface whatever the medium.
+
+## 3. Who is the master
 
 <CommonsFigure
   id="gptp-hierarchy"
-  caption="Figure 2. A gPTP domain. The grandmaster's time flows down a tree. On every link one end is a clock master port and the other a clock slave port. Bridges forward time and add the corrections for cable and residence delay."
+  caption="Figure 4. A gPTP domain. The grandmaster's time flows down a tree. On every link one end is a clock master port and the other a clock slave port. Bridges forward time and add the corrections for cable and residence delay."
 />
 
-The **best master clock algorithm ([BMCA](https://standards.ieee.org/ieee/1588/6825/))** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 2 [2].
+The **best master clock algorithm ([BMCA](https://standards.ieee.org/ieee/1588/6825/))** compares the clocks it hears about and elects a grandmaster. Each port then becomes a master port (sending time downstream) or a slave port (receiving time from upstream). Ports on redundant links become passive. The result is a spanning tree of time, as in Figure 4 [2].
 
-The figure uses the master/slave port names of the original standards. Recent revisions of IEEE 1588 also allow the names timeTransmitter and timeReceiver.
+In 802.1AS the BMCA plays the same role as the port-role part of [RSTP](/blog/rstp-rapid-spanning-tree) in 802.1Q: a master port corresponds to a designated port, a slave port to the root port, and a passive port to an alternate port [6]. The difference is what is being elected. RSTP elects a root bridge for forwarding; the BMCA elects a grandmaster by its clock attributes, such as priority, clock class and accuracy.
 
-## 3. Measuring a link
+The figure uses the master/slave port names of the original standards. Recent revisions of IEEE 1588 also allow the names timeTransmitter and timeReceiver, and the P802.1ASdr amendment brings the same change to 802.1AS [6].
+
+## 4. Measuring a link
 
 ### The PTP exchange
 
 <SourceFigure
   id="cisco-ptp-delay-request"
-  caption="Figure 3. The PTP delay request–response exchange. Sync and Follow_Up carry the master's send time t1; Delay_Req and Delay_Resp carry the slave's request back and the master's receive time t4. After four messages the slave knows all four timestamps (right column)."
+  caption="Figure 5. The PTP delay request–response exchange. Sync and Follow_Up carry the master's send time t1; Delay_Req and Delay_Resp carry the slave's request back and the master's receive time t4. After four messages the slave knows all four timestamps (right column)."
 />
 
-The **offset** is how far the slave clock is from the master clock at the same instant: an offset of +3 µs means the slave reads 3 µs ahead, so it must step or slow its clock by 3 µs. The **path delay** is the time a message takes on the wire between them. The exchange of Figure 3 measures both:
+The **offset** is how far the slave clock is from the master clock at the same instant: an offset of +3 µs means the slave reads 3 µs ahead, so it must step or slow its clock by 3 µs. The **path delay** is the time a message takes on the wire between them. The exchange of Figure 5 measures both:
 
 1. The master sends **Sync** at $t_1$ (master time); the slave receives it at $t_2$ (slave time). In two-step clocks, a **Follow_Up** message carries the exact $t_1$.
 2. The slave sends **Delay_Req** at $t_3$ (slave time); the master receives it at $t_4$ (master time) and returns $t_4$ in **Delay_Resp**.
@@ -72,28 +148,45 @@ The symmetry assumption is the weak point: any difference between the two direct
 
 ### Peer delay in 802.1AS
 
-<PeerDelayFigure caption="Figure 4. Peer delay measurement in 802.1AS. Each pair of neighbouring ports measures its own link. The follow-up message carries the precise send time t3 (two-step operation)." />
+<PeerDelayFigure caption="Figure 6. Peer delay measurement in 802.1AS. Each pair of neighbouring ports measures its own link. The follow-up message carries the precise send time t3 (two-step operation)." />
 
-gPTP does not measure the delay from master to slave end to end. Each pair of neighbours measures only the link between them, using the **peer-to-peer delay mechanism** of Figure 4. The time itself then travels in `Sync` and `Follow_Up` messages. At each hop the bridge adds to a correction field:
+gPTP does not measure the delay from master to slave end to end. Each pair of neighbours measures only the link between them, using the **peer-to-peer delay mechanism** of Figure 6. The same message exchange also yields the **neighbour rate ratio**, the frequency of the neighbour's clock relative to the local one [6]. The time itself then travels in `Sync` and `Follow_Up` messages. At each hop the bridge adds to a correction field:
 
 - the measured delay of the link the message arrived on;
 - its own **residence time**, from reception to forwarding;
 - a correction for the **rate ratio**, the frequency difference between neighbouring clocks.
 
+A receiving port thus finds its offset from the grandmaster as the receive timestamp, minus the grandmaster time carried in the message, minus the mean link delay, minus a known asymmetry correction if there is one. The servo (a phase-locked loop) smooths the result for the application, but the unfiltered value is what the bridge passes on to the next hop [6].
+
 Errors therefore accumulate hop by hop. Queuing does not add error, because each bridge measures how long the message stayed inside it and adds exactly that time to the correction field.
 
 <SourceFigure
   id="intro2017-gptp-network"
-  caption="Figure 4b. One time domain across several media, as shown when the 802.1AS revision started: Ethernet, an optical access network (EPON), Wi-Fi and a coordinated shared network, from a stratum 1 clock source to the end points."
+  caption="Figure 7. One time domain across several media, as shown when the 802.1AS revision started: Ethernet, an optical access network (EPON), Wi-Fi and a coordinated shared network, from a stratum 1 clock source to the end points."
 />
 
-## 4. What changed in the 2020 revision
+## 5. What changed in the 2020 revision
 
-The 2020 revision of 802.1AS improved the accuracy of time measurement and added **multiple time domains**, so that a device can follow several grandmasters for redundancy [2]. The task group's work on the revision also covered [link aggregation](https://en.wikipedia.org/wiki/Link_aggregation), faster changeover between grandmasters, and redundant paths [3].
+The 2020 revision rebased 802.1AS on 1588-2019 and removed several limits of the 2011 edition [6]:
 
-## 5. What an analysis must assume about time
+- **Multiple domains.** 1588-2008 already allowed several domains, but 802.1AS-2011 ran in domain 0 only. In 2020 each domain a node supports is a separate PTP instance. Every time-aware system still supports domain 0, for compatibility with 2011 devices.
+- **Common mean link delay service.** The delay of an Ethernet link depends on the cable, not on the domain, so it is measured once and shared by all domains.
+- **One-step ports**, where the Sync message carries its own precise timestamp and no Follow_Up is needed.
+- **External port configuration**, an alternative to the BMCA in which a management entity sets the port states. This suits redundancy through several domains.
+- **Fine timing measurement for Wi-Fi**, more accurate than the timing measurement of the 2011 edition.
+- **Asymmetry measurement** by line-swapping, supported through management.
+- **Automatic detection** of whether the device at the other end of a link runs 802.1AS.
 
-A schedule computed for perfectly synchronised clocks fails on real hardware. The literature on scheduled traffic therefore models a **maximum synchronisation error**: the largest offset between two non-faulty clocks. Windows are widened by that margin [4]. The 802.1AS revision allows a finer model, with an error per node that depends on its role and its hop distance from the grandmaster [4].
+<SourceFigure
+  id="garner2022-domains"
+  caption="Figure 8. Two gPTP domains in one network. Domain 0 takes its time from a GNSS-locked grandmaster on the PTP timescale; domain 1 has its own grandmaster on an arbitrary timescale. Hatched bridges and end stations take part in both."
+/>
+
+Figure 8 shows the result. Some systems belong to both domains but use only one at a time, and each domain may run on its own timescale [6]. Industrial automation uses exactly this split: a *global time* traceable to TAI, and a *working clock* for the control cycles [6]. The task group's work on the revision also covered [link aggregation](https://en.wikipedia.org/wiki/Link_aggregation), faster changeover between grandmasters, and redundant paths [3]. The P802.1ASdm amendment then adds a hot standby grandmaster: two domains run in parallel, and a node switches to the second without interrupting the time its applications see [6].
+
+## 6. What an analysis must assume about time
+
+A schedule computed for perfectly synchronised clocks fails on real hardware. The literature on scheduled traffic therefore models a **maximum synchronisation error**: the largest offset between two non-faulty clocks. Windows are widened by that margin [4]. The 802.1AS revision allows a finer model, with an error per node that depends on its role and its hop distance from the grandmaster [4]. Profiles set the number. For its working clock, IEC/IEEE 60802 requires the absolute time error between the grandmaster and any end instance to stay within 1 µs, over a chain of at least 64 and ideally 100 nodes [6].
 
 Two practical lessons come from a testbed study of 17 scheduling methods [4]:
 
@@ -102,15 +195,18 @@ Two practical lessons come from a testbed study of 17 scheduling methods [4]:
 
 A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_of_things) technologies makes the same point from the other side. With even small time errors, carefully aligned windows can drift apart. Scheduled traffic is then delayed by a whole cycle, and the problem grows with the size of the network [5].
 
-## 6. Summary
+## 7. Summary
 
 | Element | Role |
 | --- | --- |
+| IEEE 1588 PTP | General protocol with many options and no performance targets |
+| gPTP (802.1AS) | A profile of PTP plus extra features: layer 2, peer delay, every device time-aware and syntonised |
 | Grandmaster | Reference clock of a gPTP domain, elected by the BMCA |
 | Master and slave ports | Direction of time on each link |
-| `Pdelay_Req`, `Pdelay_Resp`, `Pdelay_Resp_Follow_Up` | Measure the delay of one link between neighbours |
+| `Pdelay_Req`, `Pdelay_Resp`, `Pdelay_Resp_Follow_Up` | Measure the delay and rate ratio of one link between neighbours |
 | `Sync`, `Follow_Up` | Carry time down the tree, with accumulated corrections |
 | Rate ratio | Frequency difference between neighbouring clocks |
+| Domains | Separate PTP instances, for redundancy or for different timescales (since 2020) |
 | Synchronisation error | The bound that schedules and analyses must assume |
 
 ## References
@@ -120,3 +216,6 @@ A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_o
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 4. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023 (v4, 2024), Sections II-A and VII-B. [arXiv](https://arxiv.org/abs/2305.16772)
 5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
+6. G. Garner, S. Rodrigues, "The Transport and Impact of Synchronization in Time-Sensitive Networking: An Introduction to IEEE 802.1AS," IEEE SA TSN webinar series, 24 February 2022, slides 10–31. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-garner-synchronization-0222.pdf)
+7. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, 19 January 2021, section on time synchronisation and Figure 2. [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
+8. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slide 15. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)

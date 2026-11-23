@@ -70,7 +70,7 @@ The **Reference** section collects the notation sheet, a TSN glossary and an ann
 
 ## Article
 
-The survey traces TSN from Audio Video Bridging to the current IEEE 802.1 standards, introduces deterministic network calculus, and reviews its use to bound delay and backlog under the main TSN mechanisms (CBS, TAS, ATS, frame preemption, CQF), including the integration with DetNet and wireless/5G. The draft of a survey is written in the IEEEtran journal format for *IEEE Communications Surveys & Tutorials*:
+The survey traces TSN from Audio Video Bridging to the current IEEE 802.1 standards, introduces deterministic network calculus, and reviews its use to bound delay and backlog under the main TSN mechanisms (CBS, TAS, ATS, frame preemption, CQF), including the integration with wirelined DetNet. The draft of a survey is formulated with research questions and paper understandings in [Excel literature review](https://docs.google.com/spreadsheets/d/1jbG-N9UpTw_vmJzJUMY6U7wN4mEwk8g2QfGTYSZxOZc/edit?gid=442894160#gid=442894160). The ressources are then written in the details of the IEEEtran journal format for *IEEE Communications Surveys & Tutorials*:
 
 ```
 article/

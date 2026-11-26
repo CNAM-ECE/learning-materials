@@ -242,3 +242,52 @@
     max-width: 75% !important;
   }
 }
+
+/* Collapsible gallery of annotated pages (src/components/HandwrittenPages). */
+.handwritten-pages {
+  margin: 1.2rem 0 1.6rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+}
+.handwritten-pages summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.handwritten-page {
+  margin: 0.8rem 0;
+  text-align: center;
+}
+.handwritten-page img {
+  max-width: 100%;
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+.handwritten-page figcaption {
+  font-size: 0.8rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* Research understanding landing page (src/theme/BlogListPage). */
+.ru-section {
+  margin: 0.8rem 0 1.2rem;
+}
+.ru-section__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 0.3rem;
+}
+.ru-section__posts {
+  list-style: none;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--ifm-color-emphasis-300);
+}
+.ru-section__posts li {
+  margin-bottom: 0.6rem;
+}
+.ru-section__desc {
+  font-size: 0.88rem;
+  color: var(--ifm-color-emphasis-700);
+}

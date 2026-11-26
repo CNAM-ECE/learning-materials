@@ -130,7 +130,7 @@ Variations in the first four are absorbed by buffers; the fifth is bounded by an
 | Queue empty and credit positive | Reset to zero |
 | Queue empty and credit negative | Increases back towards zero |
 
-:::caution Correction to the seminar paper
+:::caution[Correction to the seminar paper]
 Yang et al. [7] writes that credit *increases when a frame is added to the queue and decreases when a frame is sent*. This is a simplification: credit grows with **time spent waiting** at the idle slope, not with the number of frames enqueued, and it decreases with **time spent sending**. Its own figure (Figure 5) shows the correct rule. Section 2 above gives the exact rules.
 :::
 

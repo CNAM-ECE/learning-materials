@@ -126,8 +126,7 @@ const config: Config = {
           items: [
             {label: 'Research understanding', to: '/blog'},
             {label: 'Doctoral training', to: '/doctoral-training'},
-            {label: 'Notation and results', to: '/reference/notation'},
-            {label: 'Annotated resources', to: '/reference/resources'},
+            {label: 'Reference', to: '/reference/intro'},
           ],
         },
         {

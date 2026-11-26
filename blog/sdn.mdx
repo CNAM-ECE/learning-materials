@@ -139,9 +139,14 @@ Computer-aided design of a TC network is split into tasks, each defined by **inp
 | **4. Scheduling** (TS traffic) | When each frame is sent on each link. In TSN: the **GCL**, the number of queues per port and the flow-to-queue mapping | Link occupancy, flow dependencies along the path (with synchronisation error), end-to-end deadline, disjoint TS queue intervals (relaxed when frames of the same flow share a queue) | Maximise laxity ($D - \text{WCD}$), minimise tardiness ($\text{WCD} - D$), minimise the number of TS queues |
 | **5. Bandwidth allocation** (BS traffic) | An upper bound on the bandwidth of each non-scheduled flow, so that nothing is starved | $\sum$ bandwidth ≤ link bandwidth | Joint bandwidth and schedule optimisation in TTEthernet and TSN |
 
+Two details marked in the reading:
+
+- **Topology and routing objectives depend on the domain.** In aerospace and automotive networks the aim is to minimise the weight of the cabling; elsewhere it is cost. While modelling routing, the engineer may also optimise the weight of the links used, and in switched Ethernet the routes decide where link congestion appears.
+- **The scheduling constraints, written out.** The schedule gives, for each TS flow $f_i$, its frame $j$ and each link $dl_{x,y}$ on its route, a transmission offset $\phi^{dl_{x,y}}_{i,j}$ in the schedule table. A valid schedule must respect: link occupancy (no two frames on a link at once); flow dependency (a frame is sent on the next link only after it has been received and forwarded by the switch, the forwarding delay, allowing for the synchronisation error); the end-to-end deadline; and **queue occupancy**: at switch $ns_x$ the number of TS frames waiting in a queue never exceeds its capacity, $q(f_i, ns_x) \le Q^{TS}_x$. For a fully deterministic transmission, frames of different TS flows must not be in the same queue at the same time, so the order in which they leave is fixed by the gate-opening events of the GCL.
+
 A configuration is **schedulable** when the worst-case delay (WCD) is at most the deadline. A fully deterministic schedule gives the WCD directly. Otherwise the WCD comes from an analysis: network calculus, or trajectory analysis for AFDX and TTEthernet.
 
-:::caution Average versus worst case
+:::caution[Average versus worst case]
 Average delays of BS traffic are often computed with an M/M/1 queue ($\rho = \lambda/\mu$) or the Pollaczek–Khinchine formula. They are not guarantees. For TSN, extending the 802.1BA formula for CBS is **unsafe**; network calculus or availability-interval analysis is needed. The [CBS post](/blog/credit-based-shaper) explains the limits of that formula.
 :::
 

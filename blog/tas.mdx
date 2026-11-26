@@ -12,7 +12,6 @@ import {TasModelsFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 The Time-Aware Shaper ([TAS](https://standards.ieee.org/ieee/802.1Qbv/6068/)) is the [TSN](https://1.ieee802.org/tsn/) tool that gives the strongest timing guarantees, and the hardest one to configure. The mechanism in the [bridge](https://en.wikipedia.org/wiki/Network_bridge) is simple: a gate per queue and a timetable. The difficulty lies in computing the timetable.
 
@@ -25,7 +24,6 @@ The Time-Aware Shaper ([TAS](https://standards.ieee.org/ieee/802.1Qbv/6068/)) is
 
 <Abbreviations terms={["IEEE", "VLAN", "PCP", "PTP", "TSN", "TAS", "GCL", "CNC", "SDN"]} />
 
-<ArticleNotesCard pages={['ieee-802-1qbv', 'tsn-network-design']} />
 
 ## 1. Definition
 
@@ -123,6 +121,115 @@ For worst-case analysis, a queue behind a gate sees a service that is zero while
 | Configured by | Usually a CNC that computes a network-wide schedule |
 | Main cost | Guard bands, central computation, sensitivity to time errors |
 
+## 7. From the articles
+
+Reading notes on Lo Bello and Steiner [7], Yang et al. [8] and Xue et al. [4], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### The mechanism
+
+[IEEE 802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) brings **time-triggered** communication into 802.1. Its particular choice is to schedule **queues, not frames** ([7] §IV-B):
+
+- Each queue has a **gate**, open or closed. Transmission selection only considers queues whose gate is open.
+- A **gate control list (GCL)** says when each gate opens and closes. It repeats with a **cycle time** and has a limited number of entries (typically 8 to 1024, depending on the bridge, Xue et al. [4] §II-A).
+- The standard actually stores relative durations between gate changes; Lo Bello and Steiner [7] writes them as absolute times for clarity.
+- End stations must implement the same gates, but at their interface, frame-level scheduling cannot be told apart from gate scheduling.
+- The network-wide schedule is computed by a **CNC** ([4] §I).
+
+**Guard band.** A queue must stop starting new frames early enough that the last one finishes before its gate closes; otherwise it would delay the queue opening at that instant. This interval is the **guard band**. A simple bridge reserves one maximum frame time; a better one checks whether the next frame still fits. Windows protected this way are called **protected windows**.
+
+### The example in Lo Bello and Steiner [7]
+
+ES1 is synchronised and time-critical; ES3 is not synchronised and sends best-effort traffic; both send to ES2 through bridge B1.
+
+<SourceFigure
+  id="lobello2019-qbv-example"
+  caption="Figure 6. Without Qbv (top), a frame of ES3 that becomes ready slightly earlier is sent first and delays the frame of ES1, even with a lower priority. With Qbv (bottom), the gate of queue 4 closes before the frame of ES1 is ready, so ES1 is never delayed."
+/>
+
+Priorities alone cannot keep ES3 from delaying ES1, because a low-priority frame already on the wire cannot be stopped. A GCL entry that closes queue 4 (ES3) in time, while queue 7 (ES1) is open, solves it.
+
+### Computing the GCL
+
+The gate mechanism is simple; finding the gate times is not. Schedule synthesis is in general **NP-complete** ([7]). Two families of methods exist: dedicated search (heuristics, meta-heuristics, genetic algorithms) and general solvers (ILP, SMT). Xue et al. [4] reviews them with three groups of models:
+
+| Model group | Choices | Effect |
+| --- | --- | --- |
+| **Network** | Propagation and processing delay, line rate, queues for TT traffic (≤ 8), maximum GCL length, synchronisation error | Constraints that a schedule must respect on real hardware |
+| **Traffic** | Fully or partially schedulable release times; strictly or non-strictly periodic; payload over several frames; implicit, constrained or arbitrary deadline; zero-jitter or bounded jitter | What the application allows the scheduler to choose |
+| **Scheduling** | **No-wait** (no queuing along the path) or **wait-allowed**; frame or stream isolation in queues; joint routing; fragmentation; preemption | The search space and the delay and jitter obtained |
+
+<SourceFigure
+  id="xue2023-fig2"
+  caption="Figure 7. The example network used throughout the review: five bridges, five end stations and four streams."
+/>
+
+### What the 17-method comparison found
+
+Xue et al. [4] ran 17 TAS scheduling methods (2016–2022) in simulation and on an eight-bridge testbed:
+
+<SourceFigure
+  id="xue2023-fig6"
+  caption="Figure 8. The testbed: eight TTTech evaluation boards in a ring, Raspberry Pi end stations with Intel i210 NICs, and a CNC and CUC."
+/>
+
+- **No method wins everywhere.** Each model or method is best only under some settings.
+- **Settings bias conclusions.** Results depend heavily on the stream sets, topologies and resource limits chosen. Use broad settings, or realistic ones taken from profiles such as [IEC/IEEE 60802](/blog/iec-ieee-60802-industrial-profile).
+- **Metrics can disagree.** The schedulable ratio and a pairwise schedulability advantage gave inconsistent rankings; several metrics, with statistically sound data, are needed.
+- **Describe the experiment fully**: model assumptions, solver settings, stream specifications, and exactly where delay is measured.
+- **Model assumptions hold on hardware.** Propagation delay (a few ns), processing delay (≤ 1.9 µs per hop) and synchronisation error can be bounded on the testbed, which justifies the constant-or-bounded assumptions of most methods.
+- **Constraints often ignored**: the maximum GCL length of real bridges, and the limited number of queues.
+
+### The scheduling models in detail
+
+| Choice | Options | Effect |
+| --- | --- | --- |
+| **Scheduling entity** | Frame (one GCL entry per frame, no interference); window (frames share an entry, causing jitter; window assigned, partially or not); class (asynchronous, out of scope) | Frame-based gives determinism; window-based gives short GCLs |
+| **Queue isolation** | Unrestricted (as in TTEthernet; ignores FIFO order, so the schedule may deviate); explicit: FIFO order kept, **frame isolation** (one frame of a stream in the queue at a time, robust to loss) or **stream isolation** (stricter) | Only wait-allowed models are affected |
+| **Routing** | **FR**: fixed routes, usually shortest paths; **JRS**: joint routing and scheduling | JRS schedules more but costs more |
+| **Fragmentation versus preemption** | FRAG: schedule-aware fragmentation cuts store-and-forward delay but adds headers; PRE: express interrupts preemptable | PRE gives no delay gain over FRAG (reassembly) but saves bandwidth |
+| **Non-overlap constraint** | Big-M (ILP), disjunction (SMT), AllDifferent (CP) | CP is faster than SMT and ILP |
+
+A maximum Ethernet frame is 1,522 bytes, including a 22-byte header with the VLAN tag. Payloads above 1,500 bytes are split into frames, scheduled one by one or back to back as a block.
+
+**The 17 methods.**
+
+| Class | Methods |
+| --- | --- |
+| FR, no-wait | SMT-NW (job-shop ILP with guard-band compression and tabu), SMT-FRAG (SMT with fragments), DT (divisibility theory, incremental search without backtracking) |
+| FR, wait-allowed | SMT-WA (first queue isolation in TSN), AT (array theory for windows), I-OMT (iterative OMT by groups), CP-WA (constraint programming with decomposition), SMT-PRE (SMT choosing express or preemptable), LS-TB (list scheduling with backtracking on conflict sets), LS-PL (per-link phases) |
+| JRS | JRS-WA (first joint ILP, prunes infeasible paths), JRS-MC (multicast), JRS-NW and JRS-NW-L (ILP with indicator constraints, speed-ups), LS (list scheduling over routes, no backtracking), I-ILP (iterative ILP with grouping and multicast routing), CG (conflict-graph independent sets, heuristic plus ILP) |
+
+Other objectives in the literature: minimum delay and jitter, minimum number of queues, better QoS for coexisting BE or AVB traffic, reliability (retransmission, disjoint routes, FRER, out-of-sync tolerance), **online reconfiguration** (adding and removing streams, two-stage updates that avoid deadlock), and learning-based schedulers (kNN, GCN with DRL), which give no determinism guarantee.
+
+**Testbed measurements.**
+
+| Quantity | Measured | Used in simulation |
+| --- | --- | --- |
+| Propagation delay (RTT on a CAT7 cable) | 2–6 ns | 6 ns |
+| Processing delay (inferred) | ≤ 1.9 µs | 1.9 µs |
+| Synchronisation error, after grandmaster election (about 5 s) | ≤ 10 ns | 10 ns |
+| System clock to PTP hardware clock offset | ≤ 50 ns | 50 ns |
+
+16 of the 17 methods ran on the hardware (SMT-FRAG produced fragments too small for the hardware windows). On a validation set of 8 streams with 1 ms periods and 10,000 frames, the **measured delay never exceeded the analysed worst case**.
+
+**Simulation set-up.** 10 to 220 streams (220 is above industrial utilisation bounds); periods from 50 µs to 4 ms in six types, so the cycle is their LCM; five payload types; line, ring, tree and mesh topologies of 8 to 78 bridges (the 802.1AS hop limit); 1 Gbit/s; 8 queues all for TT traffic. 38,400 instances, each with a 2 h and 4 GB limit; Python with Z3 and Gurobi. Two metrics: the **schedulable ratio** (unknown counted as unschedulable, so a lower bound) and the pairwise **schedulability advantage** on known results.
+
+**Findings.**
+
+1. **F1. Complex models help in theory, their overhead hurts in practice.** JRS beats FR on advantage but its ratio drops by 41.8 % against 10.9 % as the size grows, worse on rings and meshes. FRAG/PRE have the best advantage (~14 %) but schedule under 10 % beyond 70 streams. Wait-allowed beats no-wait on advantage; no-wait beats wait-allowed under load. Full schedulability beats partial: choosing release times at the end stations matters more than at the bridges. Frame-based beats window-based because GCL length limits windows.
+2. **F2. No global best.** Exact methods win below about 100 streams, heuristics above, and heuristics exploit complex models better (CG over JRS-NW, I-OMT over I-ILP).
+3. **F3. Workload hurts scalability more than network size.** Runtime and memory grow with the number of streams; more bridges give longer but sparser paths. This matters because the CNC is often embedded.
+4. **F4. Schedule quality varies.** Frame-based GCLs can exceed 2,000 entries, while hardware supports at most 1,024; window-based and JRS schedules are shorter. Delay grows with bridges (92 to 192 µs); no-wait is lower and JRS higher. Jitter *falls* with load because windows get tighter. Unrestricted queue isolation uses too many queues.
+
+**Constraints that real hardware adds.** PTP frames can collide with TT frames; an end station needs an inter-frame gap of about 50 µs; GCL windows have a granularity. The practical choice: simple or heuristic methods under heavy load, avoid JRS at scale, no-wait when few queues are available.
+
+**Threats to validity** named by the authors: model, algorithm and implementation effects are not separated; only two window-based methods; some implementations are proofs of concept; parameters not tuned. Future work: avionics and automotive instances, fault tolerance, an open dataset.
+
+### Scalability and jitter
+
+- Scheduling scales poorly in theory, but recent solvers handle thousands of messages ([7] §VI).
+- With Qbv, jitter can be reduced to the precision of [clock synchronisation](/blog/ieee-802-1as-time-synchronization). A clock failure, though, makes the gates switch at the wrong times.
+
 ## References
 
 1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
@@ -131,5 +238,5 @@ For worst-case analysis, a queue behind a gate sees a service that is zero while
 4. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023 (v4, 2024), Sections I–III and VII. [arXiv](https://arxiv.org/abs/2305.16772)
 5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
 6. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Section VIII. [arXiv](https://arxiv.org/abs/2610.11999)
-7. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qbv](/article-notes/ieee-802-1qbv).
-8. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294) Article notes: [802.1Qbv](/article-notes/ieee-802-1qbv), [network design](/article-notes/tsn-network-design).
+7. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+8. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

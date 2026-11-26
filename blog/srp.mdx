@@ -11,7 +11,6 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 The Stream Reservation Protocol (SRP) was AVB's answer to congestion loss: a stream is admitted only if every bridge on its path can carry it. This post covers the protocol itself. [The stream reservation post](/blog/stream-reservation) places SRP among later reservation approaches and derives the latency bound that each bridge has to compute.
 
@@ -24,7 +23,6 @@ The Stream Reservation Protocol (SRP) was AVB's answer to congestion loss: a str
 
 <Abbreviations terms={["IEEE", "MAC", "VLAN", "PCP", "gPTP", "TSN", "AVB", "SRP", "MSRP", "MRP", "MVRP", "MMRP"]} />
 
-<ArticleNotesCard pages={['ieee-802-1qcc']} />
 
 ## 1. Definition
 
@@ -105,4 +103,3 @@ SRP set the pattern of distributed admission control that later standards keep. 
 3. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slides 18 and 28. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Section V. [arXiv](https://arxiv.org/abs/2610.11999)
 5. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slide 53. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)
-6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qcc](/article-notes/ieee-802-1qcc).

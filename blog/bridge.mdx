@@ -10,7 +10,6 @@ description: How an IEEE 802.1Q bridge is organised. The control and data planes
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Every TSN mechanism in this series is described as an addition to "the bridge". This post opens that box. It uses the figures with which the IEEE 802.1 working group itself explains the bridge: in its 2013 tutorial to the IETF, and in its 2017 and 2018 introductions to TSN.
 
@@ -23,7 +22,6 @@ Every TSN mechanism in this series is described as an addition to "the bridge". 
 
 <Abbreviations terms={["IEEE", "IETF", "LAN", "MAC", "VLAN", "VID", "QoS", "TSN", "CBS", "TAS", "CQF", "ATS", "PSFP", "FRER", "SRP", "CNC", "SDN", "RSTP", "MSTP", "SPB", "IS-IS", "PCR", "PCE", "MRP", "MVRP", "MMRP"]} />
 
-<ArticleNotesCard pages={['ieee-802-1q-bridge']} />
 
 ## 1. Definition
 
@@ -139,11 +137,53 @@ Control modes are assigned per VLAN. Distributed protocols and an external agent
 
 [The TSN toolbox post](/blog/tsn-toolbox) goes through the tools of Figure 8 one by one. Each has its own post in the TSN topic.
 
+## 8. From the articles
+
+Reading notes on Lo Bello and Steiner [5] and Yang et al. [6], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Switched Ethernet in three tasks
+
+A switched Ethernet network has **end stations**, which produce and consume data, and **bridges** (the articles use "switch" as a synonym), which relay frames between them. Lo Bello and Steiner [5] sorts the forwarding work of a bridge into three tasks, and TSN extends two of them:
+
+| Task | Question it answers | Where in 802.1Q clause 8.6 | TSN standards |
+| --- | --- | --- | --- |
+| **Traffic switching** | To which transmission ports does this frame go? | Frame filtering (8.6.3) | — |
+| **Traffic shaping** | Which waiting frame is sent next on a port? | Queuing frames, queue management, transmission selection (8.6.6–8.6.8) | Qbv, Qch, Qbu, Qcr |
+| **Traffic policing** | Does this frame or stream behave as agreed? | Ingress and egress filtering, flow metering (8.6.2, 8.6.4, 8.6.5) | Qci |
+
+<SourceFigure
+  id="lobello2019-forwarding"
+  caption="Figure 9. The forwarding steps of 802.1Q clause 8.6, from reception port to transmission port, with the three tasks and the TSN amendments that act on each step."
+/>
+
+A bridge that guarantees **line-speed switching** forwards any incoming pattern without loss as long as no output port is overloaded. The hard case is minimum-size frames arriving back to back on every port: the switching decision must finish well within the reception time of one minimum frame, which needs a hardware switching fabric at high link speeds.
+
+### The frame and its VLAN tag
+
+<SourceFigure
+  id="lobello2019-frame"
+  caption="Figure 10. An Ethernet frame with the 4-byte 802.1Q VLAN tag. The tag carries the TPID (0x8100), the 3-bit priority code point, the drop eligible indicator and the 12-bit VLAN identifier."
+/>
+
+- The **priority code point (PCP)** gives one of eight priorities. Before AVB and TSN, a bridge mapped PCP to one of up to eight **traffic class queues** per port (802.1Q Table 8-5, rationale in Annex I) and served them by **strict priority**.
+- Queues are FIFO: a frame never overtakes another inside one queue.
+- A common TSN choice identifies a **stream** by its destination MAC address and VLAN ID. A frame is one instance on one link; a stream groups all the frames of one talker-to-listener distribution ([5] §II-B).
+
+### Store-and-forward or cut-through
+
+802.1Q is vague on **cut-through**, where a bridge starts sending a frame before it has received all of it. Lo Bello and Steiner [5] assumes **store-and-forward**. Cut-through matters for motion control and daisy-chained industrial networks. The arguments against it are that a frame with a bad checksum may be forwarded and that configuration becomes more complex. (The project P802.1DU on cut-through bridges was later opened; see the [IEEE 802.1 post](/blog/ieee-802-1-tsn-task-group).)
+
+### The 802.1Q formalism
+
+- 802.1Q, *Bridges and Bridged Networks*, is the central document. TSN projects amend it, and it was close to 2,000 pages in 2018.
+- Clause 5 is the **conformance clause**: what a device must, should or may implement to be called a bridge. TSN is about the **VLAN bridge** of clause 5.4.
+- Naming: a capital letter after 802.1 (802.1**CB**, 802.1**CM**) is a standalone standard; lower-case letters (802.1Q**bu**) are an amendment to 802.1Q ([6] §4.2).
+
 ## References
 
 1. P. Thaler, N. Finn, D. Fedyk, J. Farkas, G. Parsons, E. Gray, "IEEE 802.1Q: Media Access Control Bridges and Virtual Bridged Local Area Networks," IEEE 802.1 tutorial, IETF 86, 10 March 2013, slides 12, 14 and 25. [Slides](https://www.ieee802.org/802_tutorials/2013-03/8021-IETF-tutorial-final.pdf)
 2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 7–10. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 28 and 47–49. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 4. IEEE, *IEEE 802.1Q-2022, Bridges and Bridged Networks*. [IEEE SA](https://standards.ieee.org/ieee/802.1Q/10323/). IEEE 802 standards are available free of charge through the [IEEE GET Program](https://standards.ieee.org/products-programs/ieee-get-program/).
-5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
-6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

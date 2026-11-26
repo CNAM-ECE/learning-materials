@@ -11,7 +11,7 @@ const repoUrl = 'https://github.com/CNAM-ECE/learning-materials';
 const config: Config = {
   title: 'Network Calculus Notes',
   tagline:
-    'From min-plus algebra to certified reconfiguration of Time-Sensitive Networks: research understanding, article notes and doctoral training',
+    'From min-plus algebra to certified reconfiguration of Time-Sensitive Networks: research understanding and doctoral training',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -76,18 +76,6 @@ const config: Config = {
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'article-notes',
-        path: 'article-notes',
-        routeBasePath: 'article-notes',
-        sidebarPath: './sidebarsArticleNotes.ts',
-        editUrl: `${repoUrl}/tree/main/`,
-        remarkPlugins: [remarkMath],
-        rehypePlugins: [rehypeKatex],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
         id: 'doctoral-training',
         path: 'doctoral-training',
         routeBasePath: 'doctoral-training',
@@ -109,21 +97,7 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          type: 'dropdown',
-          label: 'Research understanding',
-          to: '/blog',
-          position: 'left',
-          items: [
-            {to: '/blog', label: 'Posts by topic'},
-            {
-              type: 'docSidebar',
-              sidebarId: 'articleNotesSidebar',
-              docsPluginId: 'article-notes',
-              label: 'Article notes by standard',
-            },
-          ],
-        },
+        {to: '/blog', label: 'Research understanding', position: 'left'},
         {
           type: 'docSidebar',
           sidebarId: 'doctoralTrainingSidebar',
@@ -151,7 +125,6 @@ const config: Config = {
           title: 'Notes',
           items: [
             {label: 'Research understanding', to: '/blog'},
-            {label: 'Article notes', to: '/article-notes'},
             {label: 'Doctoral training', to: '/doctoral-training'},
             {label: 'Notation and results', to: '/reference/notation'},
             {label: 'Annotated resources', to: '/reference/resources'},

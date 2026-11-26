@@ -10,7 +10,6 @@ description: The TSN profile for the Ethernet network inside a vehicle. Its scop
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Cars were among the first users of AVB, for infotainment. Driver assistance and automated driving now put cameras, radars and control traffic on the same in-vehicle Ethernet, with much stricter requirements. IEEE 802.1DG is the profile that defines how TSN should be used there.
 
@@ -34,7 +33,6 @@ Cars were among the first users of AVB, for infotainment. Driver assistance and 
 
 <Abbreviations terms={["IEEE", "MAC", "PHY", "ADAS", "gPTP", "TSN", "AVB", "FRER"]} />
 
-<ArticleNotesCard pages={['tsn-profiles']} />
 
 ## 1. Definition
 
@@ -82,6 +80,22 @@ A status report from the profile's development shows how an 802.1 profile is bui
 - **Planned structure.** The 2020 draft planned sections on traffic separation, synchronised time, latency and congestion loss, topology and redundancy, and the profiles themselves.
 - **Open questions in 2020.** These included the 10 Mb/s multidrop PHY (10BASE-T1S). At the time, 802.1AS did not support multidrop media, and priorities were not supported on that medium.
 
+## 5. From the articles
+
+Reading notes on Lo Bello and Steiner [6], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Automotive in-vehicle networks
+
+Cars use CAN, LIN, MOST and FlexRay; Ethernet arrived late but is spreading fast, and TSN lets one network replace several. Lo Bello and Steiner [6] describes three uses:
+
+| Use | What TSN brings |
+| --- | --- |
+| **Backbone between domain controllers** (body, energy, connectivity, infotainment, chassis, ADAS) | Qbv for time-critical messages; CB for medium-criticality redundancy (high-criticality redundancy stays in the application, see [802.1CB](/blog/frame-replication-and-elimination)); Qci against babbling ECUs; AS for synchronised tasks and timestamps |
+| **Sensor bus** (cameras, radar, lidar, ultrasound) | Qbv, CB and Qci, plus centralised configuration (Qcc) so that sensors can be reassigned to ECUs; gateways that bundle sensor outputs into frames |
+| **Inside an ECU** | Deterministic Ethernet between chips on one board, or between boards |
+
+Why automotive lags industry: Ethernet in cars is recent. Signs of adoption: car makers in the TSN task group, automotive TSN conferences, automotive-grade products. The profile became IEEE 802.1DG, the subject of this post.
+
 ## References
 
 1. IEEE 802.1, *IEEE 802.1DG: TSN Profile for Automotive In-Vehicle Ethernet Communications*, project page. [Web page](https://1.ieee802.org/tsn/802-1dg/)
@@ -89,5 +103,4 @@ A status report from the profile's development shows how an 802.1 profile is bui
 3. IEEE SA, "TSN for Automotive: IEEE 802 Standards for Time-Sensitive Networking," flyer, 2024. [PDF](https://www.ieee802.org/1/files/public/docs2024/admin-tsn-automotive-flyer-1124.pdf)
 4. IEEE SA, "Time-Sensitive Networking for Automotive In-Vehicle Communications," *Beyond Standards*. [Article](https://standards.ieee.org/beyond-standards/time-sensitive-networking-for-automotive-in-vehicle-communications/)
 5. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slide 12. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)
-6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [profiles](/article-notes/tsn-profiles).
-7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [profiles](/article-notes/tsn-profiles).
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)

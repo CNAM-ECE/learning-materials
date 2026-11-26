@@ -10,7 +10,6 @@ description: The TSN profile that carries the link between a radio unit and its 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 In a mobile network, the link between a radio unit at the antenna and the equipment that controls it, the fronthaul, used to be a dedicated fibre with a dedicated protocol. IEEE 802.1CM shows how to carry it over ordinary bridged Ethernet, and which TSN features that takes.
 
@@ -33,7 +32,6 @@ In a mobile network, the link between a radio unit at the antenna and the equipm
 
 <Abbreviations terms={["CPRI", "eCPRI", "RE", "REC", "eRE", "eREC", "IQ", "PHY-U", "PHY-L", "MEF", "UNI", "ITU-T", "IEEE", "PHY", "VLAN", "TSN"]} />
 
-<ArticleNotesCard pages={['tsn-profiles']} />
 
 ## 1. Definition
 
@@ -117,11 +115,23 @@ Both profiles are engineered for the worst case and apply to both classes [2]:
 
 The difference is the blocking term of a worst-case analysis. Under Profile A, a fronthaul frame can wait behind one lower-priority frame of up to 2000 octets at every hop, so all traffic must keep its frames short. Under Profile B, preemption reduces that wait to a short fragment. Other traffic can then use large frames without hurting the fronthaul bound. The [802.1Qbu post](/blog/ieee-802-1qbu-frame-preemption) quantifies this blocking.
 
+## 6. From the articles
+
+Reading notes on Lo Bello and Steiner [5] and Yang et al. [6], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### IEEE 802.1CM: fronthaul
+
+- [IEEE 802.1CM](https://1.ieee802.org/tsn/802-1cm-2018/) (2018) is the TSN profile for **mobile fronthaul**: the link between radio equipment and its controller, carrying CPRI or eCPRI over bridged Ethernet ([6] §6.1).
+- Fronthaul networks are large (kilometre links) and fast (10 Gbit/s). Simulations show Qbv and Qbu help, and a **playout buffer** at the receiver improves further (Simon et al., in Lo Bello and Steiner [5] §V).
+- TSN also helps **network slicing** in 5G (no interference between users) and the aggregation of flows in bearer networks. Integration of 5G and TSN is a research topic of its own.
+
+The fronthaul figure of Yang et al. [6] is the same IEEE 802.1 slide as Figure 5 above.
+
 ## References
 
 1. IEEE 802.1, *802.1CM-2018: Time-Sensitive Networking for Fronthaul*, project page; *802.1CMde*. [802.1CM](https://1.ieee802.org/tsn/802-1cm-2018/), [802.1CMde](https://1.ieee802.org/tsn/802-1cmde/)
 2. J. Farkas, "IEEE Std 802.1CM Time-Sensitive Networking for Fronthaul: An Overview," IEEE 802.1, July 2018, slides 3–9. [Slides](https://www.ieee802.org/1/files/public/docs2018/cm-farkas-overview-0718-v01.pdf)
 3. CPRI Cooperation, *eCPRI Specification V1.1* and *Requirements for the eCPRI Transport Network V1.1*, January 2018. [Specification](http://www.cpri.info/downloads/eCPRI_v_1_1_2018_01_10.pdf), [Requirements](http://www.cpri.info/downloads/Requirements_for_the_eCPRI_Transport_Network_V1_1_2018_01_10.pdf)
 4. "5G Fronthaul Interface: eCPRI, CPRI, O-RAN Transport & Bandwidth Optimization," Superb Automation, technical article, June 2026. [Article](https://www.superb-tech.com/technical-articles/5g-fronthaul-interface-ecpri-cpri-o-ran-transport-bandwidth-optimization.html). Industry article, used for the CPRI line rates and bandwidth estimates.
-5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [profiles](/article-notes/tsn-profiles).
-6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [profiles](/article-notes/tsn-profiles).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

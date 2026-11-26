@@ -10,11 +10,10 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 ```
 ├── article/               # Survey article (LaTeX, IEEEtran journal), see below
-├── article-notes/         # Article notes: reading notes on ressource/, one page per TSN standard
 ├── blog/                  # Research understanding: thirty-eight posts (MDX, KaTeX), authors.yml, tags.yml
 ├── doctoral-training/     # Doctoral training: catalogue, one page per course, session notes
 ├── docs/                  # Reference: about, notation and results, TSN glossary, annotated resources
-├── ressource/             # The articles read for the article notes (PDF, with highlights)
+├── ressource/             # Articles read for the posts' "From the articles" sections (PDF, highlights and margin notes)
 ├── src/
 │   ├── components/        # BoundsFigure, Diagram (SVG kit), figures/ (architecture diagrams), HomepageFeatures
 │   ├── data/              # researchUnderstanding.ts: topics and post order of the blog sidebar
@@ -22,9 +21,8 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 │   ├── css/               # Theme and KaTeX styles
 │   └── pages/             # Home page
 ├── static/img/            # Logo, favicon, social card, sources/ (cropped figures), doctoral-training/ (note scans)
-├── docusaurus.config.ts   # Site configuration: blog, three docs instances, remark-math and rehype-katex
+├── docusaurus.config.ts   # Site configuration: blog, two docs instances, remark-math and rehype-katex
 ├── sidebars.ts            # Reference sidebar
-├── sidebarsArticleNotes.ts      # Article notes sidebar, grouped by TSN pillar
 └── sidebarsDoctoralTraining.ts  # Doctoral training sidebar, grouped by theme
 ```
 
@@ -32,8 +30,7 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 | Section | Route | Content |
 |:---|:---|:---|
-| Research understanding: posts | `/blog` | Thirty-eight posts in six topics, listed below |
-| Research understanding: article notes | `/article-notes` | Notes on the five articles in `ressource/`, split by standard: 802.1Q bridge and toolbox, 802.1AS, 802.1Qav, 802.1Qbv, 802.3br/802.1Qbu, 802.1Qch/Qcr, 802.1Qci, 802.1CB, 802.1Qcc, network design, profiles, DetNet; linked from each post |
+| Research understanding | `/blog` | Thirty-eight posts in six topics, listed below. Posts on a standard end with a *From the articles* section built from the margin notes on the PDFs in `ressource/` |
 | Doctoral training | `/doctoral-training` | The thirteen 2026–2027 ED SMI courses grouped by theme, hours, and session notes (research ethics so far) |
 | Reference | `/reference` | Notation, abbreviations, TSN glossary, annotated resources |
 

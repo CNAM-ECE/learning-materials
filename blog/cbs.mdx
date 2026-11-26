@@ -10,7 +10,7 @@ description: The credit-based shaper of IEEE 802.1Qav, now part of IEEE 802.1Q. 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
+import SourceFigure from '@site/src/components/SourceFigure';
 
 The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) shaper. It comes from [Audio Video Bridging](https://www.ieee802.org/1/pages/avbridges.html) (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
 
@@ -23,7 +23,6 @@ The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) sh
 
 <Abbreviations terms={["IEEE", "MAC", "TSN", "AVB", "CBS", "ATS"]} />
 
-<ArticleNotesCard pages={['ieee-802-1qav']} />
 
 ## 1. Definition
 
@@ -93,6 +92,58 @@ A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_o
 | Granularity | Per class; all streams of the class share the shaper |
 | Main parameter | `idleSlope`, the reserved rate |
 
+## 6. From the articles
+
+Reading notes on Lo Bello and Steiner [6] and Yang et al. [7], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Where the delay of a frame comes from
+
+Zero congestion loss rests on computing buffer needs for the **worst case**. Yang et al. [7], after Finn (2018), splits the delay of a packet through one relay into five parts:
+
+<SourceFigure
+  id="yang2019-timing-model"
+  caption="Figure 4. The TSN timing model: output delay, link delay, preemption delay, processing delay and queuing delay."
+/>
+
+1. **Output delay**: from selection for transmission to the first bit on the wire.
+2. **Link delay**: propagation on the cable.
+3. **Preemption delay**: waiting for an interrupted or non-interruptible frame (see [preemption](/blog/ieee-802-1qbu-frame-preemption)).
+4. **Processing delay**: from reception to entry into the output queue.
+5. **Queuing delay**: waiting in the output queue. Only this part depends on the other traffic and the shaper, and it is the one that the shaper makes analysable.
+
+Variations in the first four are absorbed by buffers; the fifth is bounded by analysing the queuing algorithm, which is what [network calculus](/blog/network-calculus-for-tsn) does.
+
+### How the shaper works
+
+[IEEE 802.1Qav](https://standards.ieee.org/ieee/802.1Qav/4401/), from the AVB suite, gives real-time guarantees **without** synchronised clocks ([6] §III-B). Each shaped queue has a **credit**:
+
+<SourceFigure
+  id="yang2019-cbs-flowchart"
+  caption="Figure 5. The CBS decision for one queue. A frame may start only when frames are queued, the credit is non-negative and the port is free."
+/>
+
+| Situation | Credit |
+| --- | --- |
+| Frames waiting, not transmitting (port busy or credit negative) | Increases at the **idleSlope** |
+| Transmitting a frame of this queue | Decreases at the **sendSlope** = idleSlope − port rate |
+| Queue empty and credit positive | Reset to zero |
+| Queue empty and credit negative | Increases back towards zero |
+
+:::caution Correction to the seminar paper
+Yang et al. [7] writes that credit *increases when a frame is added to the queue and decreases when a frame is sent*. This is a simplification: credit grows with **time spent waiting** at the idle slope, not with the number of frames enqueued, and it decreases with **time spent sending**. Its own figure (Figure 5) shows the correct rule. Section 2 above gives the exact rules.
+:::
+
+The parameters that bound the per-bridge latency are the **idle slope** (the reserved bandwidth), the **maximum frame size** of the class and of interfering lower classes, and the **port rate** ([7] lists them as maximum frame size, maximum reference size and maximum port transmission rate).
+
+### CBS with frame preemption
+
+802.1Qbu specifies how CBS behaves when preemption is on ([6] §IV-C):
+
+- Time during which a preemptable frame of a CBS queue is held or interrupted by express traffic **does not consume credit**: the shaper's *transmit* flag stays false until the frame starts or resumes.
+- The extra overhead of preemption (fragment headers) is **not** subtracted from the bandwidth reserved for the shaper.
+
+Without scheduled windows, a CBS on express traffic also limits how long preemptable frames are delayed, which keeps their transit time within the bridge bound.
+
 ## References
 
 1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
@@ -100,6 +151,5 @@ A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_o
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections VI-E, VII-F and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
 5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
-6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Qav](/article-notes/ieee-802-1qav).
-7. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qav](/article-notes/ieee-802-1qav).
-8. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294) Article notes: [802.1Qav](/article-notes/ieee-802-1qav).
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

@@ -11,7 +11,6 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {MPacketFigure, HoldReleaseFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Frame preemption is specified by two standards. IEEE 802.3br changes the Ethernet MAC so that a frame can be cut and resumed. [IEEE 802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) tells a bridge which traffic may cut which. This post covers the Ethernet half: everything that happens below the bridge port.
 
@@ -24,7 +23,6 @@ Frame preemption is specified by two standards. IEEE 802.3br changes the Etherne
 
 <Abbreviations terms={["IEEE", "MAC", "PHY", "IP", "IET", "eMAC", "pMAC", "SMD", "MCRC", "LLDP"]} />
 
-<ArticleNotesCard pages={['ieee-802-1qbu-802-3br']} />
 
 ## 1. Definition
 
@@ -119,10 +117,43 @@ When a port protects its traffic with [MACsec](https://standards.ieee.org/ieee/8
 
 - "IEEE 802.3br & IEEE 802.1Qbu: The Next Evolution in Network Performance," *tsn-network.com*, October 2022. [Article](https://tsn-network.com/ieee-802-3br-ieee-802-1qbu-the-next-evolution-in-network-performance/). A short vendor overview. Note that it swaps the two titles: 802.3br is *Interspersing Express Traffic* and 802.1Qbu is *Frame Preemption*.
 
+## 8. From the articles
+
+Reading notes on Lo Bello and Steiner [4] and Yang et al. [5], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Two standards, two layers
+
+| | [IEEE 802.3br](https://www.ieee802.org/3/br/) | [IEEE 802.1Qbu](https://standards.ieee.org/ieee/802.1Qbu/5464/) |
+| --- | --- | --- |
+| Layer | Ethernet MAC (802.3) | Bridge (802.1Q), rolled into 802.1Q-2018 |
+| Adds | **MAC Merge sublayer** joining an **express MAC (eMAC)** and a **preemptable MAC (pMAC)** to one PHY | A **frame preemption status** (express or preemptable) per traffic class |
+| Effect | Express frames can interrupt a preemptable frame, which resumes afterwards | Says which traffic goes to which MAC and how preemption works with CBS and Qbv |
+
+The PHY does not know about preemption.
+
+### Fragments
+
+- A preemptable frame can be interrupted only after **60 octets** have been sent and if at least **64 octets** remain, CRC included. The final fragment is at least 64 octets; a receiver may ask for larger non-final fragments (+0, 64, 128 or 192 octets).
+- Each non-final fragment ends with an **mCRC** covering the frame so far; the final fragment carries the original FCS.
+- Frame counts and fragment numbering detect a lost fragment, so an invalid frame is never reassembled.
+- Preemption is enabled on a link only after **verification** that the other end supports it (negotiated with LLDP and checked with verify frames).
+- So an express frame waits at most for the largest non-interruptible piece: **124 octets** in the common configuration ([4] §IV-C).
+
+### Hold and release
+
+The MAC Merge Service Interface (MM_CTL.request with hold_req = HOLD or RELEASE) lets the bridge **stop preemptable frames from starting**, not just interrupt them. Qbv uses it through two gate operations scheduled like any gate event:
+
+- **Set-And-Hold-MAC**: preemptable frames stop being sent;
+- **Set-And-Release-MAC**: they may be sent again.
+
+Scheduling Set-And-Hold-MAC 124 octet-times before the window of a time-critical class ensures that **no fragment at all** is on the wire when the window opens.
+
+Without preemption, an express frame that arrives while a pMAC frame is being sent waits for the whole frame; if both are ready at once, the express frame goes first.
+
 ## References
 
 1. IEEE P802.3br Interspersing Express Traffic Task Force. [Task force page](https://www.ieee802.org/3/br/)
 2. L. Winkel, M. Johas Teener, N. Finn, P. Thaler, "Real-time Ethernet on IEEE 802.3 Networks," joint IEEE 802.3br and IEEE 802.1 TSN tutorial, IEEE 802 plenary, March 2015, slides 11–12 and 40–59. [Slides (PPTX)](https://www.ieee802.org/802_tutorials/2015-03/8023-IET-TF-1501-Winkel-Tutorial-20150115_r06.pptx)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 29–30. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
-4. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).
-5. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).
+4. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+5. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

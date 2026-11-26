@@ -2,7 +2,7 @@ import type {ReactNode} from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 /**
- * Figures cropped from the original sources of the posts and article notes (IEEE 802.1
+ * Figures cropped from the original sources of the posts (IEEE 802.1
  * slide decks, RFC 8655, arXiv papers). Each file in static/img/sources is
  * listed here with the document, page and figure it was cut from, so that the
  * source line under the image is always complete. The figures remain the work

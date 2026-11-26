@@ -11,7 +11,6 @@ import {OsiTcpIpFigure} from '@site/src/components/figures/deterministic';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 A control loop on a factory floor and an e-mail server can share the same cable only if the network can promise the first one something the second never needs: that every packet arrives on time. This post starts from the ordinary Ethernet and TCP/IP stack, shows where its timing breaks down, and explains how Time-Sensitive Networking (TSN) extends it without replacing it.
 
@@ -21,7 +20,6 @@ A control loop on a factory floor and an e-mail server can share the same cable 
 
 <Abbreviations terms={['OSI', 'TCP', 'UDP', 'IP', 'MAC', 'PHY', 'PDU', 'LAN', 'CSMA/CD', 'IT', 'OT', 'QoS', 'TSN', 'PTP', 'gPTP', 'TAS', 'GCL', 'FRER', 'R-TAG', 'IEEE', 'IETF', 'RFC', 'DetNet', 'VLAN']} />
 
-<ArticleNotesCard pages={['ieee-802-1q-bridge', 'tsn-network-design']} />
 
 ## 1. Definition: determinism
 
@@ -144,6 +142,28 @@ The full set of tools, including credit-based shaping, preemption, cyclic queuin
 | Link (Ethernet) | Switched queues, eight priorities, no common time | IEEE 802.1 TSN: 802.1AS time, 802.1Qbv schedules, 802.1CB redundancy, and more |
 | Physical | IEEE 802.3 PHY | Unchanged, plus frame preemption (802.3br) |
 
+## 9. From the articles
+
+Reading notes on Gavriluţ et al. [11], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### The lineage of deterministic Ethernet
+
+| Step | What it added | Why it was not enough for TC traffic |
+| --- | --- | --- |
+| **Shared-medium Ethernet** (bus) | Frame format, MAC addresses, collision detection | Collisions: no bound on delay |
+| **Switched full-duplex Ethernet** | No collisions; a switch is a hub that reasons about the destination | Contention moves to the switch: an over-subscribed egress port drops frames, so delay and loss are unbounded |
+| **Strict-priority Ethernet** (802.1D-1998, 802.1Q-2005) | Classification, priority queues, VLANs (a VLAN is a subset of ports forming a broadcast domain), the PCP mapping frames to queues | Priority alone gives no per-flow guarantee |
+| **AFDX** (ARINC 664 part 7, 2005) | **Virtual links**: per-flow trees with a maximum frame length $L_{max}$ and a **bandwidth allocation gap** BAG (a power of two from 1 to 128 ms); FIFO queues | Jitter; one buffer per VL is costly; needs worst-case timing analysis; only eight BAG values; 100 Mbit/s |
+| **TTEthernet** (SAE AS6802, 2011) | Fault-tolerant **clock synchronisation** and **time-triggered** traffic. Three classes: **TS** (time-scheduled) > **RC** (rate-constrained, the AFDX traffic) > **BE** | Per-flow queues are costly; schedules are hard to compute; needs synchronised clocks |
+| **AVB** (802.1Qav, Qat, AS, merged in 802.1Q-2011) | Forwarding and queuing for time-sensitive streams: **per class** rather than per flow, with the credit-based shaper | Tens to hundreds of µs per path; no zero-jitter traffic |
+| **TSN** (802.1Qbv and the other amendments) | TTEthernet's scheduled traffic **plus** AVB's per-class queues; mixed criticality; vendor-neutral | Schedules for Qbv are very hard to compute; needs synchronised clocks |
+
+The shift from **event-triggered** to **time-triggered** communication: traffic is shaped in time by schedule tables computed in advance against a synchronised clock. Time-triggered designs are more predictable; event-triggered ones are cheaper to install and over-provision less. The survey's short summary: **TSN ≈ TTEthernet + AVB**, with the remaining limits being configuration complexity and clock synchronisation.
+
+**CBS in this lineage.** The credit decreases at the send slope while a frame is sent, increases at the idle slope while frames wait, and is reset to zero when the queue empties. See [802.1Qav](/blog/credit-based-shaper).
+
+**Integration modes.** Scheduled traffic can still be delayed by AVB or BE frames already on the wire. TSN offers two **integration modes**: a **guard band** (Qbv), and **preemption** (Qbu/802.3br), where the lower-priority frame is interrupted and sent as fragments afterwards. Combining both removes the residual delay of the smallest non-preemptable fragment and wastes less bandwidth than a full guard band.
+
 ## References
 
 1. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article, 19 January 2021. [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
@@ -156,6 +176,4 @@ The full set of tools, including credit-based shaping, preemption, cyclic queuin
 8. J. Woods, "IEC/IEEE 60802: The Case for the Converged Network in the Factory of the Future," IEEE SA TSN webinar series, April 2023, slide 8. [Slides](https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf)
 9. Cisco Systems, "Wi-Fi 6 and Private LTE/5G Technology and Business Models in Industrial IoT," white paper, 2019, section on IEEE standards. [PDF](https://www.cisco.com/c/dam/en_us/solutions/iot/iot-5g-wp.pdf)
 10. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
-11. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
-12. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
-13. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294) Article notes: [network design](/article-notes/tsn-network-design).
+11. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294)

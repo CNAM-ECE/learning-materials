@@ -10,7 +10,6 @@ description: How IEEE 802.1Qca lets a controller install explicit, non-shortest 
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 [SPB](/blog/ieee-802-1aq-shortest-path-bridging) computes shortest paths. Deterministic networks often need other paths: two disjoint routes for [FRER](/blog/frame-replication-and-elimination), or a route that avoids a link already carrying critical streams. IEEE 802.1Qca, Path Control and Reservation (PCR), lets a controller impose such paths, while IS-IS keeps doing everything else.
 
@@ -23,7 +22,6 @@ import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 <Abbreviations terms={["IEEE", "IETF", "RFC", "MAC", "VLAN", "TSN", "FRER", "SRP", "MSRP", "CNC", "SDN", "SPB", "ECT", "IS-IS", "PCR", "PCE", "PCA", "ET"]} />
 
-<ArticleNotesCard pages={['ieee-802-1cb']} />
 
 ## 1. Definition
 
@@ -79,11 +77,18 @@ Path control fills a gap that the other topology protocols leave open:
 
 In 802.1Qcc terms, the CNC of the [SDN post](/blog/sdn-and-tsn-configuration) plays the role of the PCE, and path control is one of the ways it installs the paths it computes.
 
+## 5. From the articles
+
+Reading notes on Lo Bello and Steiner [5], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Path control: IEEE 802.1Qca
+
+802.1Qca extends **IS-IS** shortest path bridging with **explicit trees**, so selected traffic can take a path other than the shortest one, together with bandwidth reservation and protection (redundant trees, loop-free alternates, restoration after a failure). Lo Bello and Steiner [5] leaves it aside because industrial and automotive networks are usually **engineered**: their topology is fixed at design time.
+
 ## References
 
 1. J. Farkas (Ed.), N. Bragg, P. Unbehagen, G. Parsons, P. Ashwood-Smith, C. Bowers, RFC 7813, "IS-IS Path Control and Reservation," IETF, June 2016, Sections 1, 4 and 5. [RFC Editor](https://www.rfc-editor.org/rfc/rfc7813)
 2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 17. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slide 37. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 4. IEEE, *IEEE 802.1Qca-2015, Path Control and Reservation*. [IEEE SA](https://standards.ieee.org/ieee/802.1Qca/5557/)
-5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1CB](/article-notes/ieee-802-1cb).
-6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1CB](/article-notes/ieee-802-1cb).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)

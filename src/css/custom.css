@@ -150,29 +150,6 @@
   border-left: 2px solid var(--ifm-color-emphasis-300);
 }
 
-/* Card at the top of a post that points to the Article notes on its
-   standard (src/components/ArticleNotesCard). */
-.notes-card {
-  margin: 1rem 0 1.5rem;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--ifm-color-primary-lighter);
-  border-left: 4px solid var(--ifm-color-primary);
-  border-radius: 6px;
-  background: var(--ifm-color-emphasis-100);
-  font-size: 0.88rem;
-}
-.notes-card__title {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-.notes-card__pages {
-  margin: 0 0 0.3rem;
-  padding-left: 1.2rem;
-}
-.notes-card__sources {
-  color: var(--ifm-color-emphasis-700);
-}
-
 /* Placeholder for a course whose notes are not written yet
    (src/components/NotesPending). */
 .notes-pending {

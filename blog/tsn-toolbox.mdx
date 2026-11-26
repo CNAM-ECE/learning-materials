@@ -11,7 +11,6 @@ import {BridgeIntegrationFigure, ScheduledTrafficFigure, PreemptionFigure, PerSt
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) is a set of [IEEE 802.1](https://1.ieee802.org/) standards for time-sensitive transmission over [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet [bridge](https://en.wikipedia.org/wiki/Network_bridge) does this tool change?
 
@@ -21,7 +20,6 @@ import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 <Abbreviations terms={["IEEE", "MAC", "IP", "gPTP", "TSN", "AVB", "CQF", "ATS", "PSFP", "FRER", "CNC", "YANG", "NETCONF", "RESTCONF", "SDN", "IS-IS", "DetNet"]} />
 
-<ArticleNotesCard pages={['ieee-802-1q-bridge']} />
 
 ## 1. Definition
 
@@ -224,6 +222,45 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 | Resources | TSN configuration | 802.1Qcc | Control plane | No |
 
 
+## 8. From the articles
+
+Reading notes on Lo Bello and Steiner [6], Yang et al. [7] and Gavriluţ et al. [8], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### The TSN toolbox
+
+TSN is a **toolbox**: a designer picks only the standards an application needs. Lo Bello and Steiner [6] groups them under four pillars, and notes that the groups overlap (802.1AS-Rev serves both timing and reliability).
+
+<SourceFigure
+  id="lobello2019-toolbox"
+  caption="Figure 9. The TSN toolbox as drawn in 2019: timing and synchronisation, bounded low latency, high reliability and resource management. Projects marked P were still in development."
+/>
+
+### Assessment of TSN as a whole ([6] §VI)
+
+| Category | Verdict in Lo Bello and Steiner [6] |
+| --- | --- |
+| Bandwidth | Follows Ethernet: 10 Mbit/s to 100 Gbit/s; TSN is independent of the PHY |
+| Real-time | TSN's strongest point (Qav, Qbu/3br, Qbv, Qcr). Not yet at its minimum latency because store-and-forward is assumed |
+| Jitter | With Qbv or Qch, jitter can shrink to the precision of clock synchronisation |
+| Reliability | CB against loss, Qci against babbling devices; weak against asymmetric clock failures |
+| Integrity | Only the Ethernet CRC; CB does not improve it |
+| Confidentiality | Not standardised by TSN; left to the 802.1 security task group |
+| Flexibility | Online reconfiguration through Qcc, but no worst-case bound on the time to compute a new configuration |
+| Scalability | Large address space; synchronisation stays under 2 µs at 100 hops; Qbv scheduling is NP-complete |
+
+Lo Bello and Steiner [6] adds **configuration ease**, which it rates poorly: the configuration space is huge, and profiles (such as 802.1BA for AVB) are the main help, with more guidance expected as adoption grows. Its informal star ratings (Table III) put bandwidth, scalability, real-time and flexibility as **strong**, reliability and availability as **medium**, and integrity, confidentiality and configuration as **weak**. Hence TSN as it stands is **not safety-critical** on its own.
+
+**Research challenges** listed at the end of Lo Bello and Steiner [6]:
+
+1. **RC1. Configuration synthesis**: which mechanisms to use, and schedules that scale.
+2. **RC2. Dependability** and design assurance.
+3. **RC3. Security**, since IT/OT convergence opens cyber-physical systems to attacks.
+4. **RC4. Verification and validation** by independent parties.
+
+Gavriluţ et al. [8] surveys the work on RC1; see [Network design and synthesis](/blog/sdn-and-tsn-configuration).
+
+The flexibility row is the gap the doctoral project addresses: a reconfiguration that must finish within a deadline cannot yet be served by TSN with a guarantee (see [Dynamic reconfiguration](/blog/dynamic-reconfiguration-of-tsn)).
+
 ## References
 
 1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
@@ -231,5 +268,6 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 5. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article, 19 January 2021, Figure 1 and section "TSN Standards." [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
-6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
-7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)
+8. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294)

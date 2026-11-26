@@ -8,7 +8,6 @@ description: A reading of two recent approaches to TSN reconfiguration, SDN-base
 ---
 
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 The guarantees developed in this series are established for a fixed configuration. This final post examines what happens when the configuration changes at run time, through two recent contributions, and argues that [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is the natural tool to *certify* a reconfiguration, whatever method proposes it.
 
@@ -16,7 +15,6 @@ The guarantees developed in this series are established for a fixed configuratio
 
 <Abbreviations terms={["IEEE", "TSN", "SDN"]} />
 
-<ArticleNotesCard pages={['tsn-network-design', 'ieee-802-1qcc']} />
 
 ## 1. Why reconfigure?
 
@@ -102,5 +100,3 @@ The companion repository [4] implements such a gate with incremental Total Flow 
 3. M. Boyer, R. Henia, "Designing a Resilient Time-Aware Shaper Configuration for TSN," Ethernet & IP @ Automotive Technology Day, Toulouse, October 2025. [Slides](https://standards.ieee.org/wp-content/uploads/2025/10/D1_09_Marc-Boyer-TSN-reconfiguration.pdf)
 4. CNAM-ECE, *Certified Admission Control for TSN*. [GitHub](https://github.com/CNAM-ECE/network-calculus)
 5. TSF Technology, "Migration vers TSN : guide pratique." [Link](https://tsf-technology.com/fr/ressources/guides-techniques/migration-tsn-guide-pratique)
-6. V. Gavriluţ, A. Pruski, M. S. Berger, "Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications," *ACM Computing Surveys*, vol. 55, no. 3, article 62, 2022. [DOI](https://doi.org/10.1145/3501294) Article notes: [network design](/article-notes/tsn-network-design).
-7. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qcc](/article-notes/ieee-802-1qcc).

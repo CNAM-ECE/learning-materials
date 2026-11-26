@@ -12,7 +12,6 @@ import {PsfpTablesFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Every bound in this series assumes that each talker respects its arrival curve. Per-Stream Filtering and [Policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) ([PSFP](https://1.ieee802.org/tsn/802-1qci/)) is the [TSN](https://1.ieee802.org/tsn/) mechanism that makes that assumption hold. It checks each stream where it enters a [bridge](https://en.wikipedia.org/wiki/Network_bridge) and stops a faulty or malicious talker before it can harm the streams that behave.
 
@@ -25,7 +24,6 @@ Every bound in this series assumes that each talker respects its arrival curve. 
 
 <Abbreviations terms={["MEF", "IEEE", "MAC", "VLAN", "VID", "PCP", "DEI", "IP", "TSN", "CBS", "ATS", "PSFP", "IPV", "CIR", "EIR", "EBS"]} />
 
-<ArticleNotesCard pages={['ieee-802-1qci']} />
 
 ## 1. Definition
 
@@ -82,6 +80,47 @@ The match yields a **stream handle**, an internal number that the following tabl
 | Metering model | MEF 10.3 bandwidth profile (CIR, CBS, EIR, EBS) |
 | Role in the analysis | Makes the declared arrival curve an enforced one |
 
+## 6. From the articles
+
+Reading notes on Lo Bello and Steiner [6] and Yang et al. [7], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### Purpose
+
+[IEEE 802.1Qci](https://1.ieee802.org/tsn/802-1qci/), now part of 802.1Q, makes **filtering, policing and queuing decisions per stream**. Streams are recognised with the stream identification functions of [802.1CB](/blog/frame-replication-and-elimination). It protects streams that share an egress queue: if one stream exceeds its bandwidth or burst, the others would wait longer or lose frames. Qci detects the violation **at ingress** and acts on it.
+
+### Three tables
+
+| Table | Content | Role |
+| --- | --- | --- |
+| **Stream filter instance table** | Ordered list of stream filters | Matches a frame and applies a chain: gate → meter → queue |
+| **Stream gate instance table** | Gates with a state (open/closed) and an **internal priority value (IPV)** | Lets frames through only at the planned times; the IPV can change the traffic class |
+| **Flow meter instance table** | Meters (MEF 10.3 style) | Measures rate and burst; drops or marks excess frames |
+
+A **stream filter** contains:
+
+- an instance identifier (its position in the ordered list);
+- a **stream_handle** (or wildcard) and a **priority** (or wildcard); together they select the filter for a received frame;
+- the **stream gate** to use;
+- zero or more filter specifications, notably the **maximum SDU size** (larger frames are dropped) and the **flow meter** to apply;
+- **counters**: frames passing or failing the gate, the SDU filter, the meter.
+
+With wildcards, the same machinery can police **per priority** or **per priority and ingress port**, not only per stream (802.1Q-2018, 8.6.5.1.1, note 2).
+
+### Stream gates
+
+- Gate lists run on the **cyclic schedule of Qbv**, with the same three state machines plus some extra variables.
+- When transmissions are coordinated, a frame that arrives **while the gate is closed** signals an error. With the optional **GateClosedDueToInvalidRx** setting, the gate then stays **closed permanently** for that stream until management intervenes. This stops a **babbling** device from disturbing others.
+- The open/closed periods and IPV changes are what [802.1Qch](/blog/cyclic-queuing-and-forwarding) reuses to build its cycles.
+
+### Where it helps
+
+- **Automotive backbone**: a faulty ECU in one domain cannot make the backbone unusable for the others ([6] §V-B).
+- **Reliability**: Qci covers more severe failures than [CB](/blog/frame-replication-and-elimination), such as babbling idiots ([6] §VI).
+
+### Open issue
+
+Qci offers many settings, but in 2019 there was little research on **how to configure it** to obtain a given effect. Lo Bello and Steiner [6] sees this as the least studied of the core TSN standards. For a bound, the policer is what makes the arrival curve assumed by the analysis hold at each hop, as described above.
+
 ## References
 
 1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
@@ -89,4 +128,5 @@ The match yields a **stream handle**, an internal number that the following tabl
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 13. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 5. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections V-B and VI-C. [arXiv](https://arxiv.org/abs/2610.11999)
-6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qci](/article-notes/ieee-802-1qci).
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)

@@ -10,7 +10,6 @@ description: The joint IEC and IEEE profile that brings TSN to the factory. Why 
 import {ProfileFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
-import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Factories have long run their control loops on fieldbuses and proprietary variants of Ethernet. They work, but they cannot share their wires with anything else. IEC/IEEE 60802 is the profile that defines how standard TSN equipment should be selected and configured to replace them.
 
@@ -34,7 +33,6 @@ Factories have long run their control loops on fieldbuses and proprietary varian
 
 <Abbreviations terms={["IEEE", "IEC", "OT", "IT", "PTP", "TSN", "LLDP"]} />
 
-<ArticleNotesCard pages={['tsn-profiles']} />
 
 ## 1. Definition
 
@@ -149,11 +147,54 @@ The overview argues that the real value of TSN lies in a **common layer 2** with
 
 One entity aware of all traffic requirements in its configuration domain can automate the on-boarding of new devices [2]. That is the central configuration model of [802.1Qcc](/blog/sdn-and-tsn-configuration).
 
+## 6. From the articles
+
+Reading notes on Lo Bello and Steiner [5], Yang et al. [6] and Xue et al. [7], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+
+### IEC/IEEE 60802: industrial automation
+
+**Why.** Industry 4.0 brings IT (cloud, services) and OT (control with real-time and safety needs) onto one network. Cheap high-speed Ethernet makes critical and non-critical flows share links; TSN gives the guarantees, but vendors and users need a common selection of features. A consortium of automation suppliers announced TSN with **OPC UA** as their future standard ("the fieldbus war is over").
+
+<SourceFigure
+  id="lobello2019-ia-hierarchy"
+  caption="Figure 8. The levels of an industrial plant, from machines (basic control) through production cells and lines to site operations, the business network and the cloud."
+/>
+
+**What it selects (as planned in 2019).** IEEE 802.3, 802.1Q, 802.1AB (LLDP), 802.1AS-Rev, and optionally 802.1CB and 802.1X, plus coexistence with the IEC 61784-2 communication profile families. Both Layer 2 and the protocols that configure it are covered.
+
+**Traffic types** from the use-case document: isochronous cyclic real-time, cyclic real-time, network control, audio/video, alarms and events, configuration and diagnostics, internal pass-through, best effort, and **brownfield** traffic from non-TSN devices.
+
+**TSN domains.** A TSN domain is a set of commonly managed devices, ports and links: a machine, a production cell, a line. A device can belong to several domains, and domains are joined by bridges (Layer 2), routers (Layer 3) or gateways (Layer 7).
+
+<SourceFigure
+  id="lobello2019-tsn-domains"
+  caption="Figure 9. Overlapping TSN domains in machine-to-machine communication: the controller link of Machine 1 belongs to the domains of the machine, the cell, the line and the plant; Machine 3 uses a separate interface."
+/>
+
+**Two use cases with requirements:**
+
+| Use case | Requirement | TSN mechanisms |
+| --- | --- | --- |
+| Sequence of events (plant-wide timestamped events) | Universal time, deviation from the grandmaster between 1 µs and 100 µs, redundancy | [802.1AS-Rev](/blog/ieee-802-1as-time-synchronization) |
+| Machine to machine / controller to controller | Machine-internal traffic isolated from M2M traffic; one-to-one and one-to-many; schedules interleaved with machine cycles | [Qbu](/blog/ieee-802-1qbu-frame-preemption), [Qbv](/blog/time-aware-shaper), [Qci](/blog/per-stream-filtering-and-policing), 802.3br, fixed priority, priority regeneration, queue-based allocation, VLANs per domain |
+
+**Fog computing.** Extending switches with compute and storage helps IT/OT convergence, but needs **run-time reconfiguration**; a configuration agent based on 802.1Qcc and OPC UA, with heuristic rescheduling, was shown feasible.
+
+Xue et al. [7] recommends taking evaluation scenarios from such profiles so that scheduling results are comparable. The profile was later published as IEC/IEEE 60802, as described above.
+
+### Other domains ([5] §V)
+
+- **Trains**: future in-train networks based on TSN, possibly with SAE AS6802 and ARINC 664.
+- **Aircraft**: a cabin backbone bus using Qbv, AS and CB.
+- **Agricultural vehicles**: TSN as a candidate for a high-speed ISOBUS.
+- **Professional audio/video and industrial M2M**, also cited as DetNet use cases ([6] §6.2).
+
 ## References
 
 1. IEEE 802.1, *IEC/IEEE 60802 TSN Profile for Industrial Automation*, project page. [Web page](https://1.ieee802.org/tsn/iec-ieee-60802/)
 2. J. Woods, "IEC/IEEE 60802: The Case for the Converged Network in the Factory of the Future," IEEE SA TSN webinar series, 6 April 2023, slides 7–19. [Slides](https://www.ieee802.org/1/files/public/docs2023/webinar-woods-TSN_60802-0423.pdf)
 3. IEC/IEEE 60802 joint project, "Requirements IEC/IEEE 60802," V1.0, 13 September 2018. [Document](https://www.ieee802.org/1/files/public/docs2018/60802-industrial-requirements-0918-v10.pdf)
 4. IEEE SA, "Time-Sensitive Networking for Industrial Automation: Unlocking the Future of Industrial Automation," *Beyond Standards*. [Article](https://standards.ieee.org/beyond-standards/time-sensitive-networking-for-industrial-automation-unlocking-the-future-of-industrial-automation/)
-5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [profiles](/article-notes/tsn-profiles).
-6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [profiles](/article-notes/tsn-profiles).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)
+7. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023. [arXiv](https://arxiv.org/abs/2305.16772)

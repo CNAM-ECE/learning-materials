@@ -1,7 +1,7 @@
 import React, {memo, type ReactNode} from 'react';
 import Heading from '@theme/Heading';
 import type {Props} from '@theme/BlogSidebar/Content';
-import {learningPath, otherTopicLabel} from '@site/src/data/learningPath';
+import {researchUnderstanding, otherTopicLabel} from '@site/src/data/researchUnderstanding';
 
 type Items = Props['items'];
 type Section = {label?: string; items: Items};
@@ -15,14 +15,14 @@ function slugOf(permalink: string): string {
 
 /**
  * Groups the sidebar items by topic, and inside a topic by section, instead
- * of by year. Order comes from src/data/learningPath.ts.
+ * of by year. Order comes from src/data/researchUnderstanding.ts.
  */
 function groupByTopic(items: Items): Group[] {
   const bySlug = new Map(items.map((item) => [slugOf(item.permalink), item]));
   const used = new Set<string>();
   const groups: Group[] = [];
 
-  for (const topic of learningPath) {
+  for (const topic of researchUnderstanding) {
     const sections: Section[] = [];
     for (const section of topic.sections) {
       const sectionItems = section.posts.flatMap((slug) => {

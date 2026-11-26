@@ -1,5 +1,5 @@
 /**
- * Abbreviations used in the learning path: what each one stands for and a
+ * Abbreviations used in the Research understanding posts: what each one stands for and a
  * one-sentence definition. Used by the Abbreviations component (a box in each
  * standards post) and by the Reference page that lists them all.
  *

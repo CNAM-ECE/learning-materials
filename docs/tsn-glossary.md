@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: TSN glossary
-description: Short definitions of the IEEE 802.1 TSN amendments and terms used in the learning path.
+description: Short definitions of the IEEE 802.1 TSN amendments and terms used in the Research understanding posts.
 ---
 
 # TSN glossary

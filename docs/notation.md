@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Notation and results
-description: One-page summary of operators, standard curves and closed-form bounds used in the learning path.
+description: One-page summary of operators, standard curves and closed-form bounds used in the Research understanding posts.
 ---
 
 # Notation and results

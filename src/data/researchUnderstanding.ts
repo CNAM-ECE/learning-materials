@@ -1,5 +1,5 @@
 /**
- * Topic grouping of the learning path, used by the blog sidebar
+ * Topic grouping of the Research understanding section, used by the blog sidebar
  * (src/theme/BlogSidebar/Content) and nowhere else.
  *
  * Topics appear in the order listed here. A topic is split into sections
@@ -7,18 +7,18 @@
  * their dates. Each entry is the `slug` of a post in blog/. A post whose slug
  * is not listed falls into "Other".
  */
-export type LearningPathSection = {
+export type ResearchSection = {
   /** Sub-category heading. */
   label: string;
   posts: string[];
 };
 
-export type LearningPathTopic = {
+export type ResearchTopic = {
   label: string;
-  sections: LearningPathSection[];
+  sections: ResearchSection[];
 };
 
-export const learningPath: LearningPathTopic[] = [
+export const researchUnderstanding: ResearchTopic[] = [
   {
     label: 'Deterministic networks',
     sections: [

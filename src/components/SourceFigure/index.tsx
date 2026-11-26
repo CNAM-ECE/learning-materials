@@ -80,6 +80,10 @@ const docs = {
     cite: 'X. Yang, D. Scholz, M. Helm, “Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN),” Seminar Innovative Internet Technologies and Mobile Communications (IITM), TU Munich, October 2019',
     url: 'https://doi.org/10.2313/NET-2019-10-1_15',
   },
+  gavrilut2022: {
+    cite: 'V. Gavriluţ, A. Pruski, M. S. Berger, “Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications,” ACM Computing Surveys, vol. 55, no. 3, article 62, 2022',
+    url: 'https://doi.org/10.1145/3501294',
+  },
 } satisfies Record<string, Doc>;
 
 type Entry = {
@@ -175,6 +179,9 @@ export const sourceFigures = {
   'yang2019-frer': {doc: 'yang2019', where: 'Figure 3, after N. Finn, 2018', alt: 'Two FRER examples: a transmitter replicates packets into two flows over A-B-C and D-E-F and the receiver eliminates duplicates; in the second, nodes B and E also eliminate and re-replicate, so two failures on different paths are tolerated', width: 520},
   'xue2023-fig2': {doc: 'xue', where: 'Fig. 2', alt: 'A TSN network of five bridges and five end stations carrying four streams from talkers to listeners', width: 520},
   'xue2023-fig6': {doc: 'xue', where: 'Fig. 6', alt: 'The eight-bridge TSN testbed: photograph of the boards, the hardware components and the logical ring topology with a CNC and a CUC', width: 620},
+  'gavrilut2022-fig1': {doc: 'gavrilut2022', where: 'Fig. 1', alt: 'Network model: three end stations connected to one switch, with flow f1 from ES1 to ES3 and flow f2 from ES2 to ES3 sharing the link from the switch to ES3', width: 620},
+  'gavrilut2022-fig2': {doc: 'gavrilut2022', where: 'Fig. 2', alt: 'Switch structure: each input has an input buffer and classification and traffic filtering, a switch fabric, and each output has eight priority queues Q0 to Q7 with TAS and CBS shapers before transmission selection', width: 620},
+  'gavrilut2022-fig4': {doc: 'gavrilut2022', where: 'Fig. 4', alt: 'Overlapping ellipses for the design problems topology selection, routing, priority and traffic-type assignment and scheduling, each marked with the symbols of the strategies used for it: KSP, ILP, CP, LP, GRASP, greedy heuristics, tabu search, genetic algorithms, SMT and OMT', width: 520},
 } satisfies Record<string, Entry>;
 
 export type SourceFigureId = keyof typeof sourceFigures;

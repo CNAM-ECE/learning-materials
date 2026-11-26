@@ -49,7 +49,7 @@ Several domains are separate instances of gPTP; link-delay measurement can be sh
 ## Accuracy figures
 
 - **Simulation** (Gutierrez et al., cited in LS19): at most **1 µs** difference between clocks up to 30 hops, **2 µs** up to 100 hops, without failures.
-- **Testbed** (XZZ23 §IV): on eight TTTech bridges with the Linux PTP stack, the measured synchronisation error, together with propagation delay (2–6 ns on a single direct cable) and processing delay (bounded by 1.9 µs per hop), is what TAS schedules must budget for. XZZ23 also notes that 802.1AS-Rev allows a **per-node** synchronisation error, depending on role and hop distance to the grandmaster, instead of one global value.
+- **Testbed** (XZZ23 §IV): on eight TTTech bridges with the Linux PTP stack (gPTP profile), the synchronisation error stayed **below 10 ns** once the grandmaster had been elected (about 5 s), and the offset between the system clock and the PTP hardware clock below 50 ns. Together with propagation delay (2–6 ns on a single direct cable) and processing delay (bounded by 1.9 µs per hop), this is what TAS schedules must budget for. PTP frames can also collide with scheduled TT frames, which the schedule must leave room for. XZZ23 also notes that 802.1AS-Rev allows a **per-node** synchronisation error, depending on role and hop distance to the grandmaster, instead of one global value.
 
 ## Open issues raised by LS19
 

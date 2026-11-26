@@ -46,6 +46,99 @@ Points marked in the reading of §2.1:
   caption="Figure 2. A DetNet-enabled network: end systems, edge nodes, relay nodes and transit nodes, some of which may be TSN sub-networks."
 />
 
+## RFC 8655 in detail (from the margin notes)
+
+**Scope.** One administrative domain: a campus, a private WAN. Not the Internet. Resources are dedicated to DetNet flows; whatever a flow does not use is available to non-DetNet traffic only.
+
+### Vocabulary
+
+| Term | Meaning |
+| --- | --- |
+| **App-flow** | The payload carried over DetNet, with no DetNet attributes |
+| **DetNet flow** | Packets with a unique flow ID and DetNet headers |
+| **Allocation** | Resources dedicated to a flow (reusable when idle) |
+| **Reservation** | Resources from source to destinations |
+| **Domain** | The DetNet-aware part of the network |
+| **Edge node** | Source or destination of the service sub-layer (like an LER or PE) |
+| **Relay node** | Service sub-layer (protection) between forwarding paths |
+| **Transit node** | Forwarding sub-layer only (like an MPLS LSR) |
+| **Link** | A physical link or a sub-network |
+| **UNI** | User–network interface: encapsulation, status, synchronisation |
+| **PRF / PEF / POF** | Packet replication, elimination and ordering functions; together **PREOF** |
+
+| IEEE (TSN) | IETF (DetNet) |
+| --- | --- |
+| Talker | Source |
+| Listener | Destination |
+| Stream | Flow |
+| Relay system (bridge) | Intermediate node |
+| End station | End system (host) |
+
+### The service
+
+DetNet QoS is stated as: **minimum and maximum latency**, bounded jitter, a **loss ratio**, and a **maximum misordering**. Only the **worst case** counts: priority queuing gives a better average but a worse worst case. The goal is to emulate legacy analogue or serial links, where latency is acceptable but **jitter is not** (it harms control stability). Jitter is reduced by the same mechanisms as resource allocation, plus sub-µs synchronisation and time-of-execution fields.
+
+### Three techniques, eight combinations
+
+| Combination | Example |
+| --- | --- |
+| Resource allocation alone | AVB (MSRP plus shapers) |
+| Explicit routes + service protection | Seamless redundancy on a ring (HSR, PRP) |
+| All three | Maximum protection |
+| Priority + over-provisioning only | Works only with little non-critical traffic and no failures |
+
+- **Resource allocation.** Buffers and bandwidth per flow: no contention loss and bounded latency, provided the source is **rate limited**. Hence no congestion control is needed, and App-flows ignore ECN. Every hop regulates the rate; ingress policing and shaping protect non-DetNet traffic. Without enough provisioned resources, the reservation is **rejected**.
+- **Service protection.** Encoding against media errors; PRE against equipment failure, over disjoint paths (1+1 or 1+n hitless). **PRE is not failover**: each packet is selected, and no failure detection is needed. Relays that replicate and eliminate mid-path tolerate several failures. The merge point **buffers** to equalise path delays. PREOF hides congestion signals, so member flows are treated as non-congestion-controlled.
+- **Explicit routes.** Dynamic routing (IS-IS, OSPF) causes loss and misordering during topology changes; explicit routes keep the path fixed. They are set up with RSVP-TE, segment routing, SDN or IS-IS. Rings need little wiring but add hops and latency.
+
+### Flows and end systems
+
+| End system | Knows about | Flow format |
+| --- | --- | --- |
+| DetNet-unaware | Nothing; needs a **proxy** | App-flow |
+| f-aware | Forwarding sub-layer (resources) | f-flow |
+| s-aware | Service sub-layer (sequencing) | s-flow |
+| sf-aware | Both | sf-flow |
+
+- **Synchronous** flows rely on sub-µs synchronisation and time-shared resources; **asynchronous** flows are analysed with worst-case interference and specified by maximum packet size, interval and maximum transmissions per interval. The trade-off is scheduling effort against buffer space.
+- An App-flow can be CBR or VBR, at Layer 1 to 3; VBR is reserved at its peak.
+- The fundamental shift: resources are **reserved before the application starts**.
+- Hops that are not DetNet-aware must be configured, and add buffering, latency and jitter downstream.
+
+### Planes
+
+DetNet is a branch of traffic engineering (TEAS), with three planes:
+
+| Plane | Contents | Interface |
+| --- | --- | --- |
+| **Application** | User agents request service through a flow management entity, with a **TSpec** | Northbound |
+| **Controller** | Control and management (plus measurement): a controller plane function (CPF: PCE or NME) computes deterministic paths with redundancy and PRE, and installs per-flow, per-hop behaviour | Southbound |
+| **Network** | Data plane and OAM: NICs, routers, MPLS switches | — |
+
+Nodes report their capabilities and topology up; the CPF pushes the flow characterisation down. Reservation alone is not enough: standard data-plane algorithms (CBS, TAS, CQF, preemption) are needed to compute per-hop latency and buffers from the flow specification. All of them except preemption also apply to routers and non-Ethernet media.
+
+<SourceFigure
+  id="rfc8655-fig7"
+  caption="Figure 3. Northbound and southbound interfaces between end systems, controller plane functions and DetNet nodes."
+/>
+
+### Flow identification across domains
+
+The flow ID must be visible to the layer that forwards. When the forwarding paradigm changes (IP, MPLS, Ethernet), the flow ID, and the sequence number with it, is **exported** to the lower layer instead of relying on deep packet inspection. A relay maps IDs: a TSN stream ID in a bridged network, its own label in MPLS. An aggregate flow is not a compound flow. Flow aggregation (MPLS hierarchy, DSCP) is how DetNet scales.
+
+<SourceFigure
+  id="rfc8655-fig10"
+  caption="Figure 4. An IP host pushes an Ethernet-domain flow ID so that the switches can forward on it; the router reads the Layer 3 ID."
+/>
+
+### Security and privacy
+
+- Security protects the **QoS**: secure control, confidentiality, availability. DetNet inherits IP and MPLS security.
+- Authenticate and authorise, especially controllers: ACTN for centralised control, protocol security for distributed control.
+- Confidentiality with IPsec (IP) or MACsec (Layer 2).
+- Availability: admission control against denial of service; authentication against man-in-the-middle **delay attacks**. Time synchronisation security is critical (RFC 7384).
+- Privacy: QoS markings and per-node flow IDs let an attacker correlate traffic.
+
 ## DetNet compared with TSN
 
 YSH19 §8, completed with LS19 §IV-G:

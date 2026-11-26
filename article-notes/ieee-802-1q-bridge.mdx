@@ -69,4 +69,15 @@ TSN is a **toolbox**: a designer picks only the standards an application needs. 
 | Flexibility | Online reconfiguration through Qcc, but no worst-case bound on the time to compute a new configuration |
 | Scalability | Large address space; synchronisation stays under 2 µs at 100 hops; Qbv scheduling is NP-complete |
 
+LS19 adds **configuration ease**, which it rates poorly: the configuration space is huge, and profiles (such as 802.1BA for AVB) are the main help, with more guidance expected as adoption grows. Its informal star ratings (Table III) put bandwidth, scalability, real-time and flexibility as **strong**, reliability and availability as **medium**, and integrity, confidentiality and configuration as **weak**. Hence TSN as it stands is **not safety-critical** on its own.
+
+**Research challenges** listed at the end of LS19:
+
+1. **RC1. Configuration synthesis**: which mechanisms to use, and schedules that scale.
+2. **RC2. Dependability** and design assurance.
+3. **RC3. Security**, since IT/OT convergence opens cyber-physical systems to attacks.
+4. **RC4. Verification and validation** by independent parties.
+
+GPB22 surveys the work on RC1; see [Network design and synthesis](./tsn-network-design.mdx).
+
 The flexibility row is the gap the doctoral project addresses: a reconfiguration that must finish within a deadline cannot yet be served by TSN with a guarantee (see [Dynamic reconfiguration](/blog/dynamic-reconfiguration-of-tsn)).

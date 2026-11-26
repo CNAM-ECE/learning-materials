@@ -36,9 +36,9 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Resource management',
+      label: 'Resource management and design',
       collapsed: false,
-      items: ['ieee-802-1qcc'],
+      items: ['ieee-802-1qcc', 'tsn-network-design'],
     },
     {
       type: 'category',

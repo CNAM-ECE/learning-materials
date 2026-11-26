@@ -12,6 +12,7 @@ import {PeerDelayFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Traffic_policing_(communications)) all assume that every [bridge](https://en.wikipedia.org/wiki/Network_bridge) reads the same time. [IEEE 802.1AS](https://1.ieee802.org/tsn/802-1as-2020/) is the standard that provides that time. This post traces how it grew out of the [Precision Time Protocol](https://en.wikipedia.org/wiki/Precision_Time_Protocol) of IEEE 1588, explains how it works, and states what an analysis has to assume about it.
 
@@ -23,6 +24,8 @@ Gates, cyclic queues and time-gated [policing](https://en.wikipedia.org/wiki/Tra
 />
 
 <Abbreviations terms={["IEEE", "LAN", "PTP", "gPTP", "BMCA", "GM", "TAI", "UDP", "IP", "MAC", "PHY", "EPON", "CSN", "MoCA", "FTM", "AVB", "TSN"]} />
+
+<ArticleNotesCard pages={['ieee-802-1as']} />
 
 ## 1. Definition
 
@@ -219,3 +222,5 @@ A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_o
 6. G. Garner, S. Rodrigues, "The Transport and Impact of Synchronization in Time-Sensitive Networking: An Introduction to IEEE 802.1AS," IEEE SA TSN webinar series, 24 February 2022, slides 10–31. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-garner-synchronization-0222.pdf)
 7. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, 19 January 2021, section on time synchronisation and Figure 2. [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
 8. D. Pannell, "An Introduction to AVB (Audio Video Bridging), the 1st TSN Profile," IEEE SA TSN webinar series, June 2022, slide 15. [Slides](https://www.ieee802.org/1/files/public/docs2022/webinar-pannell-AVB-0622.pdf)
+9. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1AS](/article-notes/ieee-802-1as).
+10. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1AS](/article-notes/ieee-802-1as).

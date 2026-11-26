@@ -10,6 +10,7 @@ description: How an IEEE 802.1Q bridge is organised. The control and data planes
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Every TSN mechanism in this series is described as an addition to "the bridge". This post opens that box. It uses the figures with which the IEEE 802.1 working group itself explains the bridge: in its 2013 tutorial to the IETF, and in its 2017 and 2018 introductions to TSN.
 
@@ -21,6 +22,8 @@ Every TSN mechanism in this series is described as an addition to "the bridge". 
 />
 
 <Abbreviations terms={["IEEE", "IETF", "LAN", "MAC", "VLAN", "VID", "QoS", "TSN", "CBS", "TAS", "CQF", "ATS", "PSFP", "FRER", "SRP", "CNC", "SDN", "RSTP", "MSTP", "SPB", "IS-IS", "PCR", "PCE", "MRP", "MVRP", "MMRP"]} />
+
+<ArticleNotesCard pages={['ieee-802-1q-bridge']} />
 
 ## 1. Definition
 
@@ -142,3 +145,5 @@ Control modes are assigned per VLAN. Distributed protocols and an external agent
 2. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 7–10. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 28 and 47–49. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 4. IEEE, *IEEE 802.1Q-2022, Bridges and Bridged Networks*. [IEEE SA](https://standards.ieee.org/ieee/802.1Q/10323/). IEEE 802 standards are available free of charge through the [IEEE GET Program](https://standards.ieee.org/products-programs/ieee-get-program/).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).

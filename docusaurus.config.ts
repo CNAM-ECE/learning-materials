@@ -109,13 +109,20 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: '/blog', label: 'Research understanding', position: 'left'},
         {
-          type: 'docSidebar',
-          sidebarId: 'articleNotesSidebar',
-          docsPluginId: 'article-notes',
+          type: 'dropdown',
+          label: 'Research understanding',
+          to: '/blog',
           position: 'left',
-          label: 'Article notes',
+          items: [
+            {to: '/blog', label: 'Posts by topic'},
+            {
+              type: 'docSidebar',
+              sidebarId: 'articleNotesSidebar',
+              docsPluginId: 'article-notes',
+              label: 'Article notes by standard',
+            },
+          ],
         },
         {
           type: 'docSidebar',

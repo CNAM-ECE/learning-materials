@@ -11,6 +11,7 @@ import {StackPlacementFigure, LayerRolesFigure} from '@site/src/components/figur
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 "Deterministic networking" names a goal before it names a technology: a packet network that delivers selected flows within a bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)), with almost no loss. This post defines the goal, lists what it demands from the network, and shows which standards body is responsible for which layer.
 
@@ -19,6 +20,8 @@ import Abbreviations from '@site/src/components/Abbreviations';
 <StackPlacementFigure />
 
 <Abbreviations terms={["IEEE", "IETF", "RFC", "OSI", "MAC", "VLAN", "QoS", "IP", "UDP", "TCP", "IT", "TSN", "AVB", "CBS", "TAS", "CQF", "FRER", "CNC", "SDN", "IS-IS", "DetNet", "MPLS", "MPLS-TE", "RSVP-TE", "RSVP", "IntServ", "DiffServ", "DSCP", "TEAS"]} />
+
+<ArticleNotesCard pages={['ietf-detnet']} />
 
 <SourceFigure
   id="overview2018-ieee802-osi"
@@ -183,3 +186,5 @@ The application areas named by the two groups overlap widely [1][3]: professiona
 7. S. Blake et al., *An Architecture for Differentiated Services*, RFC 2475, December 1998. [RFC Editor](https://www.rfc-editor.org/rfc/rfc2475)
 8. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
 9. Y. Bernet et al., *A Framework for Integrated Services Operation over Diffserv Networks*, RFC 2998, November 2000. [RFC Editor](https://www.rfc-editor.org/rfc/rfc2998)
+10. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [DetNet](/article-notes/ietf-detnet).
+11. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [DetNet](/article-notes/ietf-detnet).

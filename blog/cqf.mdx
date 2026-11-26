@@ -10,6 +10,7 @@ description: Cyclic Queuing and Forwarding as a joint configuration of stream ga
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Cyclic Queuing and Forwarding ([CQF](https://1.ieee802.org/tsn/802-1qch/)) makes [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) independent of the other traffic. A frame advances exactly one hop per cycle, so its delay depends only on the path length. No new hardware is needed: CQF is a particular way of configuring two [TSN](https://1.ieee802.org/tsn/) tools that already exist.
 
@@ -21,6 +22,8 @@ Cyclic Queuing and Forwarding ([CQF](https://1.ieee802.org/tsn/802-1qch/)) makes
 />
 
 <Abbreviations terms={["IEEE", "TSN", "CBS", "TAS", "CQF", "ATS", "PSFP", "IPV"]} />
+
+<ArticleNotesCard pages={['ieee-802-1qch-qcr']} />
 
 ## 1. Definition
 
@@ -96,3 +99,5 @@ For network calculus, CQF is the simplest case of all. Each hop is a delay eleme
 2. Wikipedia, "Time-Sensitive Networking," section on cyclic queuing and forwarding. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 35–36. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections VI-C and VII-F. [arXiv](https://arxiv.org/abs/2610.11999)
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qch and 802.1Qcr](/article-notes/ieee-802-1qch-qcr).
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Qch and 802.1Qcr](/article-notes/ieee-802-1qch-qcr).

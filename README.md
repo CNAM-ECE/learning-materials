@@ -32,8 +32,8 @@ Time-Sensitive Networking (TSN) guarantees worst-case latency only for a configu
 
 | Section | Route | Content |
 |:---|:---|:---|
-| Research understanding | `/blog` | Thirty-eight posts in six topics, listed below |
-| Article notes | `/article-notes` | Notes on the four articles in `ressource/`, split by standard: 802.1Q bridge and toolbox, 802.1AS, 802.1Qav, 802.1Qbv, 802.3br/802.1Qbu, 802.1Qch/Qcr, 802.1Qci, 802.1CB, 802.1Qcc, profiles, DetNet |
+| Research understanding: posts | `/blog` | Thirty-eight posts in six topics, listed below |
+| Research understanding: article notes | `/article-notes` | Notes on the five articles in `ressource/`, split by standard: 802.1Q bridge and toolbox, 802.1AS, 802.1Qav, 802.1Qbv, 802.3br/802.1Qbu, 802.1Qch/Qcr, 802.1Qci, 802.1CB, 802.1Qcc, network design, profiles, DetNet; linked from each post |
 | Doctoral training | `/doctoral-training` | The thirteen 2026–2027 ED SMI courses grouped by theme, hours, and session notes (research ethics so far) |
 | Reference | `/reference` | Notation, abbreviations, TSN glossary, annotated resources |
 

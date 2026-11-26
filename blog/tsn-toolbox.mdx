@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure, ScheduledTrafficFigure, PreemptionFigure, PerSt
 import {ReplicationFigure} from '@site/src/components/figures/shared';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 [Time-Sensitive Networking](https://1.ieee802.org/tsn/) (TSN) is a set of [IEEE 802.1](https://1.ieee802.org/) standards for time-sensitive transmission over [Ethernet](https://standards.ieee.org/ieee/802.3/10422/). This post goes through the tools one by one, always asking the same question: which part of an ordinary Ethernet [bridge](https://en.wikipedia.org/wiki/Network_bridge) does this tool change?
 
@@ -19,6 +20,8 @@ import Abbreviations from '@site/src/components/Abbreviations';
 <BridgeIntegrationFigure />
 
 <Abbreviations terms={["IEEE", "MAC", "IP", "gPTP", "TSN", "AVB", "CQF", "ATS", "PSFP", "FRER", "CNC", "YANG", "NETCONF", "RESTCONF", "SDN", "IS-IS", "DetNet"]} />
+
+<ArticleNotesCard pages={['ieee-802-1q-bridge']} />
 
 ## 1. Definition
 
@@ -228,3 +231,5 @@ The CNC has a view of the whole network, performs reservation and scheduling cen
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
 5. J. Steinheider (NXP Semiconductors), "The Fundamentals of Time-Sensitive Networking," *All About Circuits*, industry article, 19 January 2021, Figure 1 and section "TSN Standards." [Article](https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/)
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).
+7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Q bridge and toolbox](/article-notes/ieee-802-1q-bridge).

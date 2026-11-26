@@ -12,6 +12,7 @@ import {ReservationFlowFigure} from '@site/src/components/figures/standards';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) only if the traffic it serves stays within what it was configured for. Something must therefore decide, before a stream starts, whether the network can carry it. This post covers the distributed way of making that decision, in which the [bridges](https://en.wikipedia.org/wiki/Network_bridge) themselves admit or reject streams. The centralised alternative is covered in [the SDN post](/blog/sdn-and-tsn-configuration).
 
@@ -23,6 +24,8 @@ A shaper bounds [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) o
 />
 
 <Abbreviations terms={["IEEE", "MAC", "AVB", "CBS", "CQF", "ATS", "SRP", "RAP", "CNC", "SDN"]} />
+
+<ArticleNotesCard pages={['ieee-802-1qcc']} />
 
 ## 1. Definition
 
@@ -109,3 +112,4 @@ RAP is designed for both cases. Decentralised models can also join two centrally
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slide 18. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I, V, VI-A and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
 5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qcc](/article-notes/ieee-802-1qcc).

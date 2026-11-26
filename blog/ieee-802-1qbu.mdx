@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure, PreemptionFigure} from '@site/src/components/fi
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 A long frame already on the wire delays everything behind it: a 1522-byte frame occupies a 1 Gbit/s link for about 12 µs. [IEEE 802.3br](/blog/ieee-802-3br-interspersing-express-traffic) gave Ethernet the means to cut such a frame. IEEE 802.1Qbu decides, inside the bridge, which frames may cut which, and coordinates the cut with the gates of scheduled traffic.
 
@@ -22,6 +23,8 @@ A long frame already on the wire delays everything behind it: a 1522-byte frame 
 />
 
 <Abbreviations terms={["IEEE", "MAC"]} />
+
+<ArticleNotesCard pages={['ieee-802-1qbu-802-3br']} />
 
 ## 1. Definition
 
@@ -102,3 +105,5 @@ Profiles turn preemption from an option into a requirement. The fronthaul profil
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 29–33; "TSN Basic Concepts," 2018, slide 12. [2017](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf), [2018](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. Wikipedia, "Time-Sensitive Networking," section on frame preemption. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
 5. C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, Section II-C. [arXiv](https://arxiv.org/abs/2305.16772)
+6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).
+7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).

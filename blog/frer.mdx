@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {FrerFunctionsFigure} from '@site/src/components/figures/standards';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useless if a cable cut loses frames for the hundreds of milliseconds it takes to reroute. Frame Replication and Elimination for Reliability ([FRER](https://1.ieee802.org/tsn/802-1cb/)) sends every frame along several paths in parallel, so a single failure costs no frame and no switchover time.
 
@@ -22,6 +23,8 @@ Bounded [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) is useles
 />
 
 <Abbreviations terms={["IEEE", "IETF", "IEC", "ATS", "PSFP", "FRER", "R-TAG", "HSR", "PRP", "CNC", "SDN", "IS-IS", "DetNet"]} />
+
+<ArticleNotesCard pages={['ieee-802-1cb']} />
 
 ## 1. Definition
 
@@ -83,3 +86,5 @@ In [network calculus](https://en.wikipedia.org/wiki/Network_calculus) terms, the
 2. Wikipedia, "Time-Sensitive Networking," section on frame replication and elimination. [Article](https://en.wikipedia.org/wiki/Time-Sensitive_Networking)
 3. J. Farkas, "TSN Basic Concepts," DetNet–TSN workshop, 11 November 2018, slides 16–17. [Slides](https://www.ieee802.org/1/files/public/docs2018/detnet-tsn-farkas-tsn-basic-concepts-1118-v01.pdf)
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1CB](/article-notes/ieee-802-1cb).
+6. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1CB](/article-notes/ieee-802-1cb).

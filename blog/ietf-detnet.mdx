@@ -9,6 +9,7 @@ description: The charter of the IETF Deterministic Networking working group and 
 
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 [TSN](https://1.ieee802.org/tsn/) makes a bridged network deterministic. The [IETF](https://www.ietf.org/) Deterministic Networking ([DetNet](https://www.rfc-editor.org/rfc/rfc8655)) working group does the same for routed networks, and defines how the two fit together. This post summarises the charter and the architecture document, RFC 8655.
 
@@ -20,6 +21,8 @@ import Abbreviations from '@site/src/components/Abbreviations';
 />
 
 <Abbreviations terms={["IEEE", "IETF", "RFC", "MAC", "VLAN", "IP", "UDP", "TSN", "YANG", "DetNet", "CPF", "MPLS", "MPLS-TE", "PW", "GRE", "OAM"]} />
+
+<ArticleNotesCard pages={['ietf-detnet']} />
 
 ## 1. Definition
 
@@ -130,3 +133,5 @@ DetNet says *that* resources must be allocated so that latency is bounded; it do
 1. IETF, *Deterministic Networking (detnet) working group: charter and milestones*. [Datatracker](https://datatracker.ietf.org/wg/detnet/about/)
 2. N. Finn, P. Thubert, B. Varga, J. Farkas, *Deterministic Networking Architecture*, RFC 8655, October 2019. [RFC Editor](https://www.rfc-editor.org/rfc/rfc8655)
 3. Wikipedia, "Deterministic Networking." [Article](https://en.wikipedia.org/wiki/Deterministic_Networking)
+4. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [DetNet](/article-notes/ietf-detnet).
+5. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [DetNet](/article-notes/ietf-detnet).

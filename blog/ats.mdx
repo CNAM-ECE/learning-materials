@@ -10,6 +10,7 @@ description: Asynchronous Traffic Shaping reshapes every stream at every hop wit
 import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Class-based shapers let the bursts of a stream grow from hop to hop, and scheduled traffic needs a network-wide clock and a central schedule. Asynchronous Traffic Shaping ([ATS](https://1.ieee802.org/tsn/802-1qcr/)) avoids both problems: it restores each stream's original traffic contract at every hop, using only the [bridge](https://en.wikipedia.org/wiki/Network_bridge)'s local clock.
 
@@ -21,6 +22,8 @@ Class-based shapers let the bursts of a stream grow from hop to hop, and schedul
 />
 
 <Abbreviations terms={["IEEE", "ATS", "PSFP", "FRER", "BE"]} />
+
+<ArticleNotesCard pages={['ieee-802-1qch-qcr']} />
 
 ## 1. Definition
 
@@ -110,3 +113,5 @@ The industrial review summarises the division of labour. ATS suits sporadic or a
 4. A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026, Sections I, IV, VI-A, VI-D, VII-F and VIII. [arXiv](https://arxiv.org/abs/2610.11999)
 5. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, vol. 26, no. 6, 2018.
 6. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
+7. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.1Qch and 802.1Qcr](/article-notes/ieee-802-1qch-qcr).
+8. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.1Qch and 802.1Qcr](/article-notes/ieee-802-1qch-qcr).

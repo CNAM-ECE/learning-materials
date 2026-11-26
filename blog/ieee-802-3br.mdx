@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import {MPacketFigure, HoldReleaseFigure} from '@site/src/components/figures/profiles';
 import SourceFigure from '@site/src/components/SourceFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
+import ArticleNotesCard from '@site/src/components/ArticleNotesCard';
 
 Frame preemption is specified by two standards. IEEE 802.3br changes the Ethernet MAC so that a frame can be cut and resumed. [IEEE 802.1Qbu](/blog/ieee-802-1qbu-frame-preemption) tells a bridge which traffic may cut which. This post covers the Ethernet half: everything that happens below the bridge port.
 
@@ -22,6 +23,8 @@ Frame preemption is specified by two standards. IEEE 802.3br changes the Etherne
 />
 
 <Abbreviations terms={["IEEE", "MAC", "PHY", "IP", "IET", "eMAC", "pMAC", "SMD", "MCRC", "LLDP"]} />
+
+<ArticleNotesCard pages={['ieee-802-1qbu-802-3br']} />
 
 ## 1. Definition
 
@@ -121,3 +124,5 @@ When a port protects its traffic with [MACsec](https://standards.ieee.org/ieee/8
 1. IEEE P802.3br Interspersing Express Traffic Task Force. [Task force page](https://www.ieee802.org/3/br/)
 2. L. Winkel, M. Johas Teener, N. Finn, P. Thaler, "Real-time Ethernet on IEEE 802.3 Networks," joint IEEE 802.3br and IEEE 802.1 TSN tutorial, IEEE 802 plenary, March 2015, slides 11–12 and 40–59. [Slides (PPTX)](https://www.ieee802.org/802_tutorials/2015-03/8023-IET-TF-1501-Winkel-Tutorial-20150115_r06.pptx)
 3. J. Farkas, "Introduction to IEEE 802.1: Focus on the Time-Sensitive Networking Task Group," 15 May 2017, slides 29–30. [Slides](https://www.ieee802.org/1/files/public/docs2017/tsn-farkas-intro-0517-v01.pdf)
+4. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).
+5. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) Article notes: [802.3br and 802.1Qbu](/article-notes/ieee-802-1qbu-802-3br).

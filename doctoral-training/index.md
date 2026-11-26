@@ -29,7 +29,7 @@ The minimum of 50 hours in each category is met. The totals change when a course
 | --- | --- | --- | ---: | --- | --- |
 | Ethics and integrity | [Research ethics and scientific integrity](./courses/research-ethics.md) | 25 Nov 2026 | 6 | Attended | ✅ Written up |
 | Ethics and integrity | [Ethics of artificial intelligence](./courses/ai-ethics.md) | 27 May 2027 | 6 | Not registered | — |
-| Scientific schools | [P3S3 — Privacy, Protocols & Proofs](./courses/p3s3.md) | 1–5 Jun 2026 | 25* | Completed | — |
+| Scientific schools | [P3S3 — Privacy, Protocols & Proofs](./courses/p3s3.md) | 1–5 Jun 2026 | 25* | Completed | ✅ Written up |
 | Scientific schools | [DeMythif.AI Winter School](./courses/demythif-ai.md) | 1–5 Mar 2027 | 24 | Applied | — |
 | Scientific schools | [Data Science and Information Theory](./courses/data-science.md) | 31 Mar–9 Apr 2027 | 30 | Requested | — |
 | Communication and tools | [Thesis in 180 Seconds coaching](./courses/thesis-180s.md) | 7 and 17 Dec 2026 | 6 | Confirmed | — |
@@ -67,6 +67,6 @@ Notes are taken by hand during the session, then rewritten here as web pages: he
 - [Cnam doctoral school ED SMI](https://ed-smi.cnam.fr/).
 - [Doctorat Cnam office](mailto:suivi.doctorants@cnam.fr).
 
-:::note Usage
+:::note[Usage]
 The course descriptions are original summaries. Training materials distributed in the sessions belong to their authors and are not reproduced here; the notes are personal notes in my own words.
 :::

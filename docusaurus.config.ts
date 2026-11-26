@@ -81,6 +81,8 @@ const config: Config = {
         routeBasePath: 'doctoral-training',
         sidebarPath: './sidebarsDoctoralTraining.ts',
         editUrl: `${repoUrl}/tree/main/`,
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
       },
     ],
   ],

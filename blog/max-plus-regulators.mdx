@@ -1,0 +1,128 @@
+---
+slug: max-plus-and-interleaved-regulators
+title: "Max-plus view and interleaved regulators"
+date: 2026-10-05T20:00
+authors: [trang]
+tags: [youtube, network-calculus, ats]
+description: Flipping the time and data axes, pseudo-inverses, arrival curves written on packet dates, the time-domain packetized greedy shaper, and the interleaved regulator behind IEEE 802.1Qcr ATS, from the course notes.
+---
+
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+Network calculus usually counts bits as a function of time. Writing the same constraints on packet dates instead (when did packet $n$ arrive, when may it leave) is what makes regulators implementable, and it leads to the interleaved regulator that TSN standardised as Asynchronous Traffic Shaping.
+
+{/* truncate */}
+
+<Abbreviations terms={["ATS", "TSN", "FIFO", "PGS", "LRQ", "IR", "PFR"]} />
+
+These notes rewrite the handwritten notes taken on the course slides [2] and the typed notes on the LINCS 2023 slides [3].
+
+## 1. Min-plus or max-plus?
+
+Network calculus mainly uses cumulative functions $R(t)$, the number of bits seen in $t$ time units: that is the min-plus view. Liebeherr uses the cumulative **arrival time** function $T(x)$, the time taken to observe $x$ bits. This flips the time and data axes and gives a dual, quasi-equivalent approach in max-plus algebra, linked by pseudo-inverses $R = T^{\downarrow}$, $T = R^{\uparrow}$:
+
+$$
+f^{\downarrow}(x) = \inf\{t : f(t) \ge x\}, \qquad f^{\uparrow}(x) = \sup\{t : f(t) \le x\}.
+$$
+
+**Example.** For $f(t) = b\lceil t/\tau \rceil$: $f^{\uparrow}(x) = \tau\lfloor x/b \rfloor$ for $x \ge 0$, and $f^{\downarrow}(x) = \tau\lceil x/b - 1 \rceil$ for $x > 0$.
+
+**Chang's max-plus calculus** uses the daters (a marked point process) with a convolution that is neither associative nor commutative,
+
+$$
+(A \odot_L g)(n) = \max_{1 \le m \le n}\big(A_m + g(\ell_m + \dots + \ell_{n-1})\big).
+$$
+
+A flow is **$g$-regular** if $A \ge A \odot_L g$. With $g(x) = x/r$ this is $A_n - A_{n-1} \ge \ell_{n-1}/r$, the LRQ rule of Specht and Samii: a constraint between two consecutive inter-arrival times. $g$-regularity is not equivalent to an arrival curve and is hard to use with aggregation, which is where min-plus is strong; it maps only approximately:
+
+$$
+g(\ell) = \frac{\ell}{r} \Rightarrow \alpha(t) = rt + \ell^{MAX}, \qquad \alpha(t) = rt + \ell^{MAX} \Rightarrow g(\ell) = \frac{(\ell - \ell^{MAX})^+}{r}.
+$$
+
+## 2. Arrival curves on packet dates
+
+**Theorem** (Le Boudec 2018). With $A_n$ the arrival date of packet $n$, the arrival curve constraint $\alpha$ is equivalent to
+
+$$
+A_n - A_m \ge \alpha^{\downarrow}(\ell_m + \dots + \ell_n) \qquad \text{for all } 1 \le m \le n,
+$$
+
+using the pseudo-inverse $\alpha^{\downarrow}$. For a token bucket, $\alpha^{\downarrow}(x) = \max\left(0, \frac{x - b}{r}\right)$.
+
+| | Original definition | Equivalent max-plus formulation |
+| --- | --- | --- |
+| Affine (leaky bucket) | $R(t) - R(s) \le r(t - s) + b$ | $A_n - A_m \ge \dfrac{L_m + \dots + L_n - b}{r}$ |
+| Staircase ($b$ bits per $\tau$) | $R(t) - R(s) \le b\left\lceil \dfrac{t-s}{\tau} \right\rceil$ | $A_n - A_m \ge \tau\left\lceil \dfrac{L_m + \dots + L_n - b}{b} \right\rceil$ |
+
+In the leaky-bucket row the right-hand side is a latency: how long the packets $m..n$ must be spread over. The staircase form is the one useful for TSN.
+
+**Rate-latency service.** A FIFO element offering $\beta_{R,T}$ to a packetized input satisfies, for every $n$, for some $m \le n$:
+
+$$
+D_n \le A_m + \frac{\ell_m + \dots + \ell_n}{R} + T ,
+$$
+
+departure time $\le$ an arrival time plus the time to serve the packets since then plus the latency. Conversely, an element with this property is a rate-latency element followed by a packetizer (a guaranteed-rate node).
+
+## 3. The packetized greedy shaper in the time domain
+
+The output times $D^*_n$ of the packetized greedy shaper are given recursively, with a discrete index:
+
+$$
+D^*_1 = A_1, \qquad D^*_n = D^*_{n-1} \vee A_n \vee \bigvee_{m=1}^{n-1}\Big(A_m + \alpha^{\downarrow}(\ell_m + \dots + \ell_n)\Big).
+$$
+
+A packet leaves no earlier than the previous one (FIFO), no earlier than it arrives, and no earlier than the arrival curve allows. For any other packetized shaper, $D'_n \ge D^*_n$: the greedy one is optimal.
+
+## 4. The interleaved regulator
+
+An **interleaved regulator** (IR) is a single FIFO queue for several flows (a bank of packetizers interleaved in one queue) whose output gives every flow $f$ its own arrival curve $\alpha_f$. **Theorem:** there is one minimal interleaved regulator, which outputs every packet no later than any other.
+
+$$
+D_n = \max\left\{A_n,\ D_{n-1},\ \bigvee_{m=1}^{i-1}\Big(A^f_m + \alpha^{\downarrow}_f\big(\ell^f_m + \dots + \ell^f_i\big)\Big)\right\},
+$$
+
+where packet $n$ is the $i$-th packet of its flow $f$. The last term is the eligibility time of the packet at the head of the queue.
+
+- One FIFO queue for all packets of all flows.
+- The packet at the head is examined and held until it can be released without violating the arrival curve of its flow.
+- The other packets wait for their turn.
+
+This is the urgency-based scheduler of Specht and Samii, called **Asynchronous Traffic Shaping** in IEEE TSN ([802.1Qcr](/blog/asynchronous-traffic-shaping)).
+
+**Theorem: the minimal IR does not increase worst-case delay.** Flows with arrival curves $\alpha_f$ cross a FIFO system $S$ and then a minimal IR with the same $\alpha_f$. With $A_n$ the arrival at $S$, $D_n$ the exit of $S$ and $E_n$ the exit of the IR:
+
+$$
+\sup_n (D_n - A_n) = \sup_n (E_n - A_n).
+$$
+
+*Proof with a damper.* Let $d$ be the worst-case delay of $S$ across all flows. Replace the IR by a damper that delays every packet to exactly $d$ after its arrival at $S$ (causal since $d$ is at least the worst case). Its output is the input shifted by $d$, so every flow keeps $\alpha_f$ and the order is kept: the damper is an interleaved regulator. By minimality, the regulated output is never later than the damped one.
+
+## 5. Other regulation constraints
+
+TSN defines source constraints per packet as well as per bit. **Packet burstiness** $PB(\rho, K)$: at most $\rho t + K$ packets in any interval of duration $t$, equivalently
+
+$$
+A_n - A_m \ge \frac{n - m + 1 - K}{\rho} \qquad \text{for } m \le n .
+$$
+
+Regulators generalise shapers: under mild conditions ("$\Pi$-regulation"), any regulation rule has a minimal regulator and any combination of rules has a minimal interleaved regulator. The minimal regulator does not increase per-flow delay; the minimal interleaved regulator does not increase the delay of a FIFO system.
+
+**Packet count and event streams.** With $R(t)$ the bits up to $t$, $P(d)$ the number of packets in $d$ bits (a relation from bits to packets) and $E(t)$ the number of packets up to $t$, $E(t) = P(R(t))$ and $P^L(R(t)) = P^{\downarrow}(P(R(t)))$. The conditions $E(t) - E(s) \le f(t - s)$ and $A_n - A_m \ge f^{\downarrow}(n - m + 1)$ are equivalent. In real-time systems the same tool counts the CPU cycles that job arrivals need, and superposition gives the delay analysis.
+
+## 6. Regulators against cascading burstiness
+
+From the LINCS 2023 notes [3]: a regulator, a shaper that delays packets to keep burstiness within a prescribed arrival curve, is typically placed at the network edge to protect against misbehaving sources. Inside a per-class network it limits the cascade of [the stability post](/blog/fifo-networks-and-stability), where a flow's burstiness grows as $b' = b + rJ$ with $J$ its delay-jitter bound, and it can break cyclic dependencies (the AFDX network is an example). The price is a burstiness–latency trade-off: the regulator holds back part of the packets to respect the token bucket, which may add delay to some packets, but never to the worst case.
+
+<HandwrittenPages set="nc-lectures" pages="56-69" title="course slides 56–69, max-plus and regulators" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+<HandwrittenPages set="nc-clock" pages="15-18" title="LINCS 2023 slides 15–18, regulators" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf" />
+
+## References
+
+1. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, vol. 26, no. 6, 2018. [arXiv](https://arxiv.org/abs/1801.08477)
+2. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)
+3. J.-Y. Le Boudec, "Time Sensitive Networks, Network Calculus and Clock Non-idealities," LINCS seminar, 2023. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf)
+4. J. Liebeherr, "Duality of the Max-Plus and Min-Plus Network Calculus," *Foundations and Trends in Networking*, 2017.
+5. J. Specht, S. Samii, "Urgency-Based Scheduler for Time-Sensitive Switched Ethernet Networks," ECRTS 2016.

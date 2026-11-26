@@ -6,6 +6,8 @@ authors: [trang]
 tags: [youtube, article, book, foundations, network-calculus]
 description: Definition of arrival curves, token buckets, staircase curves for periodic TSN streams, good arrival curves and greedy shapers.
 ---
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+
 
 An arrival curve is the traffic *contract* of a flow: an upper bound on how much data the flow may send in any time window. It is the first of the two envelopes on which [network calculus](https://en.wikipedia.org/wiki/Network_calculus) is built.
 
@@ -76,6 +78,195 @@ $$
 
 This pair $(b, r)$ is the input of every bound derived in the rest of the series.
 
+## 6. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [4] and on Chapter 1 of [1], with the proofs worked out step by step as in the notes.
+
+### Representing a flow
+
+A flow is described by its **cumulative function** $R(t)$: the number of bits seen on the flow in $[0, t]$, with $R(0) = 0$. It is a monotonic, non-decreasing function.
+
+| Model | Time | $R$ | Notes |
+| --- | --- | --- | --- |
+| Fluid | Continuous | Continuous, $R(t) = \int_0^t r(s)\,ds$ | Bits arrive one by one |
+| Packet train | Continuous | Jumps at each arrival; left-continuous by convention | $R(t) = \sum_{n \ge 1} \ell_n \mathbf{1}_{\{A_n < t\}}$ |
+| Discrete time | Slotted | $S(n) = R(n\tau)$ | Systems slotted with packets of constant size, such as ATM cells |
+
+A packet train is also described by its **daters** $(A, \ell)$: the dates $A_n$ at which packets arrive and their lengths $\ell_n$. This is the view used when packet timing matters (transmission, time synchronisation). Mapping a discrete-time model back to continuous time, $R'(t) = S(\lfloor t/\tau \rfloor)$, loses information but keeps the bounds.
+
+**Backlog and virtual delay.** For a system with input $R$ and output $R^*$ (causal: $R^* \le R$), the backlog is the **vertical** deviation and, for a FIFO system, the delay is the **horizontal** one:
+
+$$
+x(t) = R(t) - R^*(t), \qquad d(t) = \inf\{\tau \ge 0 : R(t) \le R^*(t + \tau)\}.
+$$
+
+A store-and-forward node first receives the whole packet, then serves and transmits it.
+
+### Arrival curve: definition and meaning
+
+$$
+R(t) - R(s) \le \alpha(t - s) \qquad \forall\, 0 \le s \le t .
+$$
+
+- $R(t) - R(s)$ is the data the flow sends in $(s, t]$; $R(t)$ is the data that arrived before $t$.
+- $\alpha(t - s)$ is the most data allowed in an interval of length $t - s$: a limit put on the input traffic, which is what gives guarantees on latency and backlog.
+- **Token bucket** $\gamma_{r,b}(t) = rt + b$: $r$ is the long-term rate (most data per unit of time) and $b$ the burst tolerance. In any interval of length $t$, the traffic never exceeds $rt + b$. It is linear, so it is easy to compute with.
+- **Staircase** $v_{T,\tau}(t) = \lceil (t + \tau)/T \rceil$: at most one packet per $T$, with a tolerance $\tau$. It is more accurate for periodic traffic, where it captures the largest job seen in an interval.
+- **Peak rate and token bucket** $\alpha(t) = \min(M + pt,\ rt + b)$: $M + pt$ applies for $t < (b - M)/(p - r)$ and $rt + b$ after.
+- **Aggregation.** If every flow $f$ has arrival curve $\alpha_f$, the aggregate $\sum_f R_f$ has arrival curve $\sum_f \alpha_f$; for token buckets, $(\sum_f r_f,\ \sum_f b_f)$.
+
+### Lemma 1.2.1: one can always use a left-continuous arrival curve
+
+If $\alpha$ is not continuous, define its left-continuous version
+
+$$
+\alpha_l(t) = \lim_{u \to t^-} \alpha(u).
+$$
+
+**Claim.** If $\alpha$ is an arrival curve for $R$, so is $\alpha_l$: $R(t) - R(s) \le \alpha_l(t - s)$.
+
+*Case 1: $R$ left-continuous.* Choose times approaching $t$ from the left, $t_n = t - \dfrac{t - s}{n + 1}$, so that $s < t_n < t$.
+
+1. $\alpha$ is an arrival curve: $R(t_n) - R(s) \le \alpha(t_n - s)$.
+2. $t_n - s < t - s$ and $\alpha$ is non-decreasing, so $\alpha(t_n - s) \le \alpha_l(t - s)$; in the limit, $\lim_n \alpha(t_n - s) = \alpha_l(t - s)$.
+3. $R$ is left-continuous, so $\lim_n R(t_n) = R(t)$: the data before $t$ bounds the data at $t$.
+4. Taking the limit of step 1: $R(t) - R(s) \le \alpha_l(t - s)$.
+
+*Case 2: $R$ right-continuous.* Choose $s_n \to s^+$, from the right.
+
+1. $R(t) - R(s_n) \le \alpha(t - s_n)$.
+2. $t - s_n < t - s$, so $\alpha(t - s_n) \le \alpha_l(t - s)$.
+3. $\lim_n R(s_n) = R(s)$, hence $R(t) - R(s) \le \alpha_l(t - s)$.
+
+So whether $R$ is left- or right-continuous, a left-continuous arrival curve can always be used.
+
+### Token bucket and staircase: when are they the same?
+
+Take packets of constant size $k$, with $r = k/T$ and $b = k\left(\dfrac{\tau}{T} + 1\right)$. Then a flow has arrival curve $k\,v_{T,\tau}$ if and only if it has arrival curve $\gamma_{r,b}$.
+
+*1) $k\,v_{T,\tau} \Rightarrow \gamma_{r,b}$*, i.e. $k\,v_{T,\tau}(t) \le \gamma_{r,b}(t)$. Using $\lceil x \rceil \le x + 1$:
+
+$$
+k \left\lceil \frac{t + \tau}{T} \right\rceil \le k \frac{t + \tau}{T} + k = \frac{k}{T}\,t + k\left(\frac{\tau}{T} + 1\right) = rt + b .
+$$
+
+*2) $\gamma_{r,b} \Rightarrow k\,v_{T,\tau}$.* Count data in packets, $k = 1$. Then:
+
+1. $R(t) - R(s)$ is an integer, and $R(t) - R(s) \le r(t-s) + b$, so $R(t) - R(s) \le \lfloor r(t-s) + b \rfloor$.
+2. With $r = 1/T$ and $b = \tau/T + 1$: $\lfloor rt + b \rfloor = \left\lfloor \dfrac{t}{T} + \dfrac{\tau}{T} + 1 \right\rfloor$.
+3. By Lemma 1.2.1 the left limit can be used: $\lim_{u \to t^-} \lfloor x(u) + 1 \rfloor = \lceil x(t) \rceil$, so the arrival curve becomes $\left\lceil \dfrac{t + \tau}{T} \right\rceil = v_{T,\tau}(t)$.
+4. Hence $R(t) - R(s) \le v_{T,\tau}(t - s)$.
+
+The token bucket is the linear form, the staircase the form for integer-valued traffic with fixed packet size. Both model **traffic admission**: the token bucket controls rate and burst, the staircase limits packets in time.
+
+### Leaky bucket controller (Proposition 1.2.3)
+
+A leaky bucket of rate $r$ and size $b$ holds a fluid level $x(t)$ that leaks at rate $r$; a packet is conformant if it fits. Let $t_0 = \sup\{s \le t : x(s) = 0\}$ be the last time the bucket was empty before $t$; on $[t_0, t]$ the bucket is never empty (a busy period). Flow conservation gives
+
+$$
+x(t) = x(t_0) + R(t) - R(t_0) - (t - t_0)\, r = \sup_{s \le t}\{R(t) - R(s) - r(t-s)\}.
+$$
+
+Every packet is conformant iff $x(t) \le b$ for all $t$, i.e. iff every element of the set is at most $b$:
+
+$$
+R(t) - R(s) \le r(t - s) + b \quad \forall s \le t .
+$$
+
+So a flow is accepted by a leaky bucket controller $(r, b)$ exactly when it has arrival curve $\gamma_{r,b}$. Several controllers in parallel accept a flow only if each does: the arrival curve is $\min_i (r_i t + b_i)$.
+
+### GCRA (Proposition 1.2.4), by induction
+
+The Generic Cell Rate Algorithm $\text{GCRA}(T, \tau)$ keeps a theoretical arrival time `tat`. A cell arriving at $t < \text{tat} - \tau$ is too early (non-conformant); otherwise `tat` becomes $\max(t, \text{tat}) + T$. This keeps the long-term rate at most $1/T$ and bounds how far cells can arrive early. Write $\theta_n$ for `tat` after the $n$-th cell; the GCRA condition is $t_{n+1} \ge \theta_n - \tau$, with $\theta_n = \max(t_n, \theta_{n-1}) + T$ and $\theta_0 = 0$.
+
+In max-plus notation ($a \vee b = \max(a, b)$, $(a \vee b) + c = (a + c) \vee (b + c)$), unfolding the recursion gives
+
+$$
+\theta_n = \max_{1 \le j \le n}\{t_j + (n - j + 1)\,T\}.
+$$
+
+**Claim.** If the flow has arrival curve $k\,v_{T,\tau}$, every cell is GCRA-conformant. Proof by induction on $n$:
+
+1. *Base case, $n = 1$.* $\theta_0 = 0$ and $t_1 \ge 0 \ge -\tau$, so $t_1 \ge \theta_0 - \tau$: cell 1 is conformant.
+2. *Hypothesis.* Cells $1, \dots, n$ are conformant.
+3. *Step.* The arrival curve gives, for every earlier cell $j$, $t_{n+1} \ge t_j + (n + 1 - j)\,T - \tau$. Taking the maximum over $j$:
+   $$t_{n+1} \ge \max_{1 \le j \le n}\{t_j + (n - j + 1)\,T\} - \tau = \theta_n - \tau ,$$
+   so cell $n + 1$ is conformant.
+4. By induction, every cell is conformant.
+
+Conversely, between the $m$-th and $(m+n)$-th cells the GCRA forces $t_{m+n} \ge \theta_{m+n-1} - \tau \ge t_m + nT - \tau$, which is the staircase constraint. With packets of size $\delta$, $\text{GCRA}(T, \tau)$ is therefore equivalent to a token bucket with $r = \delta/T$ and $b = (\tau/T + 1)\,\delta$.
+
+### Good functions (Theorem 1.2.1)
+
+For a wide-sense increasing $\alpha$ with $\alpha(0) = 0$, the following are equivalent; such an $\alpha$ is called a **good function**:
+
+1. $\alpha$ is sub-additive: $\alpha(s + t) \le \alpha(s) + \alpha(t)$.
+2. $\alpha = \alpha \otimes \alpha = \inf_{0 \le s \le t}\{\alpha(s) + \alpha(t-s)\}$: convolution cannot improve it.
+3. $\alpha \oslash \alpha = \alpha$ (min-plus deconvolution). One direction step by step: $(\alpha \oslash \alpha)(t) = \sup_{u \ge 0}\{\alpha(t+u) - \alpha(u)\}$, and sub-additivity gives $\alpha(t+u) - \alpha(u) \le \alpha(t)$, so $(\alpha \oslash \alpha)(t) \le \alpha(t)$.
+4. $\alpha = \bar\alpha$: it is its own sub-additive closure, already a good function.
+
+**Why it matters: the greedy source.** A source that always sends as much as allowed has $R(t) = \alpha(t)$. For this flow to satisfy its own arrival curve, $\alpha(t) - \alpha(s) \le \alpha(t - s)$; with $u = t - s$, $\alpha(s + u) \le \alpha(s) + \alpha(u)$. So the arrival curves that a greedy source can achieve are exactly the good functions.
+
+### Lemma 1.2.3: arrival curve as a min-plus inequality
+
+**Claim.** $\alpha$ is an arrival curve for $R$ $\iff$ $R \le R \otimes \alpha$.
+
+($\Rightarrow$) $R(t) \le R(s) + \alpha(t - s)$ for every $s \in [0, t]$, so $R(t)$ is at most the infimum of the right-hand side, which is $(R \otimes \alpha)(t)$.
+
+($\Leftarrow$) $R(t) \le (R \otimes \alpha)(t) = \inf_{0 \le u \le t}\{R(u) + \alpha(t - u)\} \le R(s) + \alpha(t - s)$ for any $s \in [0, t]$, since an infimum is at most every element of the set. Hence $R(t) - R(s) \le \alpha(t - s)$.
+
+### Lemma 1.2.4: combining arrival curves
+
+**Claim.** If $\alpha_1$ and $\alpha_2$ are arrival curves for $R$, so is $\alpha_1 \otimes \alpha_2$.
+
+1. $R \le R \otimes \alpha_1$ and $R \le R \otimes \alpha_2$ (Lemma 1.2.3).
+2. Convolution is isotone, so convolving the first inequality with $\alpha_2$: $R \otimes \alpha_2 \le (R \otimes \alpha_1) \otimes \alpha_2$.
+3. By associativity, $(R \otimes \alpha_1) \otimes \alpha_2 = R \otimes (\alpha_1 \otimes \alpha_2)$.
+4. Chaining: $R \le R \otimes \alpha_2 \le R \otimes (\alpha_1 \otimes \alpha_2)$.
+
+**Sub-additive closure (Theorem 1.2.2).** Applying the lemma $n$ times, $\alpha^{(n)} = \alpha \otimes \dots \otimes \alpha$ is an arrival curve, and so is $\alpha^{(0)} = \delta_0$ since $f \otimes \delta_0 = f$. Taking the infimum at each $t$, $\bar\alpha = \inf_{n \ge 0} \alpha^{(n)}$ is an arrival curve. Conversely $\bar\alpha \le \alpha$, so $R(t) - R(s) \le \bar\alpha(t-s) \le \alpha(t-s)$: $\alpha$ and $\bar\alpha$ describe the same flows, but $\bar\alpha$ is the tighter bound.
+
+### Lemma 1.2.5: token buckets and staircases are good functions
+
+*Token bucket* (with $\gamma_{r,b}(0) = 0$, which is the condition for being good):
+
+$$
+\gamma_{r,b}(s + t) = r(s + t) + b \;\le\; r(s+t) + 2b = \gamma_{r,b}(s) + \gamma_{r,b}(t) \qquad (b \ge 0).
+$$
+
+*Staircase*, using $\lceil x + y \rceil \le \lceil x \rceil + \lceil y \rceil$:
+
+$$
+v_{T,\tau}(s + t) = \left\lceil \frac{s + \tau}{T} + \frac{t}{T} \right\rceil \le \left\lceil \frac{s + \tau}{T} \right\rceil + \left\lceil \frac{t}{T} \right\rceil \le v_{T,\tau}(s) + v_{T,\tau}(t).
+$$
+
+A staircase does **not** have to be concave to be a good function. The minimum of good functions is good, and for concave curves through the origin, $\gamma_1 \otimes \gamma_2 = \gamma_1 \wedge \gamma_2$.
+
+**Example.** For $\alpha_1 = 3\,v_{10,0} \wedge v_{1,0}$ the closure is
+
+$$
+\bar\alpha_1 = 3\,v_{10,0} \otimes v_{1,0} = \inf_{0 \le s \le t}\left\{3\left\lceil \frac{s}{10} \right\rceil + v_{1,0}(t - s)\right\},
+$$
+
+which is smaller than $\alpha_1$ and describes the same set of flows.
+
+### The minimum arrival curve $R \oslash R$
+
+**Claim.** $R \oslash R$ is an arrival curve for $R$, and it is below every other arrival curve of $R$.
+
+1. *It is an arrival curve.* $(R \oslash R)(t - s) = \sup_{v \ge 0}\{R(t - s + v) - R(v)\}$. The choice $v = s$ is one element of the set, giving $R(t) - R(s)$, so $R(t) - R(s) \le (R \oslash R)(t - s)$.
+2. *It is minimal.* If $\alpha$ is any arrival curve, $R(v + t) - R(v) \le \alpha(t)$ for every $v \ge 0$; taking the supremum, $(R \oslash R)(t) \le \alpha(t)$.
+
+Its left limit $(R \oslash R)_l$ is a "very good" function: good and left-continuous.
+
+### The playout buffer
+
+A flow with fixed rate $r$ is sent through a network that adds a variable delay, $-\Delta \le d(t) - d(0) \le \Delta$ (jitter). A **playout buffer** stores each bit until a fixed time $d(0) + \Delta$ after it was sent and then plays at rate $r$: it recovers a flow with fixed rate despite the jitter, i.e. it flattens the fluid rate. With a delay of $\Delta$ added at the start, the buffer never underflows, and a buffer of $2\Delta r$ is enough to avoid overflow.
+
+<HandwrittenPages set="nc-lectures" pages="4-7,10-11" title="course slides 4–7 and 10–11, flows and arrival curves" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+<HandwrittenPages set="nc-book" pages="21-50" title="Chapter 1 of the book, Sections 1.1 and 1.2, with the derivation pages" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/theory%20fundamentals.pdf" />
+
 ## Recommended viewing
 
 - *An Introduction to Network Calculus*, LCA2, EPFL. [YouTube](https://www.youtube.com/watch?v=ABQ327BTc_o).
@@ -86,3 +277,4 @@ This pair $(b, r)$ is the input of every bound derived in the rest of the series
 1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1. [Online edition](https://leboudec.github.io/netcal/)
 2. R. L. Cruz, "A calculus for network delay, Part I: Network elements in isolation," *IEEE Transactions on Information Theory*, 37(1), 1991.
 3. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, 26(6), 2018.
+4. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)

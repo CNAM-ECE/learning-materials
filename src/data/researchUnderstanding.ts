@@ -39,6 +39,12 @@ export const researchUnderstanding: ResearchTopic[] = [
           'aggregate-multiplexing-residual-service',
         ],
       },
+      {
+        label: 'Shapers and regulators',
+        posts: ['packetizers-and-greedy-shapers', 'max-plus-and-interleaved-regulators'],
+      },
+      {label: 'Networks and stability', posts: ['fifo-networks-and-stability']},
+      {label: 'Clocks', posts: ['clock-non-idealities-in-network-calculus']},
       {label: 'Classic examples', posts: ['atm-and-mpls']},
     ],
   },

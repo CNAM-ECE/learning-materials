@@ -8,6 +8,7 @@ description: Horizontal and vertical deviations, the output arrival curve, and c
 ---
 
 import BoundsFigure from '@site/src/components/BoundsFigure';
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
 
 With an arrival curve $\alpha$ for the input and a service curve $\beta$ for the system, [network calculus](https://en.wikipedia.org/wiki/Network_calculus) yields three bounds. They are the core results of the theory; everything that follows in this series composes them.
 
@@ -81,6 +82,54 @@ The output burst is the input burst of the next hop. The next post shows that pr
 
 For a single node with $\alpha$ a good arrival curve and $\beta$ a service curve, the bounds are *tight*: there exist a trajectory and a system that attain them. Tightness is lost when nodes are composed or when flows are aggregated, and recovering it at acceptable computational cost is one of the active research topics of the field.
 
+## 6. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [3].
+
+### The three bounds
+
+A flow constrained by $\alpha$ crosses an element offering service curve $\beta$:
+
+1. **Backlog** $\le v(\alpha, \beta) = \sup_t\big(\alpha(t) - \beta(t)\big)$: the largest **vertical** deviation, an upper bound on the data held.
+2. **Delay** $\le h(\alpha, \beta)$, if the element is FIFO for the flow: the largest **horizontal** deviation.
+3. **Output** is constrained by $\alpha^* = \alpha \oslash \beta$, $\alpha^*(t) = \sup_{u \ge 0}\big(\alpha(t + u) - \beta(u)\big)$. Delay in the element **increases the burstiness** of the flow.
+
+### Token bucket through a rate-latency element, step by step
+
+Take $\alpha(t) = rt + b$ and $\beta(t) = R(t - T)^+$ with $r \le R$.
+
+*Backlog.* $\alpha(t) - \beta(t)$ grows with slope $r$ until $t = T$ (where $\beta$ is still 0), then decreases with slope $r - R \le 0$. The maximum is at $t = T$:
+
+$$
+v(\alpha, \beta) = \alpha(T) - \beta(T) = b + rT .
+$$
+
+*Delay.* The bits that are hardest to serve are the burst at $t = 0$. Their level $b$ is reached by $\beta$ when $R(t - T) = b$, at $t = T + b/R$; after that, $\beta$ grows faster than $\alpha$. So
+
+$$
+h(\alpha, \beta) = \frac{b}{R} + T .
+$$
+
+*Output burstiness.* With $u \ge T$, $\alpha(t+u) - \beta(u) = r(t+u) + b - R(u - T)$ decreases in $u$; with $u \le T$, it increases. So the supremum is at $u = T$:
+
+$$
+\alpha^*(t) = r(t + T) + b = rt + b^*, \qquad b^* = b + rT .
+$$
+
+If the arrival rate exceeds the service rate ($r > R$), $\alpha - \beta$ grows without bound and the backlog goes to infinity: no finite bound exists.
+
+### With a peak rate limit
+
+For $\alpha(t) = \min(rt + b,\ pt + M)$, where $M$ is the burst of one packet and $p$ the peak rate (a packet buffer), $\alpha$ is concave and
+
+$$
+D \le \frac{M + \dfrac{b - M}{p - r}(p - R)^+}{R} + T .
+$$
+
+The bend of $\alpha$ is at $\theta = (b - M)/(p - r)$; if $p \le R$ the server is faster than the peak and only one packet $M$ waits. This is the form used for AFDX virtual links, a real-time system.
+
+<HandwrittenPages set="nc-lectures" pages="18-20" title="course slides 18–20, the three bounds" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
 ## Recommended viewing
 
 - *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
@@ -89,3 +138,4 @@ For a single node with $\alpha$ a good arrival curve and $\beta$ a service curve
 
 1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1. [Online edition](https://leboudec.github.io/netcal/)
 2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
+3. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)

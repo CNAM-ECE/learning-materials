@@ -1,0 +1,94 @@
+---
+slug: clock-non-idealities-in-network-calculus
+title: "Clock non-idealities in network calculus"
+date: 2026-10-05T22:00
+authors: [trang]
+tags: [youtube, network-calculus, time-sync]
+description: Why bounds computed with perfect clocks can fail, the clock model of network calculus with its change-of-clock inequalities, how a token bucket looks in another clock, and what non-adapted regulators do, from the LINCS 2023 notes.
+---
+
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+Everything in network calculus so far assumes that all nodes share one perfect time. In reality every node measures time with its own imperfect clock, and a regulator that enforces "at most $b$ bits plus $r$ per second" measures those seconds locally. This post shows how much the bounds move, and when a regulator stops being safe.
+
+{/* truncate */}
+
+<Abbreviations terms={["TSN", "PTP", "gPTP", "NTP", "GPS", "ATS", "PFR", "IR", "TAI"]} />
+
+These notes rewrite the typed notes on the LINCS 2023 slides [1]; [the 802.1AS post](/blog/ieee-802-1as-time-synchronization) covers how clocks are synchronised in TSN.
+
+## 1. Clocks are not ideal
+
+| Synchronisation | Example | Timestamping error $\omega$ | Notes |
+| --- | --- | --- | --- |
+| Tight | PTP, White Rabbit, GPS | $\approx 10$ ns – 1 µs | Small variation |
+| Loose | NTP | $\approx 1$ ms – 1 s | Larger error, weak synchronisation |
+| None | Free-running clocks | Unbounded | Intervals measured on one system are still bounded by drift, jitter and wander |
+
+Against an ideal clock $\mathcal{H}_{TAI}$ ($y = t$), a local clock $h_i(t)$ shows four kinds of error:
+
+- **Initial offset**: the time difference between two clocks at the start.
+- **Drift**: the accumulated difference from a clock running faster or slower than the reference (a frequency offset).
+- **Jitter**: small, rapid variations in time measurements.
+- **Wander**: slow variations in clock timing over time.
+
+Regulators use time measurements to decide when a packet may be released, so a non-ideal clock can release a packet too early or hold it too long compared with the real time stamps, and arrival constraints checked with the ideal model are no longer guaranteed.
+
+## 2. The clock model [Thomas 2020]
+
+The model must account for clock errors in three places: when checking that packets conform to arrival constraints; in delay bounds, which may need extra margins; and in regulators, so that clock offsets never make them release packets before their eligibility time.
+
+A time interval measured with clock 1 gives $d$; the same interval measured with clock 2 gives $d'$. Three parameters bound the difference:
+
+- $\omega$, the **time error bound**: about 1 µs in TSN with PTP, $+\infty$ without synchronisation. Synchronisation error: $|d' - d| \le 2\omega$, i.e. $d - 2\omega \le d' \le d + 2\omega$ (each end of the interval can be off by $\omega$).
+- $\rho$, the **clock-stability bound**: how much faster or slower one clock can run than another, about $1.0001$ in TSN.
+- $\eta$, the **timing-jitter bound**: the additional measurement error caused by jitter, about 2 ns in TSN. Jitter and wander: $d' \le \rho d + \eta$.
+
+Together, the **change-of-clock inequalities**:
+
+$$
+\max\left(0,\ \frac{d - \eta}{\rho},\ d - 2\omega\right) \;\le\; d' \;\le\; \min\left(\rho d + \eta,\ d + 2\omega\right).
+$$
+
+The model is symmetric: the same inequalities hold with $d$ and $d'$ exchanged. The relative error on delays is in general about $10^{-4}$, negligible, but there are corner cases.
+
+## 3. A token bucket seen from another clock
+
+Two questions:
+
+1. If a flow conforms to a token bucket in one clock, which arrival curve does it have in another clock? Clock differences make traffic **look burstier**, so a regulator cannot always reuse the original curve.
+2. How does the lack of synchronisation affect the stability and delay guarantees of regulators?
+
+Suppose the flow satisfies $\alpha^{\mathcal{H}_{Reg}}(t) = rt + b$ in the regulator's clock $\mathcal{H}_{Reg}$ ($r$ the maximum arrival rate, $b$ the maximum burst). Measured with another clock $\mathcal{H}$, an interval of length $t$ may correspond to up to $\min(\rho t + \eta,\ t + 2\omega)$ in $\mathcal{H}_{Reg}$. Substituting, step by step:
+
+$$
+\alpha^{\mathcal{H}}(t) = r \cdot \min(\rho t + \eta,\ t + 2\omega) + b = \min\big(\rho r t + b + r\eta,\ rt + b + 2r\omega\big).
+$$
+
+- The first term has a larger rate $\rho r$ and a slightly larger burst $b + r\eta$: clock stability and timing jitter make the clocks count time differently.
+- The second term keeps the rate $r$ but adds $2r\omega$ to the burst: the synchronisation error at both ends of the interval.
+
+The conversion makes the arrival curve **less tight** (more bursty), although the traffic itself has not changed.
+
+## 4. Non-adapted regulators [Thomas 2020]
+
+A **non-adapted** regulator uses the same nominal arrival curve as at the source, $\alpha(t) = rt + b$, but in its own local clock.
+
+| Clocks | Per-flow regulator (PFR) | Interleaved regulator (IR) |
+| --- | --- | --- |
+| Perfect | Does not increase the worst-case delay | Does not increase the worst-case delay |
+| Not synchronised | Unstable: unbounded delay; it may keep delaying traffic to enforce a constraint that no longer matches what it sees | Unstable |
+| Synchronised | Delay penalty of at most $4\omega$: the error $2\omega$ at each end of the measured interval accumulates | Still **unstable**, because it uses non-adapted arrival curves; potentially unbounded delay |
+
+An ns-3 simulation (three sources at 147 kb/s, $\omega = 1$ µs, $\rho = 1.0001$) showed the delay through a non-adapted ATS bridge growing by up to 100 µs per second of operation.
+
+**The fix:** the realistic arrival curve must be adapted to the regulator's clock, $\mathcal{H}_{Reg}$. A **rate-and-burst cascade** updates the arrival bounds node by node, with the rate multiplied by $\rho$ and the burst increased by terms in $\eta$ and $\omega$ at every regulator, which keeps PFR and IR stable and the delay guarantees deterministic.
+
+<HandwrittenPages set="nc-clock" pages="3-26" title="LINCS 2023 slides, with the typed notes" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf" />
+
+## References
+
+1. J.-Y. Le Boudec, "Time Sensitive Networks, Network Calculus and Clock Non-idealities," LINCS seminar, 2023. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf)
+2. L. Thomas, J.-Y. Le Boudec, "On Time Synchronization Issues in Time-Sensitive Networks with Regulators and Nonideal Clocks," *Proceedings of the ACM on Measurement and Analysis of Computing Systems*, vol. 4, no. 2, 2020. [arXiv](https://arxiv.org/abs/2003.01556)
+3. ITU-T Recommendation G.810, *Definitions and terminology for synchronization networks*, 1996.

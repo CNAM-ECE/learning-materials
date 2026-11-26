@@ -1,0 +1,116 @@
+---
+slug: fifo-networks-and-stability
+title: "Per-class FIFO networks: burstiness cascades and stability"
+date: 2026-10-05T18:00
+authors: [trang]
+tags: [youtube, network-calculus]
+description: How burstiness cascades in per-class FIFO networks, the ring example solved as a fixed point, the time-stopping and delay-based methods, and which FIFO networks are stable, from the course and LINCS notes.
+---
+
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+A per-class network gives every flow of a class the same FIFO queue at every hop. The bounds of [aggregate multiplexing](/blog/aggregate-multiplexing-residual-service) then depend on the burstiness of the other flows, which itself grows hop by hop. This post follows that cascade to its end: when does a finite bound exist at all?
+
+{/* truncate */}
+
+<Abbreviations terms={["FIFO", "TFA", "PLP", "TSN"]} />
+
+These notes rewrite the handwritten notes taken on the course slides [2] and the typed notes on the LINCS 2023 slides [3].
+
+## 1. The cascade at one node
+
+Inside a FIFO node offering $\beta_{R,T}$ to the aggregate, a flow $f$ with token bucket $(r_f, b_f)$ leaves with the token bucket $(r_f, b^*_f)$, obtained with the residual curve $\beta_\theta$, $\theta = T + (b_{tot} - b_f)/R$:
+
+$$
+b^*_f = b_f + r_f\left(T + \frac{b_{tot} - b_f}{R}\right).
+$$
+
+The burstiness of every flow increases along its path as a function of the other flows' burstiness. Merging during the network is the problem: the FIFO node is a transformation that couples the flows.
+
+- **Feed-forward** network (no cycle in the dependencies between output ports, i.e. no cycle in the traffic lines from source to destination): solve recursively, node by node.
+- **Cyclic dependencies**: the burstiness feeds back into itself, a loop solved as a **fixed point**.
+
+## 2. The ring example, step by step
+
+$I$ nodes on a ring, each FIFO with $\beta_{R,T}$; one flow enters at every node and uses $k$ hops; all flows have $\alpha(t) = rt + b$ at the source, and $kr \le R$. Write $b_j$ for the burstiness of a flow after $j$ hops, $b_0 = b$.
+
+1. At any node, $k$ flows share the queue: the one entering, with burstiness $b_0$, and $k - 1$ flows that already crossed $1, \dots, k - 1$ hops. The total burstiness seen by the node is
+   $$b_{tot} = b + b_1 + \dots + b_{k-1}.$$
+2. One more hop for the flow of interest, sharing the node with all the others:
+   $$b_j = b_{j-1} + r\left(T + \frac{b_{tot} - b_{j-1}}{R}\right).$$
+3. Steps 1 and 2 define $(b_{tot}, b_1, \dots, b_{k-1})$ in terms of themselves: a **fixed point**.
+4. With $R = 1$, it has a positive solution when $(k - 1)\,r + (1 - r)^k < 1$, which holds for $r < r_{crit}$.
+
+Finding the worst-case bound in a general feed-forward network is NP-hard; this symmetric case is tractable.
+
+| $k$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| $u_{crit} = k\,r_{crit}$ | 1 | 1 | 1 | 0.7579 | 0.5591 | 0.4409 | 0.3632 | 0.3084 |
+
+For $k \le 3$ the bound stays finite up to full link utilisation (100 %); for larger $k$ it explodes below it. Loading the network beyond what the outputs can serve gives no bound.
+
+**Time-stopping method.** If a non-negative fixed point exists, it is a valid bound.
+
+## 3. The delay-based method
+
+If a system delays flow $f$ by at most $D$ and $f$ has input arrival curve $\alpha_f$, then $\alpha_f(t + D)$ is an output arrival curve: it captures the increase of burstiness. On the ring, after $j$ hops the delay is at most $jD$, which gives the fixed point
+
+$$
+b_j = b + j\,r\,D, \qquad D = \frac{b + b_1 + \dots + b_{k-1}}{R} + T .
+$$
+
+It is simpler, but both the bound and $u_{crit} = \min\left(1, \frac{2}{k-1}\right)$ are worse than with the previous method: the critical situation arrives earlier.
+
+## 4. Other methods
+
+PMOO, PMOC and linear programming improve the bounds and $u_{crit}$; which works best depends on the topology (a ring calls for a total flow analysis). Tight bounds come from constructing an adversarial network.
+
+**No bound from utilisation alone.** There cannot be a bound that depends only on the maximum aggregate burstiness, the number of hops $h$ and the link utilisation $u$ when $u \ge \frac{1}{h - 1}$ (Charny and Le Boudec). Below that utilisation, a finite delay bound follows from the hop count.
+
+**TFA and PLP** [3].
+
+- **Total Flow Analysis** propagates arrival curves through the network, $\alpha^*(t) = \alpha(t + \text{delay jitter bound between source and here})$, computes the delay at every node, and sums them on the path. In a feed-forward network of depth $d$ it stops after $d$ iterations; in general it iterates until it converges to a fixed point (a valid bound) or diverges (unknown).
+- **Polynomial Linear Programming** is a relaxation of the exact LP with polynomial complexity. It uses TFA bounds as constraints and applies to generic topologies; it gives better bounds and a larger stability region, but is more complex and limited to concave arrival and convex service curves.
+
+## 5. Stability of a FIFO network
+
+Every flow $f$ is a token bucket $(r_f, b_f)$ at the source, with a fixed route; $F_i$ is the set of flows through node $i$, which is FIFO and offers $\beta_{R_i, T_i}$ to their aggregate. The load factor uses the leaky-bucket rates:
+
+$$
+u = \max_i \frac{\sum_{f \in F_i} r_f}{R_i}.
+$$
+
+The network is **underloaded** if $u < 1$, **critical** if $u = 1$, **overloaded** if $u > 1$. A network instance $(\mathcal{F}, r, b, F, \mathcal{I}, R, T)$ is **stable** if there is a bound on all delays (equivalently, all backlogs) valid for every execution trace of the network.
+
+- *Stable*: every packet has a delay bounded by a finite $D_{max}$.
+- *Unstable*: some execution trace makes delay or backlog grow without limit. Irregular traffic and topologies that feed each other's bursts can create this, even when no link is full.
+- Stable does not mean small: a stable network can still have a large worst-case delay.
+
+| Network | Stable? |
+| --- | --- |
+| Overloaded | No |
+| Single node, underloaded or critical | Yes |
+| Feed-forward, underloaded or critical | Yes: the service curve dictates a finite delay bound |
+| Every underloaded **ring** | Yes (Tassiulas and Georgiadis 1996) |
+| Arbitrary underloaded FIFO network | **Not always**: for any $\varepsilon > 0$ there is an unstable FIFO network with $u < \varepsilon$ (Andrews 2009) |
+
+Utilisation below 1 is therefore not enough. What does guarantee stability:
+
+- **Scheduling policies.** Fixed priority where a flow keeps its priority at all nodes, with strict service curves, gives a finite delay bound; so does priority by the number of hops a packet still has to go.
+- **Interference condition** (Rizzo and Le Boudec). If service curves are strict and the interference condition holds, the network is stable. With $R_i = R$ for all $i$ it reads
+  $$r_f \le \frac{R}{1 + RIN_f},$$
+  where $r_f$ is the flow rate, $R$ the server rate and $RIN_f$ the number of flows that interfere with $f$, i.e. merge with it somewhere. Each interfering flow is a penalty on the rate allowed; the condition replaces a non-linear operation by a linear upper bound.
+
+When TFA or PLP does not converge, the network may or may not be truly unstable. Stability conditions are still an open research question, and an underloaded network does not by itself guarantee deterministic delay and backlog: that depends on the traffic, the capacity, the topology and the scheduling discipline, FIFO in particular.
+
+<HandwrittenPages set="nc-lectures" pages="30-37" title="course slides 30–37, per-class networks and stability" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+<HandwrittenPages set="nc-clock" pages="11-14" title="LINCS 2023 slides 11–14, network analysis and stability" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf" />
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Section 6.4. [Online edition](https://leboudec.github.io/netcal/)
+2. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)
+3. J.-Y. Le Boudec, "Time Sensitive Networks, Network Calculus and Clock Non-idealities," LINCS seminar, 2023. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf)
+4. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018, Chapters 10 and 11.

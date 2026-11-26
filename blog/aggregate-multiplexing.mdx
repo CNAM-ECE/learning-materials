@@ -6,6 +6,8 @@ authors: [trang]
 tags: [youtube, book, network-calculus, tsn]
 description: Blind, FIFO and non-preemptive static-priority multiplexing; residual service curves; Total Flow Analysis versus path-based analyses.
 ---
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+
 
 In a real [switch](https://en.wikipedia.org/wiki/Network_switch), a flow does not have a server to itself: it shares an egress port with other flows, possibly in the same queue. To apply the results of the previous posts to one flow, we need the service that remains for it once the competing traffic has been served. This is the **residual service curve**, and its form depends on the multiplexing policy.
 
@@ -83,6 +85,47 @@ TFA is simple, scales well, and is easy to update incrementally when a flow is a
 | SFA | Better (PBOO) | Moderate | Possible |
 | PMOO / LP-based | Best | High | Difficult |
 
+## 5. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [5].
+
+### Per-class FIFO networks
+
+Schedulers separate classes; inside a class, an aggregate of flows $f$, each a token bucket $(r_f, b_f)$, is served FIFO with a rate-latency curve $\beta_{R,T}$, where $r_{tot} = \sum_f r_f \le R$ and $b_{tot} = \sum_f b_f$:
+
+$$
+D = \frac{b_{tot}}{R} + T \quad \text{(any packet of any flow)}, \qquad B = b_{tot} + r_{tot}\,T \quad \text{(the aggregate)}.
+$$
+
+### The FIFO residual service curve family
+
+Flows 1 and 2 merge into a FIFO system with service curve $\beta$ to the aggregate, and flow 2 has arrival curve $\alpha_2$. Then **for every $\theta \ge 0$**,
+
+$$
+\beta_\theta(t) = \big[\beta(t) - \alpha_2(t - \theta)\big]^+ \mathbf{1}_{\{t > \theta\}}
+$$
+
+is a service curve for flow 1. This is a whole family of service curves.
+
+**Example**, $\alpha_i = r_i t + b_i$ and $\beta = R(t - T)^+$:
+
+- $\theta = T + \dfrac{b_2}{R}$: the latency needed to serve the burst of the other flow first; afterwards the slope is $R - r_2$, the rate left once flow 2 takes its rate.
+- $\theta' = T + \dfrac{b_1 + b_2}{R}$: a curve that jumps to $b_1$ later.
+
+**Warning.** The pointwise minimum or maximum of these service curves is not a service curve: one $\theta$ must be chosen, and the best one depends on what is computed.
+
+### Burstiness cascades
+
+Applying $\beta_\theta$ with $\theta = T + (b_{tot} - b_f)/R$, the output of flow $f$ is a token bucket with
+
+$$
+b^*_f = b_f + r_f\left(T + \frac{b_{tot} - b_f}{R}\right),
+$$
+
+where $r_f$ is the flow rate, $T$ the service latency, and $(b_{tot} - b_f)/R$ is proportional to the total burstiness of the **other** flows. The burstiness of every flow grows along its path as a function of the others' (a cascade). Merging during the network is the problem: in feed-forward networks it is solved recursively; with cyclic dependencies, the feedback loop is solved as a fixed point. The stability post continues this.
+
+<HandwrittenPages set="nc-lectures" pages="28-29" title="course slides 28–29, per-class FIFO networks" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
 ## Recommended viewing
 
 - *Network Calculus: Guaranteed performance analysis in networks*, LINCS seminar. [YouTube](https://www.youtube.com/watch?v=1funUBUL2II).
@@ -93,3 +136,4 @@ TFA is simple, scales well, and is easy to update incrementally when a flow is a
 2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
 3. A. Bouillard, *panco: Performance Analysis with Network Calculus and Optimization*, 2022. [GitHub](https://github.com/anne-bou/panco)
 4. CNAM-ECE, *Certified Admission Control for TSN*. [GitHub](https://github.com/CNAM-ECE/network-calculus)
+5. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)

@@ -1,0 +1,161 @@
+---
+slug: packetizers-and-greedy-shapers
+title: "Packetizers and greedy shapers: from fluid to packets"
+date: 2026-10-05T12:00
+authors: [trang]
+tags: [youtube, book, network-calculus]
+description: The packetizer and its effect on bounds, the fluid and packetized greedy shapers, Linux's token bucket filter, and why re-shaping costs no worst-case delay, worked out step by step from the course notes.
+---
+
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+import Abbreviations from '@site/src/components/Abbreviations';
+
+The theory so far treats data as a fluid. Real networks send packets, and a shaper must decide when a whole packet may leave. This post covers the difference between fluid and packetized systems, and the result that makes regulators practical: re-shaping a flow to its original arrival curve never increases its worst-case delay.
+
+{/* truncate */}
+
+<Abbreviations terms={["TSN", "ATS", "FIFO", "TBF"]} />
+
+These notes rewrite the handwritten notes taken on the course slides [2], following the order of the course.
+
+## 1. The packetizer
+
+A constant-rate server of rate $c$ sends bits one by one: its output $R'$ is a fluid. A **packetizer** releases a packet only once all its bits are there:
+
+$$
+R^*(t) = P^L\big(R'(t)\big), \qquad P^L(x) = L(n) \iff L(n) \le x < L(n+1), \qquad L(n) = \ell_1 + \dots + \ell_n .
+$$
+
+$P^L$ rounds a cumulative amount down to the last complete packet. It is the difference between a fluid and a packetized system, and the reason real-time analyses must model it.
+
+**A service curve must say whether packetization is included.** The fluid server offers $\beta(t) = ct$. Counting only the emission times of entire packets, the same system offers the weaker
+
+$$
+\beta(t) = (ct - \ell^{max})^+ ,
+$$
+
+which deviates by one packet size.
+
+## 2. Effect of packetization
+
+Let a system with service curve $\beta$ and backlog bound $B$ be followed by a packetizer, and let $\ell^{max} = \max_n \ell_n$. Then, in this abstract framework:
+
+1. Delay bounds are the same for $R'$ and $R^*$.
+2. The backlog bound becomes $B^* = B + \ell^{max}$.
+3. The combined system offers $\beta^*(t) = [\beta(t) - \ell^{max}]^+$.
+4. If the fluid flow $R$ has arrival curve $\alpha$, the packetized flow $P^L(R)$ has arrival curve $\alpha + \ell^{max}$.
+
+## 3. Fluid greedy shapers
+
+A **shaper** forces its output to be constrained by $\alpha$ (it delays bits within intervals); a **greedy shaper** stores data in its buffer only when it has to. Its output $R'$ must satisfy
+
+$$
+R'(t) \le R(t) \quad \text{(it can only delay the input, by storing it)}, \qquad R'(t) \le (R' \otimes \alpha)(t) \quad \text{(it delays some bits so that the output is } \alpha\text{-smooth)}.
+$$
+
+A constant-bit-rate link is a fluid greedy shaper for $\alpha(t) = ct$: a queueing system.
+
+### Min-plus residuation (Baccelli et al.)
+
+Let $\mathcal{G}$ be the wide-sense increasing functions $[0, +\infty) \to [0, +\infty]$ and $\Pi : \mathcal{G} \to \mathcal{G}$ an operator (an optimisation function). Consider the problem
+
+$$
+(P) \qquad x(t) \le [\Pi(x)](t) \quad \text{and} \quad x(t) \le g(t).
+$$
+
+If $\Pi$ is **isotone** ($x \le y \Rightarrow \Pi(x) \le \Pi(y)$) and **upper semi-continuous** ($\Pi(\inf_n x_n) = \inf_n \Pi(x_n)$), there is one maximal solution:
+
+$$
+x^* = \inf\{x^0, x^1, x^2, \dots\}, \qquad x^0 = g, \quad x^{i+1} = \Pi(x^i).
+$$
+
+### The greedy shaper output
+
+With $g = R$ and $\Pi(x) = x \otimes \alpha$, the iteration gives $R \otimes \alpha \otimes \alpha \otimes \dots$, so the maximal solution is $R^* = R \otimes \bar\alpha$. Since $\alpha$ can always be taken sub-additive with $\alpha(0) = 0$,
+
+$$
+R^* = R \otimes \alpha ,
+$$
+
+so the **greedy shaper offers the service curve $\alpha$**, which is what backlog and delay bounds through a shaper are computed with. For a leaky bucket arrival $R$ and $\alpha(t) = rt + b$, the output is the input passed through: a jump of $b$ (the impulse weight), then slope $r$.
+
+### Shaping keeps the arrival constraint
+
+If the input is constrained by $\alpha$ and the shaper uses $\sigma$, the output is still constrained by $\alpha$. Step by step:
+
+$$
+R^* = R \otimes \sigma = (R \otimes \alpha) \otimes \sigma = (R \otimes \sigma) \otimes \alpha = R^* \otimes \alpha ,
+$$
+
+using $R = R \otimes \alpha$ (arrival curve, $\alpha(0) = 0$) and commutativity. What shaping does cannot undo a constraint already present: a constraint that holds at the input stays at the output. **Application:** a flow with arrival curve $\alpha$ sent over a line of rate $c$ leaves with arrival curve $\alpha \otimes \lambda_c$, $\lambda_c(t) = ct$; a periodic staircase becomes a staircase whose steps have slope $c$.
+
+## 4. Re-shaping does not increase the delay bound
+
+Burstiness gets worse at every hop. The remedy is to reshape the flow at every hop, inside the queueing system of a network node. The theorem says this costs nothing in worst-case delay.
+
+**Theorem (fluid).** A flow constrained by $\alpha$ crosses $\beta_1$, a greedy shaper $\sigma \ge \alpha$, then $\beta_2$. The end-to-end delay bound is the same with or without the shaper:
+
+$$
+h(\alpha,\ \beta_1 \otimes \sigma \otimes \beta_2) = h(\alpha,\ \sigma \otimes \beta_1 \otimes \beta_2) = h(\alpha,\ \beta_1 \otimes \beta_2).
+$$
+
+1. Commutativity moves the shaper to the front of the chain.
+2. At the front, the shaper sees a flow already constrained by $\alpha \le \sigma$, so it never delays it.
+
+Re-shaping is free in terms of delay, and it reduces downstream buffering. The tasks it serves are flow rescheduling and flow reshaping, with a curve that may be less strict than $\alpha$.
+
+**Theorem (any system).** If $R$ has arrival curve $\alpha$, the system $S$ delays it by at most $d$, $h(R, R^*) \le d$, and $R'$ is the output of a greedy shaper for $\alpha$ placed after $S$, then $h(R, R') \le d$. Any delay bound valid before the shaper is also valid after it.
+
+1. $h(R, R^*) \le d \iff R^* \ge R \otimes \delta_d$: the system offers the service curve $\delta_d$.
+2. By hypothesis $R = R \otimes \alpha$, and $R' = R^* \otimes \alpha$.
+3. So $R' \ge (R \otimes \delta_d) \otimes \alpha = (R \otimes \alpha) \otimes \delta_d = R \otimes \delta_d$.
+
+*Alternative proof with a delay box.* Feed $R^*$ also into a "delay box" whose output is $R''(t) = R(t - d)$: the input shifted in time by a constant amount. It is a valid shaper for $R^*$ (a damper that marks the time each packet entered the system), and its output keeps the arrival curve $\alpha$. By optimality of the greedy shaper, $R''(t) \le R'(t)$, i.e. $R'(t) \ge R(t - d)$.
+
+## 5. Packetized shapers
+
+A packetized shaper transmits bits on the line and must keep the properties that matter for delay bounds, now **per packet**. Its output must satisfy
+
+$$
+R'(t) \le R(t), \qquad R'(t) \le (R' \otimes \alpha)(t), \qquad R'(t) = P^L\big(R'(t)\big).
+$$
+
+There is a maximal solution, the **packetized greedy shaper** (PGS), which proves that an optimal shaper exists:
+
+$$
+R^* = \inf\{R^{(1)}, R^{(2)}, \dots\}, \qquad R^{(0)} = R, \quad R^{(i)} = P^L\big(\alpha \otimes R^{(i-1)}\big).
+$$
+
+**When the iteration stops at step 1.** If (C): $\alpha$ is piecewise linear and concave (its slope decreases), with $\alpha(0^+) \ge \ell^{max}$, then
+
+$$
+R^* = P^L(\alpha \otimes R),
+$$
+
+i.e. the packetized greedy shaper is a fluid greedy shaper followed by a packetizer. Such shapers keep the arrival constraints.
+
+**Counter-example.** With the staircase $\alpha(t) = 25\lceil t/T \rceil$ and ten packets of size 10 at $t = 0$, $R^{(1)} = P^L(\alpha \otimes R)$ is *not* constrained by $\alpha$: the fluid output has to be cut into whole packets, which pushes data into later intervals. The iteration needs four steps, $R^* = R^{(4)}$, and a PGS may not keep the arrival constraint in general.
+
+### Linux's token bucket filter
+
+```bash
+tc qdisc add dev eth0 root tbf rate 1mbit burst 32kbit ...
+```
+
+The bucket is a single counter replenished at rate $r$ up to $b$. A packet waiting in the shaper buffer is released only when it can remove a number of tokens equal to its size; otherwise it waits, and it leaves as soon as there are enough. Since $\alpha(t) = rt + b$ is concave with $b \ge \ell^{max}$, condition (C) holds: **TBF$(r, b)$ is the packetized greedy shaper for $\alpha(t) = rt + b$**.
+
+## 6. Packetized re-shaping is also free
+
+**Theorem.** A packetized flow $f$ with arrival curve $\alpha$ crosses a system $S$ that is FIFO for $f$, then a packetized greedy shaper for the same $\alpha$. The worst-case delay of $f$ is not increased, whether (C) holds or not.
+
+*Proof with a damper.* Replace the PGS by a **damper** that holds every packet until exactly $d$ after it entered $S$, $d$ being the worst-case delay through $S$ (causal because $d$ is at least that delay). The damper's output is the input shifted by $d$, so it is $\alpha$-smooth and packetized: the damper is a packetized shaper. By maximality of the PGS, the flow delayed by $d$ is never earlier than the reshaped flow. Eventually the final output is the initial input delayed by a constant.
+
+**Why it matters.** In a ring where every flow crosses $k$ hops, burstiness cascades and the delay bound blows up near a critical utilisation. A per-flow re-shaper at every node, such as a TBF, removes the cascade and keeps the bounds small up to full utilisation. Per-flow reshaping needs one FIFO queue per flow; the radical solution is the **interleaved regulator**, covered in [the max-plus post](/blog/max-plus-and-interleaved-regulators).
+
+<HandwrittenPages set="nc-lectures" pages="21-23,38-55" title="course slides 21–23 and 38–55, packetizer and shapers" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+## References
+
+1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1. [Online edition](https://leboudec.github.io/netcal/)
+2. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)
+3. J.-Y. Le Boudec, "A Theory of Traffic Regulators for Deterministic Networks With Application to Interleaved Regulators," *IEEE/ACM Transactions on Networking*, vol. 26, no. 6, 2018. [arXiv](https://arxiv.org/abs/1801.08477)

@@ -6,6 +6,8 @@ authors: [trang]
 tags: [article, book, network-calculus]
 description: End-to-end service curves by min-plus convolution, and why they give tighter bounds than summing per-hop delays.
 ---
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+
 
 A flow in a [TSN](https://1.ieee802.org/tsn/) network crosses several [bridges](https://en.wikipedia.org/wiki/Network_bridge). There are two ways to bound its end-to-end delay: add the per-hop bounds, or first compose the hops into a single equivalent server. The second is never worse and often much better. This post explains why.
 
@@ -67,8 +69,52 @@ PBOO is the reason per-flow, path-based analyses can be much tighter than per-no
 
 The trade-off between per-node analyses (simple, incremental, fast) and path-based analyses (tighter, more expensive) recurs in the discussion of online [admission control](https://en.wikipedia.org/wiki/Admission_control) in [the reconfiguration post](/blog/dynamic-reconfiguration-of-tsn).
 
+## 5. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [4].
+
+### Concatenation in one line
+
+$$
+R^* \ge R_1 \otimes \beta_2 \ge (R \otimes \beta_1) \otimes \beta_2 = R \otimes (\beta_1 \otimes \beta_2),
+$$
+
+using isotonicity and associativity of min-plus convolution. For rate-latency elements, $\beta_1 \otimes \beta_2$ has rate $\min(R_1, R_2)$, the smallest rate guaranteed along the path, and latency $T_1 + T_2$, the sum of latencies.
+
+### Pay bursts only once, step by step
+
+A flow $\alpha(t) = rt + b$ crosses $\beta_1 = R(t - T_1)^+$ then $\beta_2 = R(t - T_2)^+$, with $r \le R$.
+
+*Node by node.*
+
+1. At node 1: $D_1 = \dfrac{b}{R} + T_1$.
+2. The output of node 1 has arrival curve $\alpha'(t) = r(t + T_1) + b = rt + (b + rT_1)$: the burst grew by $rT_1$.
+3. At node 2, with the larger burst: $D_2 = \dfrac{b + rT_1}{R} + T_2$.
+4. Total: $D_1 + D_2 = \dfrac{2b + rT_1}{R} + T_1 + T_2$. The burst $b$ is counted **twice**.
+
+*By concatenation.* $\beta_1 \otimes \beta_2 = R\,(t - T_1 - T_2)^+$, so
+
+$$
+D = \frac{b}{R} + T_1 + T_2 ,
+$$
+
+the burst is paid **once**. The two worst cases cannot happen at the same time, and the concatenation captures this; it gives the better bound on the worst-case end-to-end delay.
+
+### Packetization and concatenation
+
+With a packetizer after every element, the end-to-end service curve cannot ignore the intermediate packetizers. Ignoring only the last one,
+
+$$
+D \le h(\alpha, \beta_{R,T}), \qquad R = \min_{i=1\dots n} R_i, \qquad T = \sum_{i=1}^n T_i + \sum_{i=1}^{n-1} \frac{\ell^{max}}{R_i},
+$$
+
+one $\ell^{max}$ term per hop **except the last one**.
+
+<HandwrittenPages set="nc-lectures" pages="24-27" title="course slides 24–27, concatenation" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
 ## References
 
 1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1. [Online edition](https://leboudec.github.io/netcal/)
 2. J. B. Schmitt, F. A. Zdarsky, I. Martinovic, "Improving Performance Bounds in Feed-Forward Networks by Paying Multiplexing Only Once," MMB 2008.
 3. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
+4. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)

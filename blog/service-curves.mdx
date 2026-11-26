@@ -6,6 +6,8 @@ authors: [trang]
 tags: [book, foundations, network-calculus, tas]
 description: Min-plus and strict service curves, rate-latency servers, and the service offered by a Time-Aware Shaper window.
 ---
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+
 
 The arrival curve bounds the demand; the **service curve** bounds the supply. It abstracts a scheduler, a link or a whole [switch](https://en.wikipedia.org/wiki/Network_switch) into a single function that lower-bounds the service it delivers.
 
@@ -68,8 +70,90 @@ A service curve is a guarantee that the system *at least* provides, not an exact
 1. **Composability.** Any lower bound of a service curve is still a service curve, so one may always simplify a complex curve to a rate-latency one and keep sound (if looser) bounds.
 2. **Robustness.** Bounds derived from service curves remain valid under any implementation that honours the curve, which is what a certificate needs.
 
+## 6. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [4], the LINCS 2023 slides [5] and Section 1.3 of [1].
+
+### What a service curve says
+
+An arrival curve constrains the traffic that may enter the network; a service curve is a **lower bound on the service** a network element provides to a flow, a minimum service guarantee.
+
+$$
+R^* \ge R \otimes \beta \iff \forall t \ge 0,\ \exists s \in [0, t] : R^*(t) \ge R(s) + \beta(t - s),
+$$
+
+with $\beta : \mathbb{R}^+ \to \mathbb{R} \cup \{+\infty\}$, wide-sense increasing and $\beta(0) = 0$. The output $R^*$ is above the lower envelope of all curves $R(s) + \beta(t - s)$. $\beta(0) = 0$ means that no service is promised at time 0.
+
+**Proposition 1.3.1 (removing the infimum).** If $\beta$ is continuous, there is a specific $t_0 \in [0, t]$, a point where the infimum is reached, with $R^*(t) \ge R(t_0) + \beta(t - t_0)$. **Proposition 1.3.2.** If $\beta$ is also convex, $t_0$ can be chosen as a non-decreasing function of $t$.
+
+### Strict and non-strict
+
+| | Strict service curve | (Min-plus) service curve |
+| --- | --- | --- |
+| Condition | For every $s < t$ inside a backlogged period ($R^*(u) < R(u)$ on $(s, t]$): $R^*(t) - R^*(s) \ge \beta(t - s)$ | $R^* \ge R \otimes \beta$ |
+| Meaning | A guarantee on the amount the server is certain to have served whenever the flow has data waiting | A weaker guarantee that holds only in the min-plus sense |
+| Typical system | A single queuing point | Any system, including a chain of nodes |
+
+Strict implies non-strict. *Continuously backlogged* means there is always data of the flow waiting during the whole interval. A server can be busy without serving the flow under consideration, for example while it serves another flow: that is why the strict guarantee is the useful one for a single queue.
+
+### Constant-rate server: $\beta(t) = ct$, step by step
+
+1. Take $s$ = the beginning of the busy period that contains $t$: the most recent time in the past when the queue was empty.
+2. At $s$ the queue is empty, so output equals input: $R^*(s) = R(s)$.
+3. During $(s, t]$ the queue is never empty, so the server works at rate $c$: $R^*(t) - R^*(s) = c\,(t - s)$.
+4. Substituting step 2: $R^*(t) - R(s) = c\,(t - s)$, i.e. $R^*(t) \ge R(s) + \beta(t - s)$ with $\beta(t) = ct$.
+
+$\beta(t) = ct$ is a service curve, and also a strict one.
+
+### Guaranteed-delay node: $\delta_T$
+
+$$
+\delta_T(t) = \begin{cases} 0 & t \le T \\ +\infty & t > T \end{cases}, \qquad (R \otimes \delta_T)(t) = R(t - T).
+$$
+
+For a node that is FIFO for the flow, **delay $\le T$ $\iff$ the node offers the service curve $\delta_T$**: $R^*(t) \ge R(t - T)$, i.e. a bit leaves at most $T$ after it arrived. Example: a *server with vacations*, which serves packets on the line but whose scheduler may be busy doing something else for up to $T$. EDF schedulers are analysed this way: as long as the flow has backlog, the node keeps sending, and every bit leaves within its deadline $T$.
+
+### Rate-latency and static priority
+
+$$
+\beta_{R,T}(t) = R\,(t - T)^+ = \max\big(0,\ R(t - T)\big).
+$$
+
+**Static priority without preemption**, line rate $C$:
+
+- **High priority:** $\beta_H(t) = (Ct - MTU_L)^+$, strict. A high-priority packet can arrive while a low-priority packet is being sent; without preemption it waits for at most one low-priority packet, $MTU_L$.
+- **Low priority**, when high priority is constrained by $\alpha(t) = rt + b$ with $r < C$:
+  $$\beta_L(t) = \big((C - r)t - b\big)^+ \quad \text{(not strict)}, \qquad \beta'_L(t) = \big((C - r)t - b - MTU_L\big)^+ \quad \text{(strict)}.$$
+  The burst $b$ is the worst-case interruption by high-priority traffic; $C - r$ is what is left once high priority takes its rate, and $r < C$ ensures that high priority does not saturate the server, so low priority is not starved.
+
+**Deficit Round Robin** (processor sharing, as in multitask systems): one queue per flow, each visited in turn and served up to $Q_i$ bits. It offers flow $i$ the strict service curve $\beta_i(t) = R_i(t - T_i)^+$ with
+
+$$
+R_i = \frac{Q_i}{\sum_j Q_j}\,c, \qquad T_i = \frac{\bar Q_i + \bar L_i}{c} + L_{\max,i}\left(\frac{1}{R_i} - \frac{1}{c}\right), \qquad \bar Q_i = \sum_{j \ne i} Q_j,\ \bar L_i = \sum_{j \ne i} L_{\max,j}.
+$$
+
+Service-curve characterisations exist for most schedulers used in time-sensitive networks: CBS, DRR, IEEE AVB, the time-aware shaper.
+
+### GPS as a service curve
+
+A Generalised Processor Sharing node guarantees flow $i$ a rate $r$ during any busy period of the flow. Starting the busy period at $t_0$, when $R(t_0) = R^*(t_0)$:
+
+$$
+R^*(t) - R^*(t_0) \ge r\,(t - t_0) \;\Rightarrow\; R^*(t) \ge R(t_0) + r(t - t_0) \ge \inf_{0 \le s \le t}\{R(s) + r(t - s)\},
+$$
+
+so $R^* \ge R \otimes \gamma_{r,0}$ with $\gamma_{r,0}(t) = rt$.
+
+<HandwrittenPages set="nc-lectures" pages="12-17" title="course slides 12–17, service curves" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+<HandwrittenPages set="nc-book" pages="51-54" title="Section 1.3 of the book, service curves" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/theory%20fundamentals.pdf" />
+
+<HandwrittenPages set="nc-clock" pages="9" title="LINCS 2023 slide 9, strict and non-strict" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf" />
+
 ## References
 
 1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 1. [Online edition](https://leboudec.github.io/netcal/)
 2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
 3. IEEE Std 802.1Qbv-2015, *Enhancements for Scheduled Traffic*, now incorporated in IEEE Std 802.1Q.
+4. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)
+5. J.-Y. Le Boudec, "Time Sensitive Networks, Network Calculus and Clock Non-idealities," LINCS seminar, 2023. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/time%20sensitive%20net%20with%20clock%20non-idealities.pdf)

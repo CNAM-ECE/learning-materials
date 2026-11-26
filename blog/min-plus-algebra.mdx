@@ -6,6 +6,8 @@ authors: [trang]
 tags: [youtube, book, foundations, network-calculus]
 description: Cumulative functions, the min-plus dioid, convolution and deconvolution, with the properties used throughout the series.
 ---
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
+
 
 [Network calculus](https://en.wikipedia.org/wiki/Network_calculus) is often summarised as "queueing theory in the [min-plus algebra](https://en.wikipedia.org/wiki/Min-plus_algebra)". In conventional system theory, a linear time-invariant system is characterised by its impulse response and its output is a *convolution* in the $(+,\times)$ algebra. Network calculus keeps the same structure but replaces addition by minimum and multiplication by addition. This post sets up that algebra.
 
@@ -106,6 +108,88 @@ It is the largest sub-additive function below $f$ (and below $\delta_0$). Sub-ad
 | System law | $y = h * x$ | $R^* \ge R \otimes \beta$ |
 | Impulse | Dirac $\delta$ | $\delta_0$ (zero at 0, $+\infty$ elsewhere) |
 
+## 7. From the lecture notes
+
+These notes rewrite the handwritten notes taken on the course slides [4] and on the introduction of the book [1], in the order of the course.
+
+### Why a new algebra
+
+Network calculus is a **system theory** for deterministic queuing systems, built like the theory of linear circuits but on a different algebra. The notes on the introduction of [1] pair the two:
+
+| Linear systems (electronics) | Min-plus systems (networks) |
+| --- | --- |
+| Addition $a + b$ | Minimum $a \wedge b = \min(a, b)$ |
+| Multiplication $a \times b$ | Addition $a + b$ |
+| Output voltage $y = h \otimes x$, an integral convolution | Output flow $y = \sigma \otimes x$, a min-plus convolution |
+| An RC circuit | A greedy shaper (traffic shaper), which delays bits so that the output conforms to $\sigma$ |
+| Concatenating two filters: convolve the impulse responses | Concatenating two shapers or servers: convolve their curves |
+
+Traffic is shaped by a constraint (the shaping curve), and the conforming traffic leaves the queue. The difference with circuits: the sum of two input flows is **not** handled linearly, because the bits of two flows compete for the same server.
+
+### Min-plus convolution, step by step
+
+$$
+(f_1 \otimes f_2)(t) = \inf_{0 \le s \le t} \left( f_1(s) + f_2(t-s) \right).
+$$
+
+- It plays the role of the integral of ordinary convolution, with $\inf$ in place of $\int$ and $+$ in place of $\times$.
+- It returns the **greatest lower bound** over all ways of splitting the interval $t$ into $s$ and $t - s$.
+- It applies to any wide-sense increasing function of time; no continuity is needed.
+- It is associative and commutative, and it is easily computed for the curves used in practice, as a combinatorial problem on their linear pieces.
+
+**Example: two rate-latency curves.** For $\beta_1 = R_1(t - T_1)^+$ and $\beta_2 = R_2(t - T_2)^+$, the convolution is a rate-latency curve again, with the smaller rate and the summed latencies:
+
+$$
+\beta_1 \otimes \beta_2 = \min(R_1, R_2)\,\big(t - (T_1 + T_2)\big)^+ .
+$$
+
+### The rules of the calculus
+
+Functions may take the value $+\infty$, so that impulses can be written:
+
+$$
+\delta_0(0) = 0,\quad \delta_0(t) = +\infty \text{ for } t > 0, \qquad f \otimes \delta_0 = f .
+$$
+
+| Property | Statement |
+| --- | --- |
+| Associative, commutative | $(f_1 \otimes f_2) \otimes f_3 = f_1 \otimes (f_2 \otimes f_3)$, $f_1 \otimes f_2 = f_2 \otimes f_1$ |
+| Distributive over min | $f \otimes (g \wedge h) = (f \otimes g) \wedge (f \otimes h)$ |
+| Isotone | $f \le f'$ and $g \le g'$ $\Rightarrow$ $f \otimes g \le f' \otimes g'$ |
+| Through the origin | $f(0) = g(0) = 0 \Rightarrow f \otimes g \le f \wedge g$ |
+| Concave through the origin | $f \otimes g = f \wedge g$ |
+| Convex piecewise linear | $f \otimes g$ puts the linear pieces of $f$ and $g$ end to end, sorted by increasing slope |
+
+### Arrival curves in min-plus form
+
+$$
+\alpha \text{ is an arrival curve for } R
+\iff R(t) \le R(s) + \alpha(t - s)\ \ \forall s \in [0, t]
+\iff R \le R \otimes \alpha .
+$$
+
+The second form compares two functions instead of checking every pair $(s, t)$. When $\alpha(0) = 0$, the inequality is an equality: $R = R \otimes \alpha$.
+
+**Sub-additive closure.** Any arrival curve can be replaced by
+
+$$
+\bar\alpha = \inf\{\delta_0,\ \alpha,\ \alpha \otimes \alpha,\ \alpha \otimes \alpha \otimes \alpha,\ \dots\},
+$$
+
+which is sub-additive, $\bar\alpha(s + t) \le \bar\alpha(s) + \bar\alpha(t)$ with $\bar\alpha(0) = 0$, and is still an arrival curve. If a flow sends at most $\alpha(T)$ bits in $T$, then in two intervals of length $T$ it sends at most $\alpha(T) + \alpha(T)$, which may be less than $\alpha(2T)$: the closure keeps the tighter value. A sub-additive curve cannot be improved this way.
+
+**Example.** "At most $L$ bits in any interval of duration $\tau$" is the curve $\alpha(t) = L$ for $t \le \tau$ and $+\infty$ after. Its closure is the staircase
+
+$$
+\bar\alpha(t) = L \left\lceil \frac{t}{\tau} \right\rceil ,
+$$
+
+a more constraining function that describes the same flows.
+
+<HandwrittenPages set="nc-lectures" pages="8-11" title="course slides 8–11, min-plus calculus" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf" />
+
+<HandwrittenPages set="nc-book" pages="14-18" title="book introduction, network calculus as a system theory" pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/theory%20fundamentals.pdf" />
+
 ## Recommended viewing
 
 - *An Introduction to Network Calculus*, LCA2, EPFL. [YouTube](https://www.youtube.com/watch?v=ABQ327BTc_o).
@@ -115,3 +199,4 @@ It is the largest sub-additive function below $f$ (and below $\delta_0$). Sub-ad
 1. J.-Y. Le Boudec, P. Thiran, *Network Calculus*, LNCS 2050, Springer, 2001, Chapter 3. [Online edition](https://leboudec.github.io/netcal/)
 2. A. Bouillard, M. Boyer, E. Le Corronc, *Deterministic Network Calculus*, Wiley-ISTE, 2018.
 3. C.-S. Chang, *Performance Guarantees in Communication Networks*, Springer, 2000.
+4. J.-Y. Le Boudec, "An Introduction to Network Calculus," lecture slides, 5 April 2019. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/courses/network-calculus/course%20lectures.pdf)

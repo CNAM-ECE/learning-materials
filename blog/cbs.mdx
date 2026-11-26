@@ -21,7 +21,7 @@ The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) sh
   caption="Figure 1. Where the credit-based shaper acts: it is a transmission selection algorithm attached to a traffic-class queue of an 802.1Q egress port. The queues, the relay and the MAC are unchanged."
 />
 
-<Abbreviations terms={["IEEE", "MAC", "TSN", "AVB", "CBS", "ATS"]} />
+<Abbreviations terms={["IEEE", "MAC", "TSN", "AVB", "CBS", "ATS", "TAS", "GCL", "TT", "BE", "WCD", "gPTP", "CIR"]} />
 
 
 ## 1. Definition
@@ -94,7 +94,7 @@ A review of [industrial IoT](https://en.wikipedia.org/wiki/Industrial_internet_o
 
 ## 6. From the articles
 
-Reading notes on Lo Bello and Steiner [6] and Yang et al. [7], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
+Reading notes on Lo Bello and Steiner [6], Yang et al. [7] and Zhao et al. [8], from the copies kept in the repository's [`ressource/`](https://github.com/CNAM-ECE/learning-materials/tree/main/ressource) folder. They expand the margin notes taken while reading.
 
 ### Where the delay of a frame comes from
 
@@ -144,6 +144,216 @@ The parameters that bound the per-bridge latency are the **idle slope** (the res
 
 Without scheduled windows, a CBS on express traffic also limits how long preemptable frames are delayed, which keeps their transit time within the bridge bound.
 
+### AVB traffic in a TSN network
+
+Zhao, Pop, Zheng and Li [8] ask what happens to AVB streams once the same port also carries time-triggered (TT) traffic under a [time-aware shaper](/blog/time-aware-shaper). Their answer is a network calculus analysis of the worst-case delay (WCD) of AVB Class A and Class B, for both ways of protecting TT windows. These notes rewrite the handwritten reading notes on the report.
+
+#### The question and the setting
+
+How should traffic types of different priority share one Ethernet infrastructure, each with a bounded latency? An urgent control signal in a car must not wait behind a video stream, and the video stream must still get its bandwidth.
+
+| Element | Assumption in [8] |
+| --- | --- |
+| Network | Switched Ethernet, all links at the same rate $C$ (1 Gbit/s, so 1,000 bit/µs), full duplex, multi-hop |
+| Routing | Fixed: each flow follows a known sequence of dataflow links (its *dataflow routing*) |
+| Topology of flows | **Feed-forward**: no cycle of dependencies between output ports, so bounds can be computed hop by hop |
+| Traffic classes | TT (highest), AVB Class A, AVB Class B, BE (lowest); the class of each application is fixed by the designer |
+| Flows | TT: frame size and period, scheduled by the GCL. AVB: frame size $l$ and period $p$, giving a token bucket at the source |
+| Clocks | All switches and end stations share one time base through IEEE 802.1AS (gPTP); accuracy in the microsecond range is enough to match the windows |
+| Scheduling inside a class | Strict priority between classes, FIFO inside a queue, no preemption between AVB classes |
+| Analysis | Network calculus: arrival curves and service curves give an upper bound on delay |
+
+<SourceFigure
+  id="zhao2017-fig2"
+  caption="Figure 6. An output port in [8]: one TT queue, a CBS behind each AVB queue, one BE queue, and a gate per queue driven by the GCL. Transmission selection (TSA) only sees queues whose gate is open."
+/>
+
+An AVB frame at the head of its queue may start only when **all three** hold:
+
+1. the gate of its queue is open in the GCL;
+2. its CBS credit is zero or positive;
+3. no frame of the other AVB class is being sent.
+
+#### Protecting the TT windows
+
+A TT window must start on an idle wire. A frame already being sent when the window opens would delay it, so TSN offers two **integration modes**:
+
+<SourceFigure
+  id="zhao2017-fig5"
+  caption="Figure 7. The two integration modes. (a) Non-preemption: a guard band keeps the wire idle before the TT frame. (b) Preemption: the AVB frame is cut, the TT frame goes out, and the rest of the AVB frame follows with an overhead."
+/>
+
+| | Guard band (non-preemption) | Frame preemption (802.1Qbu / 802.3br) |
+| --- | --- | --- |
+| What happens | No new frame may start if it cannot finish before the TT window | A lower-priority frame is interrupted, then resumed after the window |
+| Cost | Up to one maximum frame of idle wire before every window: 1,538 bytes on the wire take **12.3 µs** at 1 Gbit/s | A small overhead per interruption: an extra preamble, fragment header and checksum |
+| Effect on AVB | Wasted bandwidth and longer AVB delays | Lower AVB delay and better bandwidth use, at the price of some TT jitter |
+| Window seen by the analysis | Guard band merged with the TT window: $L^h_{GB+TT,i} = L^h_i + L^h_{GB,i}$ | TT window, then an overhead of duration $T_{OH} = L_{OH}/C$ after it |
+
+The guard band before the $i$-th window is the **smaller** of the transmission time of the largest competing AVB frame and the idle time since the previous window. A short gap between windows therefore gives a short guard band.
+
+<SourceFigure
+  id="zhao2017-fig9"
+  caption="Figure 8. Guard bands before the TT windows of one hyperperiod. The guard band before window 1 is cut to the short idle time after window 0."
+/>
+
+<SourceFigure
+  id="zhao2017-fig10"
+  caption="Figure 9. With preemption, the overhead of the resumed frame comes after each TT window instead."
+/>
+
+#### CBS inside a gated port
+
+The credit follows the usual rules (section 2), with one addition that the standard left open at the time: **while the gate of an AVB queue is closed, its credit is frozen**. It neither grows during guard bands and TT windows nor is reset. The report adopts this *frozen* behaviour so that the credit cannot overflow while a long TT window keeps AVB frames waiting.
+
+<SourceFigure
+  id="zhao2017-fig6"
+  caption="Figure 10. Credits of Class A (red) and Class B (blue) while BE, TT and AVB frames share the port. (a) Non-preemption: both credits stay flat during the guard band and the TT window. (b) Preemption: the credits stay flat during the TT window and resume with the overhead."
+/>
+
+#### Bounds on the credit
+
+Write $C$ for the link rate, $idSl_M$ for the idle slope of class $M \in \{A, B\}$, $sdSl_M = idSl_M - C < 0$ for its send slope, and $l^{max}_{X}$ for the largest frame of class $X$. The credit of each class stays between two values [8], after Azua and Boyer.
+
+**Lower bound.** The credit is lowest just after the class has sent its largest frame starting from zero credit. Sending takes $l^{max}_{AVB_M}/C$, during which the credit falls at $sdSl_M$:
+
+$$
+credit^{min}_M = sdSl_M \cdot \frac{l^{max}_{AVB_M}}{C}.
+$$
+
+**Upper bound for Class A.** Class A waits at most for one lower-priority frame already on the wire, a Class B or a BE frame, and gains credit at $idSl_A$ meanwhile:
+
+$$
+credit^{max}_A = idSl_A \cdot \frac{l^{max}_n}{C}, \qquad l^{max}_n = \max\left(l^{max}_{AVB_B},\, l^{max}_{BE}\right).
+$$
+
+**Upper bound for Class B.** Class B gains credit for as long as it waits, and it waits in three successive steps:
+
+| Step | Who uses the wire | Duration | Credit gained by B |
+| --- | --- | --- | --- |
+| 1 | A BE frame already on the wire | $l^{max}_{BE}/C$ | $idSl_B \cdot l^{max}_{BE}/C$ |
+| 2 | Class A sends until its credit $credit^{max}_A$ is used up at the rate $sdSl_A$ | $T^{credit}_A = -\dfrac{l^{max}_n \, idSl_A}{C \, sdSl_A}$ | $idSl_B \cdot T^{credit}_A$ |
+| 3 | The last Class A frame, started with credit just above zero | $l^{max}_{AVB_A}/C$ | $idSl_B \cdot l^{max}_{AVB_A}/C$ |
+
+Adding the three steps:
+
+$$
+credit^{max}_B = idSl_B \left( \frac{l^{max}_{BE} + l^{max}_{AVB_A}}{C} - \frac{l^{max}_n \, idSl_A}{C \, sdSl_A} \right).
+$$
+
+Since $sdSl_A < 0$, the last term is positive: the bound grows with the bandwidth reserved for Class A.
+
+#### When the credit can grow without bound
+
+These bounds hold only if the credit of Class B cannot climb from one peak to a higher one. Figure 11 shows the failure: each time Class A regains the wire, Class B loses less credit than it gained, and its peaks $P_1, P_2, \dots$ keep rising.
+
+<SourceFigure
+  id="zhao2017-fig7"
+  caption="Figure 11. Credit of Class B rising without bound: the second peak P2 is higher than the first peak P1."
+/>
+
+**Theorem 1 (non-overflow condition) [8].** The credit of Class B stays bounded if
+
+$$
+sdSl_A \cdot sdSl_B \;\ge\; idSl_A \cdot idSl_B .
+$$
+
+Replacing each send slope by $idSl_M - C$ shows what the condition means:
+
+$$
+(idSl_A - C)(idSl_B - C) \ge idSl_A \, idSl_B
+\;\Longleftrightarrow\;
+idSl_A + idSl_B \le C .
+$$
+
+The two classes together must not reserve more than the link rate. This is a pre-condition of every AVB bound that follows; AVB configurations in practice stay far below it (75 % of the link at most, section 3).
+
+#### TT windows as an arrival curve
+
+The GCL of output port $h$ repeats every hyperperiod $p^h_{GCL}$, the least common multiple of the periods of the TT flows sharing the port. It contains $N^h$ TT windows; window $j$ lasts $L^h_j$, and $o^h_{j,i}$ is its offset from window $i$ (with $o^h_{i,i} = 0$).
+
+<SourceFigure
+  id="zhao2017-fig8"
+  caption="Figure 12. The GCL of output port h: three TT windows per hyperperiod, of lengths L0, L1 and L2, and their offsets from window 0."
+/>
+
+Taking window $i$ as the starting point, the TT traffic that can leave the port within any interval of length $t$ is at most
+
+$$
+\alpha^h_{TT,i}(t) = \sum_{j=i}^{i+N^h-1} L^h_j \cdot C \cdot \left\lceil \frac{t - o^h_{j,i}}{p^h_{GCL}} \right\rceil .
+$$
+
+Each term is a staircase: $L^h_j \cdot C$ bits, the most the TT queue can send in window $j$, once per hyperperiod. Since the worst starting window is not known, the TT arrival curve is the upper envelope over all of them (Lemma 1):
+
+$$
+\alpha^h_{TT}(t) = \max_{0 \le i \le N^h-1} \alpha^h_{TT,i}(t).
+$$
+
+In the non-preemption mode, the same construction with window lengths $L^h_i + L^h_{GB,i}$ gives $\alpha^h_{GB+TT}$ (Lemma 2). Merging each guard band with the window that follows it means the two need not be handled separately, which is possible because the AVB credits are frozen during both.
+
+#### The service left to an AVB class
+
+**Theorem 2 (non-preemption) [8].** The service curve of AVB Class $M$ at output port $h$ is
+
+$$
+\beta^{h[npr]}_{AVB_M}(t) = \frac{C \cdot idSl_M}{idSl_M - sdSl_M}
+\left[ \sup_{0 \le u \le t} \left\{ u - \frac{\alpha^h_{GB+TT}(u)}{C} - \frac{credit^{max}_M}{idSl_M} \right\} \right]^+ .
+$$
+
+How to read it:
+
+- $\alpha^h_{GB+TT}(u)/C$ is the time lost to TT windows and guard bands within $u$;
+- $credit^{max}_M / idSl_M$ is a latency: the time for which the class may be blocked while its credit climbs to its maximum;
+- the factor in front equals $idSl_M$, because $idSl_M - sdSl_M = C$: what is left is served at the reserved rate.
+
+**Theorem 3 (preemption)** has the same structure, with the TT curve of Lemma 1 instead of $\alpha^h_{GB+TT}$ and an extra term for the preemption overheads that follow the TT windows (Lemma 3).
+
+#### From one hop to the whole path
+
+- **At the source.** An AVB flow sending frames of $l$ bits every $p$ has the token bucket arrival curve $\alpha(t) = l + (l/p)\,t$: burst $b = l$, rate $r = l/p$.
+- **At the next hop.** A flow with burst $b$ and rate $r$ that is delayed by at most $d$ leaves with burst $b' = b + r\,d$ and the same rate. This is the output arrival curve of [the fundamental bounds](/blog/three-fundamental-bounds), and it becomes the input of the next port.
+- **Feed-forward.** The hop-by-hop order exists because no cycle $p_1 \to p_2 \to \dots \to p_1$ of output ports occurs among the flows.
+- **End to end.** The WCD of a flow is the sum of its per-port delays along its route, plus a constant technical latency $d_{tech}$ for each switch crossed.
+
+#### Results on the Orion CEV case
+
+The method was implemented in C++ with the RTC toolbox and evaluated on a TSN version of the Orion Crew Exploration Vehicle network: 31 end stations, 15 switches, 39 routes, 1 Gbit/s links.
+
+| Test case | Traffic | Finding |
+| --- | --- | --- |
+| TC1 | 5 TT flows, 34 AVB Class A flows, preemption | Against the earlier analysis RTN16, the bounds are **98.3 % tighter on average** and up to 99.7 % (Figure 13) |
+| TC2 | 15 TT flows, 20 Class A and 14 Class B flows (some multicast); idle slopes 60 % and 15 % of the link | Non-preemption gives **18.7 % larger WCDs** on average, because a guard band is longer than a preemption overhead (Figure 14) |
+| TC2–TC4 | Same AVB flows, TT traffic using 1 %, 3 % and 7 % of the bandwidth | The more bandwidth TT takes, the larger the AVB WCDs; the *porosity* of the GCL, how densely its windows are packed, matters (Figure 15) |
+
+<SourceFigure
+  id="zhao2017-fig12"
+  caption="Figure 13. TC1: worst-case delays of 34 Class A flows. The network calculus method (crosses) stays at a few tens of µs, while RTN16 (triangles) reports up to 2 ms."
+/>
+
+<SourceFigure
+  id="zhao2017-fig13"
+  caption="Figure 14. TC2: worst-case delays with preemption (crosses) and without (triangles)."
+/>
+
+<SourceFigure
+  id="zhao2017-fig14"
+  caption="Figure 15. TC2 to TC4: AVB worst-case delays normalised to the case where TT uses 7 % of the bandwidth."
+/>
+
+#### Context from the reading notes
+
+**TAS, which shapes the AVB service here.**
+
+| Advantages | Drawbacks |
+| --- | --- |
+| Low delay and jitter for TT traffic | Building the GCLs of a network is NP-hard |
+| Time-triggered and event-triggered traffic can share the port | The schedule is fixed: adding one flow means computing it again |
+| | Sporadic, event-driven critical traffic does not fit a fixed timetable |
+
+TAS controls the TT **queue** through the GCL; it does not schedule each TT flow, and TT frames lose their strict periodicity as they cross the network when end systems are not scheduled.
+
+**ATS, the alternative for sporadic traffic.** [802.1Qcr](/blog/asynchronous-traffic-shaping) reshapes every flow at every hop with a token bucket $\alpha(t) = CBS + CIR \cdot t$: committed burst size $CBS$ (in bits; not the credit-based shaper) and committed information rate $CIR$. Bursts therefore do not accumulate along the path, and no global clock is needed: each switch uses its local time. Le Boudec's result that an interleaved regulator gives this reshaping without increasing the worst-case delay ("shaping for free") is the reason it works; see the [network calculus for TSN post](/blog/network-calculus-for-tsn).
+
 ## References
 
 1. IEEE 802.1, *Time-Sensitive Networking (TSN) Task Group*. [Web page](https://1.ieee802.org/tsn/)
@@ -153,3 +363,4 @@ Without scheduled windows, a CBS on express traffic also limits how long preempt
 5. I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023, Section III-D. [arXiv](https://arxiv.org/abs/2311.08852)
 6. L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334)
 7. X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15)
+8. L. Zhao, P. Pop, Z. Zheng, Q. Li, "Timing Analysis of AVB Traffic in TSN Networks using Network Calculus," Technical report, DTU Compute, June 2017; published at IEEE RTAS 2018. [Annotated copy](https://github.com/CNAM-ECE/network-calculus/blob/main/docs/projects/project%20understandings.pdf)

@@ -84,6 +84,10 @@ const docs = {
     cite: 'V. Gavriluţ, A. Pruski, M. S. Berger, “Constructive or Optimized: An Overview of Strategies to Design Networks for Time-Critical Applications,” ACM Computing Surveys, vol. 55, no. 3, article 62, 2022',
     url: 'https://doi.org/10.1145/3501294',
   },
+  zhao2017: {
+    cite: 'L. Zhao, P. Pop, Z. Zheng, Q. Li, “Timing Analysis of AVB Traffic in TSN Networks using Network Calculus,” Technical report, DTU Compute, June 2017 (published at IEEE RTAS 2018)',
+    url: 'https://github.com/CNAM-ECE/network-calculus/blob/main/docs/projects/project%20understandings.pdf',
+  },
 } satisfies Record<string, Doc>;
 
 type Entry = {
@@ -182,6 +186,16 @@ export const sourceFigures = {
   'gavrilut2022-fig1': {doc: 'gavrilut2022', where: 'Fig. 1', alt: 'Network model: three end stations connected to one switch, with flow f1 from ES1 to ES3 and flow f2 from ES2 to ES3 sharing the link from the switch to ES3', width: 620},
   'gavrilut2022-fig2': {doc: 'gavrilut2022', where: 'Fig. 2', alt: 'Switch structure: each input has an input buffer and classification and traffic filtering, a switch fabric, and each output has eight priority queues Q0 to Q7 with TAS and CBS shapers before transmission selection', width: 620},
   'gavrilut2022-fig4': {doc: 'gavrilut2022', where: 'Fig. 4', alt: 'Overlapping ellipses for the design problems topology selection, routing, priority and traffic-type assignment and scheduling, each marked with the symbols of the strategies used for it: KSP, ILP, CP, LP, GRASP, greedy heuristics, tabu search, genetic algorithms, SMT and OMT', width: 520},
+  'zhao2017-fig2': {doc: 'zhao2017', where: 'Fig. 2', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'An output port with a TAS: a TT queue, AVB Class A and Class B queues each followed by a credit-based shaper, and a BE queue; every queue has a gate driven by the GCL before transmission selection', width: 400},
+  'zhao2017-fig5': {doc: 'zhao2017', where: 'Fig. 5', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'A TT frame contending with an AVB frame: in non-preemption mode a guard band keeps the port idle before the TT frame; in preemption mode the AVB frame is split, with an additional fragment and an overhead', width: 520},
+  'zhao2017-fig6': {doc: 'zhao2017', where: 'Fig. 6', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Frames of BE, TT and AVB Classes A and B on a timeline, with the credits of Class A in red and Class B in blue: (a) non-preemption with a guard band, (b) preemption with an overhead', width: 520},
+  'zhao2017-fig7': {doc: 'zhao2017', where: 'Fig. 7', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Credit of Class A and Class B over time: the peaks P1 and P2 of the credit of Class B keep rising when the slopes do not satisfy the non-overflow condition', width: 560},
+  'zhao2017-fig8': {doc: 'zhao2017', where: 'Fig. 8', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'The GCL of an output port h over one hyperperiod: three TT windows of lengths L0, L1, L2, with offsets o1,0 and o2,0 from the first window', width: 600},
+  'zhao2017-fig9': {doc: 'zhao2017', where: 'Fig. 9', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Guard bands before each TT window of the hyperperiod, of length LGB,0, LGB,1, LGB,2', width: 600},
+  'zhao2017-fig10': {doc: 'zhao2017', where: 'Fig. 10', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Preemption overheads LOH after each TT window of the hyperperiod', width: 600},
+  'zhao2017-fig12': {doc: 'zhao2017', where: 'Fig. 12', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of 34 AVB Class A flows: about 700 to 2000 µs with the earlier RTN16 analysis, a few tens of µs with the network calculus method', width: 480},
+  'zhao2017-fig13': {doc: 'zhao2017', where: 'Fig. 13', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of 68 AVB flows with preemption (crosses) and non-preemption (triangles); non-preemption is higher for most flows', width: 680},
+  'zhao2017-fig14': {doc: 'zhao2017', where: 'Fig. 14', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of AVB flows normalised to the case with 7 % TT bandwidth: lower with 3 % TT and lowest with 1 % TT', width: 680},
 } satisfies Record<string, Entry>;
 
 export type SourceFigureId = keyof typeof sourceFigures;

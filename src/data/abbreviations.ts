@@ -99,6 +99,8 @@ export const abbreviations: Record<string, Abbreviation> = {
   SMD: {expansion: 'Start mPacket Delimiter', definition: 'The 802.3br delimiter that tells the receiver whether an mPacket is express, the start of a preemptable frame or a continuation fragment.'},
   MCRC: {expansion: 'mPacket CRC', definition: 'The check value that ends every non-final fragment of a preempted frame in 802.3br.'},
   BE: {expansion: 'Best Effort', definition: 'Traffic with no guarantee of delay or delivery.'},
+  TT: {expansion: 'Time-Triggered', definition: 'Traffic sent at instants fixed in advance by a schedule; in TSN, the frames released by the time-aware shaper in their GCL windows.', link: SA + '802.1Qbv/6068/'},
+  WCD: {expansion: 'Worst-Case Delay', definition: 'An upper bound on the end-to-end delay of every frame of a flow, valid for all admissible traffic; what a network calculus analysis computes.'},
 
   // Reservation and configuration
   SRP: {expansion: 'Stream Reservation Protocol', definition: 'IEEE 802.1Qat: distributed admission control in which talkers advertise streams and listeners subscribe, reserving resources hop by hop.', link: SA + '802.1Qat/4050/'},

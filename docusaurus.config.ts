@@ -11,7 +11,7 @@ const repoUrl = 'https://github.com/CNAM-ECE/learning-materials';
 const config: Config = {
   title: 'Network Calculus Notes',
   tagline:
-    'A learning path from min-plus algebra to certified reconfiguration of Time-Sensitive Networks',
+    'From min-plus algebra to certified reconfiguration of Time-Sensitive Networks: research understanding, article notes and doctoral training',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -46,10 +46,10 @@ const config: Config = {
         blog: {
           path: 'blog',
           routeBasePath: 'blog',
-          blogTitle: 'Learning path',
+          blogTitle: 'Research understanding',
           blogDescription:
             'A sequence of posts on deterministic network calculus and its application to TSN',
-          blogSidebarTitle: 'Learning path',
+          blogSidebarTitle: 'Research understanding',
           blogSidebarCount: 'ALL',
           sortPosts: 'ascending',
           postsPerPage: 'ALL',
@@ -72,6 +72,31 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'article-notes',
+        path: 'article-notes',
+        routeBasePath: 'article-notes',
+        sidebarPath: './sidebarsArticleNotes.ts',
+        editUrl: `${repoUrl}/tree/main/`,
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'doctoral-training',
+        path: 'doctoral-training',
+        routeBasePath: 'doctoral-training',
+        sidebarPath: './sidebarsDoctoralTraining.ts',
+        editUrl: `${repoUrl}/tree/main/`,
+      },
+    ],
+  ],
+
   themeConfig: {
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
@@ -84,7 +109,21 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {to: '/blog', label: 'Learning path', position: 'left'},
+        {to: '/blog', label: 'Research understanding', position: 'left'},
+        {
+          type: 'docSidebar',
+          sidebarId: 'articleNotesSidebar',
+          docsPluginId: 'article-notes',
+          position: 'left',
+          label: 'Article notes',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'doctoralTrainingSidebar',
+          docsPluginId: 'doctoral-training',
+          position: 'left',
+          label: 'Doctoral training',
+        },
         {
           type: 'docSidebar',
           sidebarId: 'referenceSidebar',
@@ -104,7 +143,9 @@ const config: Config = {
         {
           title: 'Notes',
           items: [
-            {label: 'Learning path', to: '/blog'},
+            {label: 'Research understanding', to: '/blog'},
+            {label: 'Article notes', to: '/article-notes'},
+            {label: 'Doctoral training', to: '/doctoral-training'},
             {label: 'Notation and results', to: '/reference/notation'},
             {label: 'Annotated resources', to: '/reference/resources'},
           ],

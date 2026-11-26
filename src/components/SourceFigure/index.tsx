@@ -88,6 +88,18 @@ const docs = {
     cite: 'L. Zhao, P. Pop, Z. Zheng, Q. Li, “Timing Analysis of AVB Traffic in TSN Networks using Network Calculus,” Technical report, DTU Compute, June 2017 (published at IEEE RTAS 2018)',
     url: 'https://github.com/CNAM-ECE/network-calculus/blob/main/docs/projects/project%20understandings.pdf',
   },
+  cremers2026: {
+    cite: 'C. Cremers, “The future of security protocol analysis: Towards provable guarantees for apps?,” P3S3 Summer School, Orsay, 1 June 2026',
+    url: 'https://p3s3.github.io/program',
+  },
+  feneuil2026: {
+    cite: 'T. Feneuil, “Beyond SNARKs: Hash-Based Zero-Knowledge for Post-Quantum Signatures,” P3S3 Summer School, Orsay, 2 June 2026',
+    url: 'https://p3s3.github.io/program',
+  },
+  levallois2026: {
+    cite: 'C. Levallois-Barth, “Legal aspects concerning the European Digital Identity Wallet,” P3S3 Summer School, Orsay, 3 June 2026',
+    url: 'https://p3s3.github.io/program',
+  },
 } satisfies Record<string, Doc>;
 
 type Entry = {
@@ -196,6 +208,18 @@ export const sourceFigures = {
   'zhao2017-fig12': {doc: 'zhao2017', where: 'Fig. 12', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of 34 AVB Class A flows: about 700 to 2000 µs with the earlier RTN16 analysis, a few tens of µs with the network calculus method', width: 480},
   'zhao2017-fig13': {doc: 'zhao2017', where: 'Fig. 13', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of 68 AVB flows with preemption (crosses) and non-preemption (triangles); non-preemption is higher for most flows', width: 680},
   'zhao2017-fig14': {doc: 'zhao2017', where: 'Fig. 14', edit: 'cropped from a copy with the reading annotations removed, otherwise unchanged', alt: 'Worst-case delays of AVB flows normalised to the case with 7 % TT bandwidth: lower with 3 % TT and lowest with 1 % TT', width: 680},
+  'cremers2026-abstraction': {doc: 'cremers2026', where: 'slide 7', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'An emperor tamarin photographed in full detail as reality, with a sharp patch on a blurred image as the computational view and a pixelated image as the symbolic view', width: 620},
+  'cremers2026-pcs': {doc: 'cremers2026', where: 'slide 62', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'A time line with a compromise in the middle: forward secrecy protects secret messages before it, post-compromise security protects messages after a healing step', width: 620},
+  'cremers2026-signed-dh': {doc: 'cremers2026', where: 'slide 127', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'Signed Diffie-Hellman between Init and Resp: each sends g to a fresh exponent with a signature over the roles and the share, and both derive the session key', width: 560},
+  'cremers2026-ws-attack': {doc: 'cremers2026', where: 'slide 40', edit: 'cropped from the slide, otherwise unchanged', alt: 'Message sequence of the WS-Security X.509 attack: the attacker re-signs the request with a key chosen to verify the same signature, so the responder answers the attacker while the initiator accepts the response', width: 620},
+  'feneuil2026-fiat-shamir': {doc: 'feneuil2026', where: 'slide 5', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'A prover who knows a secret key sends a transcript to a verifier; each challenge is a hash of the message and the previous commitment or response, which is the Fiat-Shamir transformation', width: 560},
+  'feneuil2026-ggm': {doc: 'feneuil2026', where: 'slide 63', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'A GGM tree: a root seed expanded by a pseudo-random generator into child seeds down to leaf seeds, each giving a random value', width: 440},
+  'feneuil2026-merkle': {doc: 'feneuil2026', where: 'slide 73', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'A Merkle tree: leaves are hashes of the evaluations P(e1) to P(eN), and each parent is the hash of its two children up to the root', width: 440},
+  'feneuil2026-families': {doc: 'feneuil2026', where: 'slide 156', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'Comparison table of post-quantum signatures: MPCitH, Dilithium, Falcon, SPHINCS+, UOV, Mayo and SQIsign, with signature and key sizes in kilobytes, signing and verification speed, and security assumption', width: 640},
+  'feneuil2026-ring': {doc: 'feneuil2026', where: 'slide 166', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'A ring signature: public keys of n different signers, each an MQ system, and the signer knows a private key x with F of index i star applied to x equal to zero', width: 560},
+  'levallois2026-timeline': {doc: 'levallois2026', where: 'slide 11', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'Time line of the EUDI wallet: eIDAS 1 in 2014, eIDAS 2 in 2024, a wallet in each Member State by December 2026, acceptance required from December 2027, and an aim of 80 % adoption by 2030', width: 640},
+  'levallois2026-personal-data': {doc: 'levallois2026', where: 'slide 22', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'Personal data of natural persons, mandatory and optional identification attributes, to which the GDPR applies, beside data of legal persons, to which it does not', width: 640},
+  'levallois2026-risks': {doc: 'levallois2026', where: 'slide 34', edit: 'cropped from the slide, with the slide title removed, otherwise unchanged', alt: 'Risks of the EUDI wallet in four boxes: cyberattacks, violation of fundamental rights, social exclusion and infringement of sovereignty', width: 640},
 } satisfies Record<string, Entry>;
 
 export type SourceFigureId = keyof typeof sourceFigures;

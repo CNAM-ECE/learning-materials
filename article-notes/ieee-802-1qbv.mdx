@@ -1,0 +1,69 @@
+---
+id: ieee-802-1qbv
+title: "IEEE 802.1Qbv: the time-aware shaper"
+sidebar_label: 802.1Qbv (TAS)
+description: Notes on scheduled traffic from the articles - gates and the gate control list, the guard band, the three-station example, the models used to schedule TAS, and the lessons of the 17-method comparison.
+---
+
+import SourceFigure from '@site/src/components/SourceFigure';
+
+**Sources:** LS19 §IV-B · YSH19 §4.2 · XZZ23 §I–VII · **Post:** [Time-Aware Shaper](/blog/time-aware-shaper)
+
+## The mechanism
+
+[IEEE 802.1Qbv](https://standards.ieee.org/ieee/802.1Qbv/6068/) brings **time-triggered** communication into 802.1. Its particular choice is to schedule **queues, not frames** (LS19 §IV-B):
+
+- Each queue has a **gate**, open or closed. Transmission selection only considers queues whose gate is open.
+- A **gate control list (GCL)** says when each gate opens and closes. It repeats with a **cycle time** and has a limited number of entries (typically 8 to 1024, depending on the bridge, XZZ23 §II-A).
+- The standard actually stores relative durations between gate changes; LS19 writes them as absolute times for clarity.
+- End stations must implement the same gates, but at their interface, frame-level scheduling cannot be told apart from gate scheduling.
+- The network-wide schedule is computed by a **CNC** (XZZ23 §I).
+
+**Guard band.** A queue must stop starting new frames early enough that the last one finishes before its gate closes; otherwise it would delay the queue opening at that instant. This interval is the **guard band**. A simple bridge reserves one maximum frame time; a better one checks whether the next frame still fits. Windows protected this way are called **protected windows**.
+
+## The example in LS19
+
+ES1 is synchronised and time-critical; ES3 is not synchronised and sends best-effort traffic; both send to ES2 through bridge B1.
+
+<SourceFigure
+  id="lobello2019-qbv-example"
+  caption="Figure 1. Without Qbv (top), a frame of ES3 that becomes ready slightly earlier is sent first and delays the frame of ES1, even with a lower priority. With Qbv (bottom), the gate of queue 4 closes before the frame of ES1 is ready, so ES1 is never delayed."
+/>
+
+Priorities alone cannot keep ES3 from delaying ES1, because a low-priority frame already on the wire cannot be stopped. A GCL entry that closes queue 4 (ES3) in time, while queue 7 (ES1) is open, solves it.
+
+## Computing the GCL
+
+The gate mechanism is simple; finding the gate times is not. Schedule synthesis is in general **NP-complete** (LS19). Two families of methods exist: dedicated search (heuristics, meta-heuristics, genetic algorithms) and general solvers (ILP, SMT). XZZ23 reviews them with three groups of models:
+
+| Model group | Choices | Effect |
+| --- | --- | --- |
+| **Network** | Propagation and processing delay, line rate, queues for TT traffic (≤ 8), maximum GCL length, synchronisation error | Constraints that a schedule must respect on real hardware |
+| **Traffic** | Fully or partially schedulable release times; strictly or non-strictly periodic; payload over several frames; implicit, constrained or arbitrary deadline; zero-jitter or bounded jitter | What the application allows the scheduler to choose |
+| **Scheduling** | **No-wait** (no queuing along the path) or **wait-allowed**; frame or stream isolation in queues; joint routing; fragmentation; preemption | The search space and the delay and jitter obtained |
+
+<SourceFigure
+  id="xue2023-fig2"
+  caption="Figure 2. The example network used throughout the review: five bridges, five end stations and four streams."
+/>
+
+## What the 17-method comparison found
+
+XZZ23 ran 17 TAS scheduling methods (2016–2022) in simulation and on an eight-bridge testbed:
+
+<SourceFigure
+  id="xue2023-fig6"
+  caption="Figure 3. The testbed: eight TTTech evaluation boards in a ring, Raspberry Pi end stations with Intel i210 NICs, and a CNC and CUC."
+/>
+
+- **No method wins everywhere.** Each model or method is best only under some settings.
+- **Settings bias conclusions.** Results depend heavily on the stream sets, topologies and resource limits chosen. Use broad settings, or realistic ones taken from profiles such as [IEC/IEEE 60802](./tsn-profiles.mdx).
+- **Metrics can disagree.** The schedulable ratio and a pairwise schedulability advantage gave inconsistent rankings; several metrics, with statistically sound data, are needed.
+- **Describe the experiment fully**: model assumptions, solver settings, stream specifications, and exactly where delay is measured.
+- **Model assumptions hold on hardware.** Propagation delay (a few ns), processing delay (≤ 1.9 µs per hop) and synchronisation error can be bounded on the testbed, which justifies the constant-or-bounded assumptions of most methods.
+- **Constraints often ignored**: the maximum GCL length of real bridges, and the limited number of queues.
+
+## Scalability and jitter
+
+- Scheduling scales poorly in theory, but recent solvers handle thousands of messages (LS19 §VI).
+- With Qbv, jitter can be reduced to the precision of [clock synchronisation](./ieee-802-1as.mdx). A clock failure, though, makes the gates switch at the wrong times.

@@ -1,0 +1,64 @@
+---
+id: ieee-802-1qcc
+title: "IEEE 802.1Qcc: configuration models and stream reservation"
+sidebar_label: 802.1Qcc (configuration)
+description: Notes on TSN configuration from the articles - SRP, the user-network interface, the fully distributed, centralised network / distributed user and fully centralised models, six trade-offs, and the related 802.1CS and RAP projects.
+---
+
+import SourceFigure from '@site/src/components/SourceFigure';
+
+**Sources:** LS19 §III-D, §IV-F, §IV-G · YSH19 §4.2 · **Posts:** [Stream reservation](/blog/stream-reservation), [SRP](/blog/ieee-802-1qat-srp), [SDN and TSN configuration](/blog/sdn-and-tsn-configuration)
+
+## Resource management in TSN
+
+Zero loss and predictable delay need a **contract** between the application and the network: the talker limits its maximum packet size and the number of packets per interval, and the network reserves resources for it (LS19 §III-D).
+
+| Standard | Role |
+| --- | --- |
+| **802.1Qat**, Stream Reservation Protocol (SRP), in 802.1Q since 2014 | AVB: registers and reserves buffers and queues along the path from talker to listener |
+| **[802.1Qcc](https://1.ieee802.org/tsn/802-1qcc/)**, SRP enhancements | Configurable SR classes and streams; the user-network interface (UNI); the three configuration models; YANG models |
+| **802.1Qcp** | YANG data models for 802.1Q |
+| **[802.1CS](https://1.ieee802.org/tsn/802-1cs/)**, Link-local Registration Protocol | Replicates a registration database of up to about 1 MB over one link (MRP is designed for about 1,500 bytes) |
+| **RAP**, Resource Allocation Protocol | Distributed resource management and admission control over 802.1CS. Called P802.1Qdd in LS19, now [P802.1DD](https://1.ieee802.org/tsn/802-1dd/) |
+
+## The three configuration models
+
+802.1Q clause 12 defines the **managed objects** (the knobs); 802.1Qcc defines **models**, abstract functions rather than protocols, for who sets them. A model fixes where the **UNI** sits and whether configuration is distributed or centralised. LS19 uses a line of ten bridges B1–B10 with talker ES1 and listener ES2.
+
+**Fully distributed.** The UNI is between each end station and its bridge. The talker *advertises* its stream; the advertisement travels bridge by bridge to the listener, which answers *ready*; each bridge decides locally (for example, the stream fails if the link B5–B6 is saturated). SRP is this model.
+
+<SourceFigure
+  id="lobello2019-qcc-distributed"
+  caption="Figure 1. Fully distributed model: the UNI is at the edge, and each bridge makes local decisions."
+/>
+
+**Centralised network / distributed user.** The UNI stays at the edge, but requests are forwarded to a **centralized network configuration (CNC)** that configures all affected bridges. With a global view, the CNC can find configurations where the distributed model fails.
+
+<SourceFigure
+  id="lobello2019-qcc-centralized"
+  caption="Figure 2. Centralised network / distributed user model: a CNC, here in ES3 next to B3, computes the configuration."
+/>
+
+**Fully centralized.** A **centralized user configuration (CUC)** collects the needs of the end stations (for example over OPC UA) and talks to the CNC through the UNI. Steps: ES1 registers the stream at the CUC; ES2 requests it; the CUC asks the CNC; the CNC configures B1–B10 and returns the end-station settings to the CUC, which forwards them. In the extreme, the CUC knows all requirements at design time from a file. The UNI is given as **YANG** models, exchanged with NETCONF or RESTCONF.
+
+<SourceFigure
+  id="lobello2019-qcc-fully-centralized"
+  caption="Figure 3. Fully centralised model: the UNI is between the CUC and the CNC."
+/>
+
+## Six trade-offs (LS19 §IV-F)
+
+| # | Aspect | Centralised | Distributed |
+| --- | --- | --- | --- |
+| 1 | Algorithmic complexity | Simpler: one decider, no races | Concurrent reservations can block each other; correct resolution is complex and error-prone |
+| 2 | Execution time | Requests travel to the CNC and back | Only the talker, listeners and bridges on the path are involved |
+| 3 | Bottlenecks | CNC computation and traffic; out-of-band management is safer but costly | Spread over bridges |
+| 4 | Fault tolerance | Single point of failure unless the CNC is replicated (hot, warm or cold standby) | Not fault-tolerant by default either |
+| 5 | Solution quality | Global view: better optima, solutions where the distributed model fails; a natural place for self-configuration | Local decisions only |
+| 6 | Cost | Extra CNC/CUC, but possibly connected only occasionally or in the cloud | Complexity and development risk |
+
+LS19 concludes that **centralised configuration should be the default** for industrial TSN. The CNC is SDN in all but name; NETCONF, RESTCONF and YANG are more likely building blocks than OpenFlow.
+
+## The open issue that matters here
+
+LS19 §VI notes that no research addressed the **worst-case time to generate a new configuration**, so applications that need reconfiguration **within a deadline** cannot be served with a guarantee. This is the gap that certified admission control with network calculus aims to close; see [Dynamic reconfiguration](/blog/dynamic-reconfiguration-of-tsn).

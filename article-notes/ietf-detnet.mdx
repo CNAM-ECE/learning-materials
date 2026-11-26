@@ -1,0 +1,67 @@
+---
+id: ietf-detnet
+title: "IETF DetNet (RFC 8655) and how it compares with TSN"
+sidebar_label: DetNet (RFC 8655)
+description: Notes on the DetNet architecture from RFC 8655 and the comparison of DetNet and TSN in the seminar paper and the industrial survey.
+---
+
+import SourceFigure from '@site/src/components/SourceFigure';
+
+**Sources:** RFC 8655 §2–4 · YSH19 §3, §5, §7–8 · LS19 §IV-G · **Post:** [IETF DetNet](/blog/ietf-detnet)
+
+## History
+
+| Year | Event |
+| --- | --- |
+| 2007 | IEEE 802.1 creates the **AVB** task group: time-synchronised, low-latency streaming over Layer 2 |
+| 2012 | AVB is renamed the **TSN** task group to serve industrial control |
+| 2015 | The IETF creates the **DetNet** working group, to extend bounded latency, low jitter and high reliability to Layer 3 |
+| 2019 | RFC 8557 (problem statement), RFC 8578 (use cases) and RFC 8655 (architecture) are published |
+
+## RFC 8655: what DetNet provides
+
+DetNet gives a flow a **bounded latency** (with a minimum and a maximum), **low loss** and **in-order delivery**, using three techniques:
+
+| Technique | How |
+| --- | --- |
+| **Resource allocation** | Reserve buffers and bandwidth along the path, so that there is no congestion loss and the delay is bounded |
+| **Service protection** | Packet replication, elimination and ordering (PREOF), the Layer 3 counterpart of [802.1CB](./ieee-802-1cb.mdx), and network coding |
+| **Explicit routes** | Fixed paths that do not change with routing convergence (MPLS TE, segment routing, SDN, IS-IS) |
+
+Points marked in the reading of §2.1:
+
+- DetNet flows **converge** with non-DetNet traffic on one infrastructure. DetNet does not exclude other flows, but they must not take the resources reserved for DetNet.
+- There is **no restriction on topology**. A flow is characterised by a **maximum bandwidth**, and resources can be reserved by network management, by a central controller, or **on demand** through a distributed control plane such as RSVP.
+- Some DetNet nodes need **synchronised clocks**, to sub-microsecond accuracy for some queue-control techniques.
+- DetNet runs over **sub-networks** that are not DetNet-aware. The margin note on the PDF reads: *DetNet interconnects with non-DetNet topologies (sub-network technologies)*. TSN, MPLS TE and OTN are examples.
+- A **compound flow** is split into **member flows** for service protection and merged back into one flow without duplicates by the service sub-layer. A **service sub-layer proxy** maps between DetNet and non-DetNet systems, adding or removing sequence information.
+
+<SourceFigure
+  id="rfc8655-fig2"
+  caption="Figure 1. The DetNet data-plane stack: the service sub-layer (replication, elimination, ordering) above the forwarding sub-layer (resource allocation, explicit routes)."
+/>
+
+<SourceFigure
+  id="rfc8655-fig3"
+  caption="Figure 2. A DetNet-enabled network: end systems, edge nodes, relay nodes and transit nodes, some of which may be TSN sub-networks."
+/>
+
+## DetNet compared with TSN
+
+YSH19 §8, completed with LS19 §IV-G:
+
+| Aspect | TSN (IEEE 802.1) | DetNet (IETF) |
+| --- | --- | --- |
+| Layer | Layer 2 bridged LANs (some exceptions, such as 802.1AS-Rev and 802.1CB, also apply above) | Layer 3 (IP and MPLS), over Layer 2 sub-networks |
+| Latency | Upper bound | Upper **and lower** bound, to limit jitter |
+| Data plane | Ethernet | IP, MPLS; runs over TSN, MPLS TE or OTN; multi-layer systems possible |
+| Reliability | 802.1CB | PREOF, the same idea |
+| Time synchronisation | 802.1AS | Reuses IEEE 1588 and 802.1AS |
+| Security | Little in the TSN standards; left to 802.1 security | A dedicated security document: delay attacks, path manipulation, authentication of nodes |
+| Maturity in 2019 | Many published standards in use | Mostly drafts; now several RFCs (IP, MPLS, over TSN, YANG, security) |
+
+**Coexistence with best effort.** DetNet gives critical flows a higher priority than best effort; since both are limited by reservations, the network stays stable (YSH19 §5.1).
+
+**Industry view (LS19).** Large networks could benefit from TSN and DetNet together, to keep guarantees across routers. But industrial automation (OPC UA) and automotive (SOME/IP in Adaptive AUTOSAR) already have their own Layer 3 and higher solutions, so it was unclear in 2019 how far DetNet would be adopted there.
+
+**Future work named in 2019.** For TSN: interconnection with external networks, simpler management, security and privacy. For DetNet: reliable resource sharing over Layer 2, and integration with existing networks.

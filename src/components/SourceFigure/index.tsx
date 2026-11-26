@@ -2,7 +2,7 @@ import type {ReactNode} from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 /**
- * Figures cropped from the original sources of the learning path (IEEE 802.1
+ * Figures cropped from the original sources of the posts and article notes (IEEE 802.1
  * slide decks, RFC 8655, arXiv papers). Each file in static/img/sources is
  * listed here with the document, page and figure it was cut from, so that the
  * source line under the image is always complete. The figures remain the work
@@ -71,6 +71,14 @@ const docs = {
   allaboutcircuits: {
     cite: 'J. Steinheider (NXP Semiconductors), “The Fundamentals of Time-Sensitive Networking,” All About Circuits, 19 January 2021',
     url: 'https://www.allaboutcircuits.com/industry-articles/the-fundamentals-of-time-sensitive-networking/',
+  },
+  lobello2019: {
+    cite: 'L. Lo Bello, W. Steiner, “A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems,” Proceedings of the IEEE, vol. 107, no. 6, pp. 1094–1120, June 2019',
+    url: 'https://doi.org/10.1109/JPROC.2019.2905334',
+  },
+  yang2019: {
+    cite: 'X. Yang, D. Scholz, M. Helm, “Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN),” Seminar Innovative Internet Technologies and Mobile Communications (IITM), TU Munich, October 2019',
+    url: 'https://doi.org/10.2313/NET-2019-10-1_15',
   },
 } satisfies Record<string, Doc>;
 
@@ -151,6 +159,22 @@ export const sourceFigures = {
   'allaboutcircuits-ptp-vs-gptp': {doc: 'allaboutcircuits', where: 'Figure 2', edit: 'cropped from a screenshot, with the caption removed, otherwise unchanged', alt: 'A balance: PTP (1588) permits layer 4 and other transports, non-time-aware systems and overlapping time domains; gPTP (802.1AS) uses layer 2 Ethernet only, two-step timestamps, the peer delay mechanism, and all devices are syntonized', width: 460},
   'garner2022-layering': {doc: 'garner2022', where: 'slide 17', alt: 'The 802.1AS architecture: ClockSource, ClockTarget, ClockMaster, ClockSlave, SiteSync and PortSync in the media-independent layer, above one media-dependent entity per port with the MAC and PHY', width: 520},
   'garner2022-domains': {doc: 'garner2022', where: 'slide 22', alt: 'Two gPTP domains: domain 0 with a GNSS grandmaster using the PTP timescale, domain 1 with its own grandmaster using an arbitrary timescale, and bridges that belong to both', width: 600},
+  'lobello2019-frame': {doc: 'lobello2019', where: 'Fig. 1', alt: 'Layout of an Ethernet frame: preamble, start of frame, destination and source MAC addresses, 802.1Q VLAN tag, Ethertype, payload, FCS and inter-frame gap, with the VLAN tag split into TPID, PCP, DEI and VID', width: 560},
+  'lobello2019-forwarding': {doc: 'lobello2019', where: 'Fig. 2', alt: 'The frame forwarding steps of 802.1Q clause 8.6 from reception port to transmission port, grouped into traffic policing, traffic switching and traffic shaping, with Qci and Qbv, Qch, Qbu, Qcr marked where they act', width: 560},
+  'lobello2019-toolbox': {doc: 'lobello2019', where: 'Fig. 5', alt: 'The IEEE 802.1 TSN toolbox: timing and synchronisation, bounded low latency, high reliability and resource management, with the standards in each group', width: 560},
+  'lobello2019-as-example': {doc: 'lobello2019', where: 'Fig. 6', alt: 'Two end stations and one bridge: ES1 is the grandmaster, its port is master, the bridge port facing it is slave, the bridge port facing ES2 is master and the port of ES2 is slave', width: 480},
+  'lobello2019-qbv-example': {doc: 'lobello2019', where: 'Fig. 7', alt: 'ES1 and ES3 sending to ES2 through bridge B1: without Qbv the frame of ES3 delays the frame of ES1; with Qbv the gate of queue 4 closes before the frame of ES1 arrives', width: 460},
+  'lobello2019-cb-e2e': {doc: 'lobello2019', where: 'Fig. 8', alt: 'ES1 sends a stream over two disjoint paths through B1 and a faulty B2; the corrupted copy from B2 arrives first, so 802.1CB in ES2 keeps it and drops the correct copy from B1', width: 460},
+  'lobello2019-qcc-distributed': {doc: 'lobello2019', where: 'Fig. 9', alt: 'A line of ten bridges B1 to B10 between ES1 and ES2, with the user-network interface between each end station and its bridge', width: 520},
+  'lobello2019-qcc-centralized': {doc: 'lobello2019', where: 'Fig. 10', alt: 'The same line of bridges with a CNC attached to bridge B3, and the user-network interface still between the end stations and their bridges', width: 520},
+  'lobello2019-qcc-fully-centralized': {doc: 'lobello2019', where: 'Fig. 11', alt: 'The same line of bridges with a CNC and a CUC attached to bridge B3, and the user-network interface between the CUC and the CNC', width: 520},
+  'lobello2019-ia-hierarchy': {doc: 'lobello2019', where: 'Fig. 12, itself taken from the IEC/IEEE 60802 use-case document', alt: 'Levels of industrial automation from basic control up to the enterprise network: machines with synchronised and unsynchronised devices, production cells, production lines, the factory network, MES, ERP and the cloud', width: 640},
+  'lobello2019-tsn-domains': {doc: 'lobello2019', where: 'Fig. 13, itself taken from the IEC/IEEE 60802 use-case document', alt: 'Overlapping TSN domains: machines 1 to 4, production cells 1 and 2, the production line, the plant and the operations control HMI', width: 520},
+  'yang2019-timing-model': {doc: 'yang2019', where: 'Figure 1, redrawn there after N. Finn, “Introduction to Time-Sensitive Networking,” IEEE Communications Standards Magazine, 2018', alt: 'The five components of the delay of a packet through a relay: output delay, link delay, preemption delay, processing delay and queuing delay', width: 560},
+  'yang2019-cbs-flowchart': {doc: 'yang2019', where: 'Figure 2, after A. Nasrallah et al., IEEE Communications Surveys & Tutorials, 2019', alt: 'Flowchart of the credit-based shaper for one queue: with queued frames and a non-negative credit, a frame is sent when the channel is free and the credit decreases at the send slope; otherwise the credit increases at the idle slope, or is reset to zero when the queue is empty', width: 460},
+  'yang2019-frer': {doc: 'yang2019', where: 'Figure 3, after N. Finn, 2018', alt: 'Two FRER examples: a transmitter replicates packets into two flows over A-B-C and D-E-F and the receiver eliminates duplicates; in the second, nodes B and E also eliminate and re-replicate, so two failures on different paths are tolerated', width: 520},
+  'xue2023-fig2': {doc: 'xue', where: 'Fig. 2', alt: 'A TSN network of five bridges and five end stations carrying four streams from talkers to listeners', width: 520},
+  'xue2023-fig6': {doc: 'xue', where: 'Fig. 6', alt: 'The eight-bridge TSN testbed: photograph of the boards, the hardware components and the logical ring topology with a CNC and a CUC', width: 620},
 } satisfies Record<string, Entry>;
 
 export type SourceFigureId = keyof typeof sourceFigures;

@@ -1,0 +1,45 @@
+---
+id: ieee-802-1qci
+title: "IEEE 802.1Qci: per-stream filtering and policing"
+sidebar_label: 802.1Qci (PSFP)
+description: Notes on PSFP from the articles - the three tables, the fields of a stream filter, stream gates and the invalid-reception lock, and the lack of configuration guidance.
+---
+
+**Sources:** LS19 §III-C, §IV-D · YSH19 §4.2 · **Post:** [Per-Stream Filtering and Policing](/blog/per-stream-filtering-and-policing)
+
+## Purpose
+
+[IEEE 802.1Qci](https://1.ieee802.org/tsn/802-1qci/), now part of 802.1Q, makes **filtering, policing and queuing decisions per stream**. Streams are recognised with the stream identification functions of [802.1CB](./ieee-802-1cb.mdx). It protects streams that share an egress queue: if one stream exceeds its bandwidth or burst, the others would wait longer or lose frames. Qci detects the violation **at ingress** and acts on it.
+
+## Three tables
+
+| Table | Content | Role |
+| --- | --- | --- |
+| **Stream filter instance table** | Ordered list of stream filters | Matches a frame and applies a chain: gate → meter → queue |
+| **Stream gate instance table** | Gates with a state (open/closed) and an **internal priority value (IPV)** | Lets frames through only at the planned times; the IPV can change the traffic class |
+| **Flow meter instance table** | Meters (MEF 10.3 style) | Measures rate and burst; drops or marks excess frames |
+
+A **stream filter** contains:
+
+- an instance identifier (its position in the ordered list);
+- a **stream_handle** (or wildcard) and a **priority** (or wildcard); together they select the filter for a received frame;
+- the **stream gate** to use;
+- zero or more filter specifications, notably the **maximum SDU size** (larger frames are dropped) and the **flow meter** to apply;
+- **counters**: frames passing or failing the gate, the SDU filter, the meter.
+
+With wildcards, the same machinery can police **per priority** or **per priority and ingress port**, not only per stream (802.1Q-2018, 8.6.5.1.1, note 2).
+
+## Stream gates
+
+- Gate lists run on the **cyclic schedule of Qbv**, with the same three state machines plus some extra variables.
+- When transmissions are coordinated, a frame that arrives **while the gate is closed** signals an error. With the optional **GateClosedDueToInvalidRx** setting, the gate then stays **closed permanently** for that stream until management intervenes. This stops a **babbling** device from disturbing others.
+- The open/closed periods and IPV changes are what [802.1Qch](./ieee-802-1qch-qcr.mdx) reuses to build its cycles.
+
+## Where it helps
+
+- **Automotive backbone**: a faulty ECU in one domain cannot make the backbone unusable for the others (LS19 §V-B).
+- **Reliability**: Qci covers more severe failures than [CB](./ieee-802-1cb.mdx), such as babbling idiots (LS19 §VI).
+
+## Open issue
+
+Qci offers many settings, but in 2019 there was little research on **how to configure it** to obtain a given effect. LS19 sees this as the least studied of the core TSN standards. For a bound, the policer is what makes the arrival curve assumed by the analysis hold at each hop; see [the PSFP post](/blog/per-stream-filtering-and-policing).

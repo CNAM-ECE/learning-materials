@@ -1,0 +1,38 @@
+---
+id: ieee-802-1qch-qcr
+title: "IEEE 802.1Qch and 802.1Qcr: cyclic queuing and asynchronous shaping"
+sidebar_label: 802.1Qch and 802.1Qcr
+description: Notes on Cyclic Queuing and Forwarding and Asynchronous Traffic Shaping from the articles, and how their outlook in 2019 compares with today.
+---
+
+**Sources:** LS19 §III-B, §IV-D, §IV-G · YSH19 §4.2 · **Posts:** [Cyclic Queuing and Forwarding](/blog/cyclic-queuing-and-forwarding), [Asynchronous Traffic Shaping](/blog/asynchronous-traffic-shaping)
+
+## IEEE 802.1Qch: Cyclic Queuing and Forwarding
+
+[IEEE 802.1Qch](https://1.ieee802.org/tsn/802-1qch/) chooses the **output queue of a frame from the time it arrives**:
+
+- Each port keeps at least **two queues** that are enabled in turn by a periodic schedule (Qbv gates). At any time one queue sends while the other collects.
+- Frames received during a cycle go into the queue that is currently closed. When the queues swap, everything collected is sent and new arrivals go to the other queue.
+- So a frame spends about **one cycle per hop**, and the network transit latency is characterised by the cycle time (YSH19 §4.2). The original name was the **peristaltic shaper**.
+- The aim is to minimise **relay jitter**.
+- The cycle split and the change of internal priority reuse the stream gates of [802.1Qci](./ieee-802-1qci.mdx) at ingress (LS19 §IV-D).
+
+LS19 saw no strong sign in 2019 that Qch would be adopted in industry. The [CQF post](/blog/cyclic-queuing-and-forwarding) gives the cycle-time condition that makes the per-hop bound hold.
+
+## IEEE 802.1Qcr: Asynchronous Traffic Shaping
+
+[IEEE 802.1Qcr](https://1.ieee802.org/tsn/802-1qcr/) gives guaranteed low latency **without a synchronised time base**. It adds a layer of **shaped queues** at egress, after the urgency-based scheduler of Specht and Samii (LS19 §IV-G).
+
+- Unlike Qbv, it needs neither clocks nor a schedule; unlike CBS, it shapes **per stream** (or per group of streams), which keeps bursts from building up across hops.
+- LS19 expected it to matter mostly for the **automotive** industry, given who contributed to the project.
+
+It was still a project (P802.1Qcr) when LS19 was written; it was published as [802.1Qcr-2020](https://1.ieee802.org/tsn/802-1qcr/). The [ATS post](/blog/asynchronous-traffic-shaping) covers the token-bucket shapers, the queue allocation rules and the shaper-to-shaper delay segments.
+
+## Where they sit among the shapers
+
+| Mechanism | Needs synchronised time | Unit of shaping | Typical use (LS19 view) |
+| --- | --- | --- | --- |
+| [CBS (Qav)](./ieee-802-1qav.mdx) | No | Traffic class | Audio/video streams |
+| [TAS (Qbv)](./ieee-802-1qbv.mdx) | Yes | Queue, by gate schedule | Time-triggered control |
+| CQF (Qch) | Yes | Cycle | Low relay jitter, simple configuration |
+| ATS (Qcr) | No | Stream or stream group | Automotive, asynchronous critical traffic |

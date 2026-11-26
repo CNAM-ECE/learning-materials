@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: Annotated resources
-description: The lectures, articles and technical documents from which the learning path was prepared, with a short note on each.
+description: The lectures, articles and technical documents from which the Research understanding posts were prepared, with a short note on each.
 ---
 
 # Annotated resources
@@ -21,8 +21,9 @@ description: The lectures, articles and technical documents from which the learn
 | M. Boyer, R. Henia, "Designing a Resilient Time-Aware Shaper Configuration for TSN," Ethernet & IP @ Automotive Technology Day, 2025. [Slides](https://standards.ieee.org/wp-content/uploads/2025/10/D1_09_Marc-Boyer-TSN-reconfiguration.pdf) | Incremental TAS reconfiguration after permanent link faults (WPEx: window precedence exclusion, window enlargement, protective gating). | Why deterministic guarantees, Reconfiguration |
 | N. Sertbaş Bülbül, D. Ergenç, M. Fischer, "Towards SDN-based Dynamic Path Reconfiguration for Time Sensitive Networking," IEEE/IFIP NOMS 2022. [IEEE Xplore](https://ieeexplore.ieee.org/document/9789890) | MILP-based path (re)configuration by an SDN controller; compares never, periodic, threshold-triggered and systematic reconfiguration. | Why deterministic guarantees, Reconfiguration |
 | TSF Technology, "Migration vers TSN : guide pratique." [Link](https://tsf-technology.com/fr/ressources/guides-techniques/migration-tsn-guide-pratique) | Practitioner's guide (in French): key standards and a five-phase migration method ending with latency validation. | Why deterministic guarantees, Reconfiguration |
-
-| C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023. [arXiv](https://arxiv.org/abs/2305.16772) | System models of TAS scheduling and an experimental comparison of 17 methods in simulation and on an eight-bridge testbed. | 802.1AS, TAS, Preemption, SDN |
+| L. Lo Bello, W. Steiner, "A Perspective on IEEE Time-Sensitive Networking for Industrial Communication and Automation Systems," *Proceedings of the IEEE*, vol. 107, no. 6, pp. 1094–1120, 2019. [DOI](https://doi.org/10.1109/JPROC.2019.2905334) | Survey of the core TSN standards (AS, Qbv, Qbu/3br, Qci, CB, Qcc) with open issues for each, and industrial and automotive use cases. Kept in `ressource/`. | [Article notes](/article-notes) |
+| X. Yang, D. Scholz, M. Helm, "Deterministic Networking (DetNet) vs Time Sensitive Networking (TSN)," Seminar IITM SS 19, TU Munich, 2019. [DOI](https://doi.org/10.2313/NET-2019-10-1_15) | Short comparison of TSN and DetNet: layers, bounds, data planes, security and maturity. Kept in `ressource/`. | [Article notes](/article-notes) |
+| C. Xue, T. Zhang, Y. Zhou, M. Nixon, A. Loveless, S. Han, "Real-Time Scheduling for 802.1Qbv Time-Sensitive Networking (TSN): A Systematic Review and Experimental Study," arXiv:2305.16772, 2023. [arXiv](https://arxiv.org/abs/2305.16772) | System models of TAS scheduling and an experimental comparison of 17 methods in simulation and on an eight-bridge testbed. Kept in `ressource/`. | 802.1AS, TAS, Preemption, SDN, [Article notes](/article-notes) |
 | A. Grigorjew, S. Geissler, J. Schmitt, T. Hossfeld, "Decentralized Latency Models and Information Flow for TSN Shapers – A Tutorial," arXiv:2610.11999, 2026. [arXiv](https://arxiv.org/abs/2610.11999) | Shaper-to-shaper delay segments, the information a bridge needs for a local bound, and locally computable bounds for SP, CQF, ATS and CBS. | CBS, TAS, CQF, ATS, PSFP, FRER, Stream reservation, SDN |
 | I. Behnke, H. Austad, "Real-Time Performance of Industrial IoT Communication Technologies: A Review," arXiv:2311.08852, 2023 (CC BY 4.0). [arXiv](https://arxiv.org/abs/2311.08852) | IIoT scenarios and requirements; IntServ, DiffServ and TSN shapers; recent SDN and TSN work for industrial networks. | Deterministic networking, 802.1AS, CBS, TAS, ATS, Stream reservation, SDN |
 

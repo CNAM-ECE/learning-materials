@@ -11,6 +11,7 @@ import {BridgeIntegrationFigure} from '@site/src/components/figures/tsn';
 import CommonsFigure from '@site/src/components/CommonsFigure';
 import Abbreviations from '@site/src/components/Abbreviations';
 import SourceFigure from '@site/src/components/SourceFigure';
+import HandwrittenPages from '@site/src/components/HandwrittenPages';
 
 The credit-based shaper (CBS) is the oldest [TSN](https://1.ieee802.org/tsn/) shaper. It comes from [Audio Video Bridging](https://www.ieee802.org/1/pages/avbridges.html) (AVB). It needs no clock, only a counter per queue, and it turns bursts into an even flow of frames.
 
@@ -215,19 +216,32 @@ The credit follows the usual rules (section 2), with one addition that the stand
 
 Write $C$ for the link rate, $idSl_M$ for the idle slope of class $M \in \{A, B\}$, $sdSl_M = idSl_M - C < 0$ for its send slope, and $l^{max}_{X}$ for the largest frame of class $X$. The credit of each class stays between two values [8], after Azua and Boyer.
 
-**Lower bound.** The credit is lowest just after the class has sent its largest frame starting from zero credit. Sending takes $l^{max}_{AVB_M}/C$, during which the credit falls at $sdSl_M$:
+**Lower bound, step by step.** The credit falls only while a frame of the class is on the wire, at the rate given by the send slope:
 
 $$
-credit^{min}_M = sdSl_M \cdot \frac{l^{max}_{AVB_M}}{C}.
+\frac{d\,credit_M}{dt} = sdSl_M \quad \text{(while a Class } M \text{ frame is sent).}
 $$
 
-**Upper bound for Class A.** Class A waits at most for one lower-priority frame already on the wire, a Class B or a BE frame, and gains credit at $idSl_A$ meanwhile:
+1. A frame may start only when the credit is non-negative, so the worst start is $credit_M(0) = 0$.
+2. The longest the credit keeps falling is the time to send the largest frame of the class:
+   $$T^{max}_M = \frac{l^{max}_{AVB_M}}{C}.$$
+3. Over that time the credit changes by $\Delta credit_M = sdSl_M \cdot T^{max}_M$, so
+   $$credit_M(t) \;\ge\; credit_M(0) + \Delta credit_M \;\ge\; sdSl_M \cdot \frac{l^{max}_{AVB_M}}{C} = credit^{min}_M .$$
+
+A large frame drains the credit fast: the lower bound is set by the largest frame alone.
+
+**Upper bound for Class A, step by step.** While frames of a class wait without being sent, the credit grows at the idle slope:
 
 $$
-credit^{max}_A = idSl_A \cdot \frac{l^{max}_n}{C}, \qquad l^{max}_n = \max\left(l^{max}_{AVB_B},\, l^{max}_{BE}\right).
+\frac{d\,credit_M}{dt} = idSl_M \quad \text{(while Class } M \text{ frames wait).}
 $$
 
-**Upper bound for Class B.** Class B gains credit for as long as it waits, and it waits in three successive steps:
+1. Class A has the highest AVB priority, so the only thing it can wait for is **one** lower-priority frame that was already on the wire when the Class A frame arrived (there is no preemption between AVB classes and BE).
+2. That frame is a Class B or a BE frame of at most $l^{max}_n = \max\left(l^{max}_{AVB_B},\, l^{max}_{BE}\right)$ bits, sent in $l^{max}_n / C$.
+3. During that wait the credit of Class A rises at $idSl_A$:
+   $$credit^{max}_A = idSl_A \cdot \frac{l^{max}_n}{C}.$$
+
+**Upper bound for Class B, step by step.** Class B gains credit at $idSl_B$ for as long as it has to wait, $credit^{max}_B = idSl_B \cdot T^{max}_{wait}$. The longest wait is made of three successive steps:
 
 | Step | Who uses the wire | Duration | Credit gained by B |
 | --- | --- | --- | --- |
@@ -235,7 +249,13 @@ $$
 | 2 | Class A sends until its credit $credit^{max}_A$ is used up at the rate $sdSl_A$ | $T^{credit}_A = -\dfrac{l^{max}_n \, idSl_A}{C \, sdSl_A}$ | $idSl_B \cdot T^{credit}_A$ |
 | 3 | The last Class A frame, started with credit just above zero | $l^{max}_{AVB_A}/C$ | $idSl_B \cdot l^{max}_{AVB_A}/C$ |
 
-Adding the three steps:
+Step 2 needs the time Class A can keep the wire. Class A starts with $credit^{max}_A$ and its credit falls at $|sdSl_A|$ until it reaches zero:
+
+$$
+T^{credit}_A = \frac{credit^{max}_A}{|sdSl_A|} = \frac{l^{max}_n \, idSl_A}{C \, |sdSl_A|} = -\frac{l^{max}_n \, idSl_A}{C \, sdSl_A} \qquad (sdSl_A < 0).
+$$
+
+Adding the three steps, $\Delta credit^{(1)}_B + \Delta credit^{(2)}_B + \Delta credit^{(3)}_B$:
 
 $$
 credit^{max}_B = idSl_B \left( \frac{l^{max}_{BE} + l^{max}_{AVB_A}}{C} - \frac{l^{max}_n \, idSl_A}{C \, sdSl_A} \right).
@@ -257,6 +277,16 @@ These bounds hold only if the credit of Class B cannot climb from one peak to a 
 $$
 sdSl_A \cdot sdSl_B \;\ge\; idSl_A \cdot idSl_B .
 $$
+
+Where it comes from, following the peaks of Figure 11:
+
+1. Let $y_{P_i}$ be the credit of Class B at its $i$-th peak $P_i$. At a peak Class B starts sending, so its credit falls at $sdSl_B$, while Class A waits and its negative credit rises at $idSl_A$.
+2. Class A takes the wire back as soon as its credit is back to zero, at the point $Q$. If $credit_A$ is the (negative) credit of Class A at $P_1$, Class B has lost meanwhile
+   $$\Delta^-_B = sdSl_B \cdot \frac{y_Q - credit_A}{idSl_A} ,$$
+   the time Class A needs to climb back, multiplied by the send slope of B.
+3. Class A then sends until its credit is negative again, for $\Delta t = (y_Q - credit_A)/|sdSl_A|$, while Class B waits and gains $\Delta^+_B = idSl_B \cdot \Delta t$.
+4. The credit of Class B stays bounded only if no peak is higher than the one before, $y_{P_{i+1}} \le y_{P_i}$, that is $\Delta^+_B \le |\Delta^-_B|$. Both sides are proportional to the same swing $y_Q - credit_A$ of Class A, which leaves a condition on the slopes only:
+   $$\frac{idSl_B}{|sdSl_A|} \le \frac{|sdSl_B|}{idSl_A} \iff sdSl_A \cdot sdSl_B \ge idSl_A \cdot idSl_B .$$
 
 Replacing each send slope by $idSl_M - C$ shows what the condition means:
 
@@ -283,7 +313,13 @@ $$
 \alpha^h_{TT,i}(t) = \sum_{j=i}^{i+N^h-1} L^h_j \cdot C \cdot \left\lceil \frac{t - o^h_{j,i}}{p^h_{GCL}} \right\rceil .
 $$
 
-Each term is a staircase: $L^h_j \cdot C$ bits, the most the TT queue can send in window $j$, once per hyperperiod. Since the worst starting window is not known, the TT arrival curve is the upper envelope over all of them (Lemma 1):
+Reading the formula term by term:
+
+- $L^h_j \cdot C$ is the most data the TT queue can send in window $j$: the whole window at line rate;
+- $o^h_{j,i}$ is how much later window $j$ opens than window $i$, so the term starts counting only once window $j$ can have begun;
+- $\lceil (t - o^h_{j,i}) / p^h_{GCL} \rceil$ counts the hyperperiods that window $j$ overlaps in an interval of length $t$; each one gives at most one window of TT traffic.
+
+Each term is therefore a staircase that climbs by $L^h_j \cdot C$ once per hyperperiod. Since the worst starting window is not known, the TT arrival curve is the upper envelope over all of them (Lemma 1):
 
 $$
 \alpha^h_{TT}(t) = \max_{0 \le i \le N^h-1} \alpha^h_{TT,i}(t).
@@ -300,13 +336,26 @@ $$
 \left[ \sup_{0 \le u \le t} \left\{ u - \frac{\alpha^h_{GB+TT}(u)}{C} - \frac{credit^{max}_M}{idSl_M} \right\} \right]^+ .
 $$
 
-How to read it:
+How it is derived, step by step [8]:
+
+1. Take the latest backlogged period of Class $M$, starting at $s$: the backlog is empty at $s$ and $credit_M(s) = 0$. Look at any $t > s$ and write $\Delta t = t - s$.
+2. Split $\Delta t$ into the time the port is closed to AVB, $\Delta t_0 = \Delta t^0_{TT} + \Delta t^0_{GB}$ (TT windows and guard bands, credit frozen), the time $\Delta t^-$ during which Class $M$ sends, and the time $\Delta t^+$ during which it waits.
+3. The credit only moves outside $\Delta t_0$, and never exceeds its maximum:
+   $$credit_M(t) - credit_M(s) = idSl_M \, \Delta t^+ + sdSl_M \, \Delta t^- \le credit^{max}_M .$$
+4. Substituting $\Delta t^+ = \Delta t - \Delta t_0 - \Delta t^-$ gives a lower bound on the sending time:
+   $$\Delta t^- \;\ge\; \frac{idSl_M\,(\Delta t - \Delta t_0) - credit^{max}_M}{idSl_M - sdSl_M}.$$
+5. The closed time is at most what the TT windows and guard bands can take: $\Delta t_0 \le \alpha^h_{GB+TT}(\Delta t)/C$.
+6. Class $M$ sends at the line rate $C$ during $\Delta t^-$, so its output over $\Delta t$ is at least $C \cdot \Delta t^-$. Taking the best $u \le \Delta t$ and keeping the positive part gives the service curve above.
+
+Reading the result:
 
 - $\alpha^h_{GB+TT}(u)/C$ is the time lost to TT windows and guard bands within $u$;
 - $credit^{max}_M / idSl_M$ is a latency: the time for which the class may be blocked while its credit climbs to its maximum;
-- the factor in front equals $idSl_M$, because $idSl_M - sdSl_M = C$: what is left is served at the reserved rate.
+- the factor in front equals $idSl_M$, because $idSl_M - sdSl_M = C$: what is left is served at the reserved rate. The AVB service available is the link service minus the TT service.
 
-**Theorem 3 (preemption)** has the same structure, with the TT curve of Lemma 1 instead of $\alpha^h_{GB+TT}$ and an extra term for the preemption overheads that follow the TT windows (Lemma 3).
+**Theorem 3 (preemption)** has the same structure, with the TT curve of Lemma 1 instead of $\alpha^h_{GB+TT}$ and an extra term for the preemption overheads that follow the TT windows (Lemma 3). In step 2 of the proof, the time outside the TT windows now also contains the overhead time $\Delta t_{OH}$: service lost because the interrupted frame must be resumed. A guard band comes **before** a TT window, an overhead **after** it.
+
+**What the GCL does not do.** TAS controls the TT **queue** through the GCL; it does not schedule each TT flow. When end systems are not scheduled, TT frames lose their periodicity as they cross the network, which is why the analysis works with windows and not with individual TT frames.
 
 #### From one hop to the whole path
 
@@ -353,6 +402,13 @@ The method was implemented in C++ with the RTC toolbox and evaluated on a TSN ve
 TAS controls the TT **queue** through the GCL; it does not schedule each TT flow, and TT frames lose their strict periodicity as they cross the network when end systems are not scheduled.
 
 **ATS, the alternative for sporadic traffic.** [802.1Qcr](/blog/asynchronous-traffic-shaping) reshapes every flow at every hop with a token bucket $\alpha(t) = CBS + CIR \cdot t$: committed burst size $CBS$ (in bits; not the credit-based shaper) and committed information rate $CIR$. Bursts therefore do not accumulate along the path, and no global clock is needed: each switch uses its local time. Le Boudec's result that an interleaved regulator gives this reshaping without increasing the worst-case delay ("shaping for free") is the reason it works; see the [network calculus for TSN post](/blog/network-calculus-for-tsn).
+
+<HandwrittenPages
+  set="zhao2017"
+  pages="1-23"
+  title="annotated report of Zhao et al. [8], with the reading notes on pages 2–5, 10–12, 14, 16, 22 and 23"
+  pdf="https://github.com/CNAM-ECE/network-calculus/blob/main/docs/projects/project%20understandings.pdf"
+/>
 
 ## References
 

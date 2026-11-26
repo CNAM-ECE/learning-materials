@@ -5,6 +5,8 @@ sidebar_label: "Bibliometrics"
 description: "Three-hour workshop on bibliometric indicators and tools and their limits (16 April 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Introduction to Bibliometrics
 
 A three-hour, French-language online workshop for Cnam doctoral candidates on bibliometric tools and their use in research evaluation.
@@ -30,6 +32,4 @@ By the end, participants should be able to explain major indicators and tools, r
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="16 April 2027" />

@@ -5,6 +5,8 @@ sidebar_label: "Invention patents (INPI)"
 description: "Four-hour introduction to intellectual property and patent practice with INPI (13–14 January 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Invention Patents — INPI
 
 A four-hour, French-language online course introducing intellectual property and the protection of inventions. It is listed under professional development and career preparation.
@@ -32,6 +34,4 @@ The connection link is sent to registered participants shortly before the course
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="13 and 14 January 2027" />

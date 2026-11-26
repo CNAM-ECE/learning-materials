@@ -5,6 +5,8 @@ sidebar_label: "Ethics of AI"
 description: "Six-hour seminar on the ethical and societal dimensions of artificial intelligence (27 May 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Ethics of Artificial Intelligence
 
 A six-hour seminar on the ethical and societal dimensions of artificial intelligence. It is scheduled as the second day of the two-part ethics programme described in ADUM and is mandatory in the supplied schedule.
@@ -32,6 +34,4 @@ The ADUM listing gives the programme and assessment for the seminar. Check ADUM 
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Not registered" date="27 May 2027" />

@@ -5,6 +5,8 @@ sidebar_label: "J1A welcome seminar"
 description: "Welcome seminar for doctoral candidates at Cnam and the ED SMI doctoral school (18 January 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # J1A Cnam — Welcome Seminar
 
 A French-language, in-person introduction to Cnam and its Sciences des Métiers de l’Ingénieur (SMI) doctoral school. The seminar is for doctoral candidates enrolled at Cnam; it is mandatory for first-year SMI doctoral candidates enrolled at Cnam.
@@ -29,6 +31,4 @@ The published programme notes that the timetable and rooms may change.
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="18 January 2027" />

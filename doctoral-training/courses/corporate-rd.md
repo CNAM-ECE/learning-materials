@@ -5,6 +5,8 @@ sidebar_label: "Corporate R&D in France"
 description: "Seven-hour online course on discovering and accessing company R&D departments in France (22 March 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Discovering Corporate R&D in France
 
 A seven-hour online course titled “Discover and access the R&D department of a company in France,” listed under career development and self-knowledge.
@@ -24,6 +26,4 @@ The course concerns discovering and accessing research-and-development departmen
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Requested" date="22 March 2027" />

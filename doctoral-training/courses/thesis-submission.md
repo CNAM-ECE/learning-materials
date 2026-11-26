@@ -5,6 +5,8 @@ sidebar_label: "Thesis deposit and publication"
 description: "Three-hour workshop on writing, depositing, archiving and publishing the Cnam thesis (14 June 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Writing, Depositing and Publishing the Cnam Thesis
 
 A three-hour, French-language online workshop for Cnam doctoral candidates on thesis preparation, deposit, archiving, dissemination and publication rights. It is mandatory for Cnam SMI doctoral candidates and recommended for Abbé-Grégoire doctoral candidates.
@@ -35,6 +37,4 @@ The ADUM listing recommends reviewing the doctoral studies guide and relevant th
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="14 June 2027" />

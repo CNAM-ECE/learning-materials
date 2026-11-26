@@ -5,6 +5,8 @@ sidebar_label: "Thesis in 180 seconds"
 description: "Coaching in explaining the thesis to a broad audience, in preparation for Ma thèse en 180 secondes (7 and 17 December 2026)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Thesis in 180 Seconds Coaching
 
 A French-language doctoral-college programme for researchers who want to explain their thesis in simple, concise terms to a broad audience, particularly in preparation for the *Ma thèse en 180 secondes* (MT180) competition.
@@ -34,6 +36,4 @@ Further information: [Sorbonne Université — MT180 preparation 2027](https://w
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="7 and 17 December 2026" />

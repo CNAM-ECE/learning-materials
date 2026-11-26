@@ -5,6 +5,8 @@ sidebar_label: "Innovation processes"
 description: "Two-day course on contemporary innovation processes, with a visit to the Musée des arts et métiers (10–11 March 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Innovation Processes
 
 A two-day, French-language course on contemporary innovation, combining taught sessions, museum-based exploration and case studies. Its stated objective is to help doctoral candidates understand innovation processes and develop the ability to analyse and act on innovation situations.
@@ -31,6 +33,4 @@ The published timetable runs 09:30–12:30 and 14:00–17:00 on both days. Rooms
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="10–11 March 2027" />

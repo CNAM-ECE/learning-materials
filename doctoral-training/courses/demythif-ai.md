@@ -5,6 +5,8 @@ sidebar_label: "DeMythif.AI"
 description: "Five-day thematic winter school on demystifying artificial intelligence, Institut DataIA (1–5 March 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # DeMythif.AI Winter School
 
 A five-day thematic winter school organised by Institut DataIA. The schedule records 24 hours of scientific training.
@@ -25,6 +27,4 @@ The title frames the course around demystifying artificial intelligence. A detai
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Applied" date="1–5 March 2027" />

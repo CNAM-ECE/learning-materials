@@ -5,6 +5,8 @@ sidebar_label: "Data science and information theory"
 description: "Thirty-hour scientific course at the Institut d’Astrophysique de Paris (31 March–9 April 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Data Science and Information Theory
 
 A 30-hour scientific course delivered over six days at the Institut d’Astrophysique de Paris (IAP).
@@ -25,6 +27,4 @@ The title identifies data science and information theory as the course subject. 
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Requested" date="31 March–2 April and 7–9 April 2027" />

@@ -5,6 +5,8 @@ sidebar_label: "Zotero"
 description: "Three-hour introduction to Zotero for collecting, organising and citing references (11 March 2027)."
 ---
 
+import NotesPending from '@site/src/components/NotesPending';
+
 # Zotero — Beginner Introduction
 
 A three-hour, French-language online workshop for Cnam doctoral candidates. It introduces Zotero as a tool for collecting, checking, organising and annotating references, then citing them in a thesis and generating a bibliography in a chosen style (for example, APA or IEEE).
@@ -32,6 +34,4 @@ Zotero does not support Apple Pages. LaTeX use requires configuration that is ou
 
 ## Notes
 
-:::info Notes after the session
-This page will hold the notes taken during the session, rewritten as on the [research ethics page](./research-ethics.md).
-:::
+<NotesPending status="Confirmed" date="11 March 2027" />
